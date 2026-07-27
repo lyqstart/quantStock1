@@ -177,7 +177,7 @@ class DataWatermark(Base):
     data_item_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("meta.data_item.data_item_id"), nullable=False)
     source_binding_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("meta.source_binding.source_binding_id"))
     scope_key: Mapped[str] = mapped_column(String(256), nullable=False)
-    frequency: Mapped[str | None] = mapped_column(String(16))
+    frequency: Mapped[str] = mapped_column(String(16), nullable=False, default="")
     initialized_from: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     initialized_to: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     latest_collected_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

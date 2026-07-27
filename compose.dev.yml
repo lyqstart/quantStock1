@@ -28,5 +28,17 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  worker:
+    profiles: ["collect"]
+    build: .
+    command: ["python", "-m", "app.collect.worker"]
+    env_file: .env
+    environment:
+      QUANTSTOCK1_DATABASE_URL: postgresql+psycopg://quantstock1:${QUANTSTOCK1_DB_PASSWORD:-change_me}@db:5432/quantstock1
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
 volumes:
   quantstock1_dev_pgdata:

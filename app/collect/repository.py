@@ -6,6 +6,7 @@ from sqlalchemy import Select, and_, or_, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.storage.models.meta import SourceBinding
 from app.storage.models.ops import CollectTask, RequestSlice
 
 
@@ -43,8 +44,13 @@ class TaskRepository:
         now = datetime.now(UTC)
         stmt: Select[tuple[RequestSlice]] = (
             select(RequestSlice)
+            .join(CollectTask, CollectTask.task_id == RequestSlice.task_id)
+            .join(SourceBinding, SourceBinding.source_binding_id == CollectTask.source_binding_id)
             .where(
-                RequestSlice.status == "PENDING",
+                CollectTask.status.in_(("PENDING", "RUNNING", "PARTIAL")),
+                SourceBinding.enabled.is_(True),
+                SourceBinding.capability_status.not_in(("permission_denied", "schema_changed", "temporarily_unavailable")),
+                RequestSlice.status.in_(("PENDING", "RETRY_WAIT")),
                 or_(RequestSlice.next_retry_at.is_(None), RequestSlice.next_retry_at <= now),
             )
             .order_by(RequestSlice.priority.asc(), RequestSlice.slice_order.asc())
@@ -99,6 +105,58 @@ class TaskRepository:
                 response_rows=response_rows,
                 lease_expires_at=None,
                 heartbeat_at=now,
+            )
+        )
+        return result.rowcount == 1
+
+    def release_slice_for_retry(
+        self,
+        *,
+        slice_id: uuid.UUID,
+        lease_token: uuid.UUID,
+        error_type: str,
+        next_retry_at: datetime,
+    ) -> bool:
+        result = self.session.execute(
+            update(RequestSlice)
+            .where(
+                RequestSlice.slice_id == slice_id,
+                RequestSlice.lease_token == lease_token,
+                RequestSlice.status == "RUNNING",
+            )
+            .values(
+                status="RETRY_WAIT",
+                last_error_type=error_type,
+                next_retry_at=next_retry_at,
+                leased_by=None,
+                leased_at=None,
+                lease_expires_at=None,
+                lease_token=None,
+            )
+        )
+        return result.rowcount == 1
+
+    def fail_slice(
+        self,
+        *,
+        slice_id: uuid.UUID,
+        lease_token: uuid.UUID,
+        error_type: str,
+    ) -> bool:
+        result = self.session.execute(
+            update(RequestSlice)
+            .where(
+                RequestSlice.slice_id == slice_id,
+                RequestSlice.lease_token == lease_token,
+                RequestSlice.status == "RUNNING",
+            )
+            .values(
+                status="FAILED",
+                last_error_type=error_type,
+                leased_by=None,
+                leased_at=None,
+                lease_expires_at=None,
+                lease_token=None,
             )
         )
         return result.rowcount == 1

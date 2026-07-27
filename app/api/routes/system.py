@@ -2,6 +2,7 @@ from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
 
 from app.core.config import get_settings
+from app.core.version import APP_VERSION
 from app.storage.db import check_database
 
 router = APIRouter(tags=["system"])
@@ -26,7 +27,7 @@ def ready() -> JSONResponse:
 def version() -> dict[str, str]:
     settings = get_settings()
     return {
-        "application_version": "0.1.0",
+        "application_version": APP_VERSION,
         "git_commit": settings.git_commit,
         "build_time": settings.build_time,
         "environment": settings.env,
