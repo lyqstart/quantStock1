@@ -31,3 +31,17 @@ def test_core_daily_item_probes_use_one_trade_date() -> None:
         assert spec.params == {"trade_date": "20260727"}
         assert "trade_date" in spec.fields
         assert "ts_code" in spec.fields
+
+def test_minute_probe_uses_known_historical_window() -> None:
+    spec = build_probe_spec('stk_mins')
+    assert spec.params['ts_code'] == '000001.SZ'
+    assert spec.params['freq'] == '1min'
+    assert spec.params['start_date'].startswith('2024-01-02')
+    assert 'trade_time' in spec.fields
+
+def test_financial_probes_are_per_stock_and_bounded() -> None:
+    for api_name in ('income','fina_indicator'):
+        spec = build_probe_spec(api_name)
+        assert spec.params['ts_code'] == '000001.SZ'
+        assert spec.params['start_date'] == '20240101'
+        assert 'end_date' in spec.fields

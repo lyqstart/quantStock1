@@ -2,14 +2,23 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import date
+from datetime import date, datetime
+from zoneinfo import ZoneInfo
 
-from app.collect.market_data_service import enqueue_stock_basic, enqueue_stock_daily, enqueue_trade_date_item
+from app.collect.market_data_service import (
+    enqueue_financial_item,
+    enqueue_stock_basic,
+    enqueue_stock_daily,
+    enqueue_stock_minute,
+    enqueue_trade_date_item,
+)
 from app.collect.scheduler import schedule_once
 from app.collect.trade_calendar_service import enqueue_trade_calendar
 from app.core.logging import configure_logging
 from app.datasource.capability import probe_binding
 from app.storage.db import get_session_factory
+
+SHANGHAI = ZoneInfo("Asia/Shanghai")
 
 TRADE_DATE_CLI_ITEMS = (
     "stock_adj_factor",
@@ -21,6 +30,10 @@ TRADE_DATE_CLI_ITEMS = (
 
 def _parse_date(value: str) -> date:
     return date.fromisoformat(value)
+
+def _parse_datetime(value: str) -> datetime:
+    parsed = datetime.fromisoformat(value)
+    return parsed if parsed.tzinfo is not None else parsed.replace(tzinfo=SHANGHAI)
 
 
 def main() -> None:
@@ -52,6 +65,30 @@ def main() -> None:
     market_item.add_argument("--date", required=True, type=_parse_date)
     market_item.add_argument("--run-type", default="BACKFILL", choices=["BACKFILL", "INCREMENTAL", "RERUN"])
     market_item.add_argument("--reason", default="manual market item collection")
+
+    minute = sub.add_parser("enqueue-stock-minute")
+    minute.add_argument("--ts-code", required=True)
+    minute.add_argument("--start", required=True, type=_parse_datetime)
+    minute.add_argument("--end", required=True, type=_parse_datetime)
+    minute.add_argument(
+        "--freq", default="1min", choices=["1min", "5min", "15min", "30min", "60min"]
+    )
+    minute.add_argument(
+        "--run-type", default="BACKFILL", choices=["BACKFILL", "INITIALIZE", "RERUN"]
+    )
+    minute.add_argument("--reason", default="manual stock minute sample")
+
+    financial = sub.add_parser("enqueue-financial-item")
+    financial.add_argument(
+        "--item", required=True, choices=["financial_income", "financial_indicator"]
+    )
+    financial.add_argument("--ts-code", required=True)
+    financial.add_argument("--start", required=True, type=_parse_date)
+    financial.add_argument("--end", required=True, type=_parse_date)
+    financial.add_argument(
+        "--run-type", default="BACKFILL", choices=["BACKFILL", "INITIALIZE", "RERUN"]
+    )
+    financial.add_argument("--reason", default="manual financial sample")
 
     sub.add_parser("scheduler-once")
 
@@ -89,6 +126,28 @@ def main() -> None:
                 session,
                 item_code=args.item,
                 trade_date=args.date,
+                run_type=args.run_type,
+                requested_by="operator",
+                reason=args.reason,
+            )
+        elif args.command == "enqueue-stock-minute":
+            task, created = enqueue_stock_minute(
+                session,
+                ts_code=args.ts_code,
+                start_time=args.start,
+                end_time=args.end,
+                frequency=args.freq,
+                run_type=args.run_type,
+                requested_by="operator",
+                reason=args.reason,
+            )
+        elif args.command == "enqueue-financial-item":
+            task, created = enqueue_financial_item(
+                session,
+                item_code=args.item,
+                ts_code=args.ts_code,
+                start_date=args.start,
+                end_date=args.end,
                 run_type=args.run_type,
                 requested_by="operator",
                 reason=args.reason,

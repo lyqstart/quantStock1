@@ -38,6 +38,9 @@ ADJ_FACTOR_FIELDS = ("ts_code", "trade_date", "adj_factor")
 DAILY_BASIC_FIELDS = ("ts_code", "trade_date", "close", "turnover_rate", "pe", "pb", "total_mv")
 SUSPEND_D_FIELDS = ("ts_code", "trade_date", "suspend_timing", "suspend_type")
 STK_LIMIT_FIELDS = ("trade_date", "ts_code", "pre_close", "up_limit", "down_limit")
+STK_MINS_FIELDS = ("ts_code", "trade_time", "open", "close", "high", "low", "vol", "amount")
+INCOME_FIELDS = ("ts_code", "ann_date", "f_ann_date", "end_date", "report_type", "comp_type", "end_type", "update_flag", "basic_eps", "revenue", "n_income_attr_p")
+FINA_INDICATOR_FIELDS = ("ts_code", "ann_date", "end_date", "eps", "dt_eps", "roe", "roa", "debt_to_assets", "update_flag")
 
 
 def build_probe_spec(api_name: str, *, now: datetime | None = None) -> ProbeSpec:
@@ -65,6 +68,15 @@ def build_probe_spec(api_name: str, *, now: datetime | None = None) -> ProbeSpec
     if api_name == "stk_limit":
         day = current.astimezone(SHANGHAI).strftime("%Y%m%d")
         return ProbeSpec(params={"trade_date": day}, fields=STK_LIMIT_FIELDS)
+    if api_name == "stk_mins":
+        probe_day = "2024-01-02"
+        return ProbeSpec(params={"ts_code":"000001.SZ","freq":"1min","start_date":f"{probe_day} 09:00:00","end_date":f"{probe_day} 15:30:00"}, fields=STK_MINS_FIELDS)
+    if api_name == "income":
+        end_day = current.astimezone(SHANGHAI).strftime("%Y%m%d")
+        return ProbeSpec(params={"ts_code":"000001.SZ","start_date":"20240101","end_date":end_day}, fields=INCOME_FIELDS)
+    if api_name == "fina_indicator":
+        end_day = current.astimezone(SHANGHAI).strftime("%Y%m%d")
+        return ProbeSpec(params={"ts_code":"000001.SZ","start_date":"20240101","end_date":end_day}, fields=FINA_INDICATOR_FIELDS)
     raise ValueError(f"No capability probe spec configured for api: {api_name}")
 
 

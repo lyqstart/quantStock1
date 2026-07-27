@@ -8,6 +8,8 @@ from sqlalchemy.orm import Session
 
 from app.collect.idempotency import build_task_idempotency_key
 from app.collect.planners.stock_basic import plan_stock_basic_slices
+from app.collect.planners.stock_minute import plan_stock_minute_slice
+from app.collect.planners.financial import plan_financial_slice
 from app.collect.planners.trade_date_item import plan_trade_date_slice
 from app.collect.repository import TaskRepository
 from app.storage.models.meta import DataItem, SourceBinding
@@ -190,3 +192,150 @@ def enqueue_stock_daily(
         requested_by=requested_by,
         reason=reason,
     )
+
+
+
+def enqueue_stock_minute(
+    session: Session,
+    *,
+    ts_code: str,
+    start_time: datetime,
+    end_time: datetime,
+    frequency: str = "1min",
+    run_type: str = "BACKFILL",
+    requested_by: str = "operator",
+    reason: str = "stock minute sample collection",
+) -> tuple[CollectTask, bool]:
+    item, binding = _catalog(session, "stock_minute")
+    object_scope = {"type": "security", "ts_code": ts_code}
+    key = build_task_idempotency_key(
+        data_item_code=item.code,
+        source_binding_code=binding.binding_code,
+        run_type=run_type,
+        object_scope=object_scope,
+        time_start=start_time,
+        time_end=end_time,
+        frequency=frequency,
+    )
+    task = CollectTask(
+        data_item_id=item.data_item_id,
+        source_binding_id=binding.source_binding_id,
+        run_type=run_type,
+        object_scope=object_scope,
+        time_start=start_time,
+        time_end=end_time,
+        frequency=frequency,
+        priority=20,
+        status="PENDING",
+        idempotency_key=key,
+        requested_by=requested_by,
+        reason=reason,
+        source_binding_version=binding.request_policy_version,
+        planning_status="COMPLETE",
+        planning_complete=True,
+    )
+    persisted, created = TaskRepository(session).create_task_idempotent(task)
+    if not created:
+        return persisted, False
+
+    plan = plan_stock_minute_slice(
+        ts_code=ts_code,
+        frequency=frequency,
+        start_time=start_time,
+        end_time=end_time,
+        source_binding_code=binding.binding_code,
+        mapping_version=binding.field_mapping_version,
+    )
+    session.add(
+        RequestSlice(
+            task_id=persisted.task_id,
+            partition_key=plan.partition_key,
+            slice_order=plan.slice_order,
+            request_params=plan.request_params,
+            request_hash=plan.request_hash,
+            time_start=start_time,
+            time_end=end_time,
+            object_key=ts_code,
+            frequency=frequency,
+            status="PENDING",
+            priority=persisted.priority,
+        )
+    )
+    session.flush()
+    return persisted, True
+
+
+def enqueue_financial_item(
+    session: Session,
+    *,
+    item_code: str,
+    ts_code: str,
+    start_date: date,
+    end_date: date,
+    run_type: str = "BACKFILL",
+    requested_by: str = "operator",
+    reason: str | None = None,
+) -> tuple[CollectTask, bool]:
+    if item_code not in {"financial_income", "financial_indicator"}:
+        raise ValueError(f"Unsupported financial DataItem: {item_code}")
+
+    item, binding = _catalog(session, item_code)
+    start_dt = datetime.combine(start_date, time.min, tzinfo=SHANGHAI)
+    end_dt = datetime.combine(end_date, time.max, tzinfo=SHANGHAI)
+    object_scope = {"type": "security", "ts_code": ts_code}
+    frequency = item.frequency or "report"
+    key = build_task_idempotency_key(
+        data_item_code=item.code,
+        source_binding_code=binding.binding_code,
+        run_type=run_type,
+        object_scope=object_scope,
+        time_start=start_dt,
+        time_end=end_dt,
+        frequency=frequency,
+    )
+    task = CollectTask(
+        data_item_id=item.data_item_id,
+        source_binding_id=binding.source_binding_id,
+        run_type=run_type,
+        object_scope=object_scope,
+        time_start=start_dt,
+        time_end=end_dt,
+        frequency=frequency,
+        priority=20,
+        status="PENDING",
+        idempotency_key=key,
+        requested_by=requested_by,
+        reason=reason or f"{item_code} sample collection",
+        source_binding_version=binding.request_policy_version,
+        planning_status="COMPLETE",
+        planning_complete=True,
+    )
+    persisted, created = TaskRepository(session).create_task_idempotent(task)
+    if not created:
+        return persisted, False
+
+    plan = plan_financial_slice(
+        ts_code=ts_code,
+        start_date=start_date,
+        end_date=end_date,
+        api_name=binding.api_name,
+        source_binding_code=binding.binding_code,
+        mapping_version=binding.field_mapping_version,
+    )
+    session.add(
+        RequestSlice(
+            task_id=persisted.task_id,
+            partition_key=plan.partition_key,
+            slice_order=plan.slice_order,
+            request_params=plan.request_params,
+            request_hash=plan.request_hash,
+            time_start=start_dt,
+            time_end=end_dt,
+            object_key=ts_code,
+            frequency=frequency,
+            status="PENDING",
+            priority=persisted.priority,
+        )
+    )
+    session.flush()
+    return persisted, True

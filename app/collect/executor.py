@@ -19,6 +19,9 @@ from app.storage.models.raw import (
     TushareDaily,
     TushareDailyBasic,
     TushareStkLimit,
+    TushareStkMins,
+    TushareIncome,
+    TushareFinaIndicator,
     TushareStockBasic,
     TushareSuspendD,
     TushareTradeCal,
@@ -45,6 +48,18 @@ STK_LIMIT_FIELDS = ("trade_date", "ts_code", "pre_close", "up_limit", "down_limi
 
 RAW_INSERT_BATCH_SIZE = 1000
 
+def _api_fields_from_model(model, *, exclude: set[str] | None = None) -> tuple[str, ...]:
+    excluded = set(exclude or set())
+    return tuple(
+        column.name
+        for column in model.__table__.columns
+        if not column.name.startswith("_") and column.name not in excluded
+    )
+
+STK_MINS_FIELDS = _api_fields_from_model(TushareStkMins, exclude={"frequency"})
+INCOME_FIELDS = _api_fields_from_model(TushareIncome)
+FINA_INDICATOR_FIELDS = _api_fields_from_model(TushareFinaIndicator)
+
 
 def chunk_rows(values: list[dict], size: int = RAW_INSERT_BATCH_SIZE):
     if size <= 0:
@@ -61,6 +76,9 @@ ITEM_FIELDS = {
     "stock_daily_basic": DAILY_BASIC_FIELDS,
     "stock_suspend": SUSPEND_D_FIELDS,
     "stock_limit_price": STK_LIMIT_FIELDS,
+    "stock_minute": STK_MINS_FIELDS,
+    "financial_income": INCOME_FIELDS,
+    "financial_indicator": FINA_INDICATOR_FIELDS,
 }
 
 ITEM_MODELS = {
@@ -71,6 +89,9 @@ ITEM_MODELS = {
     "stock_daily_basic": TushareDailyBasic,
     "stock_suspend": TushareSuspendD,
     "stock_limit_price": TushareStkLimit,
+    "stock_minute": TushareStkMins,
+    "financial_income": TushareIncome,
+    "financial_indicator": TushareFinaIndicator,
 }
 
 EXPECTED_NON_EMPTY_ITEMS = {
@@ -375,6 +396,10 @@ class CollectionExecutor:
             business = {field: row.get(field) for field in fields}
             if item_code == "trade_calendar" and business["is_open"] is not None:
                 business["is_open"] = str(business["is_open"])
+            if item_code == "stock_minute":
+                business["frequency"] = slice_row.frequency or str(slice_row.request_params.get("freq") or "")
+                if not business["frequency"]:
+                    raise RuntimeError("stock_minute requires frequency in request context")
             values.append(
                 {
                     "_source": "tushare",
@@ -489,6 +514,14 @@ class CollectionExecutor:
             scope_key, frequency, collected_at = str(task.object_scope.get("exchange", "SSE")), "day", task.time_end
         elif item.code in TRADE_DATE_ITEMS:
             scope_key, frequency, collected_at = "GLOBAL", (item.frequency or "day"), task.time_end
+        elif item.code == "stock_minute":
+            scope_key = str(task.object_scope.get("ts_code", "UNKNOWN"))
+            frequency = task.frequency or "1min"
+            collected_at = task.time_end or now
+        elif item.code in {"financial_income", "financial_indicator"}:
+            scope_key = str(task.object_scope.get("ts_code", "UNKNOWN"))
+            frequency = item.frequency or "report"
+            collected_at = task.time_end or now
         else:
             scope_key, frequency, collected_at = "GLOBAL", "", now
 
