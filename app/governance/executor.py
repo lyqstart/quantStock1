@@ -829,10 +829,18 @@ class QualityExecutor:
             invalid_prices = []
             for payload in payloads:
                 pre, up, down = payload["pre_close"], payload["up_limit"], payload["down_limit"]
-                if any(v is None or not math.isfinite(float(v)) for v in (pre, up, down)) or pre <= 0 or up <= down:
+                invalid_pre_close = pre is not None and (not math.isfinite(float(pre)) or pre <= 0)
+                invalid_limits = (
+                    up is None
+                    or down is None
+                    or not math.isfinite(float(up))
+                    or not math.isfinite(float(down))
+                    or up <= down
+                )
+                if invalid_pre_close or invalid_limits:
                     invalid_prices.append(payload["security_code"])
             if invalid_prices:
-                issues.append(self._issue("QB-LIMIT-002", "VALIDITY", "BLOCK", "INVALID_LIMIT_PRICE", batch.scope_key, "stock_limit_price contains invalid pre_close/up_limit/down_limit relationships", observed={"invalid_count": len(invalid_prices), "sample": invalid_prices[:10]}, expected={"invalid_count": 0}))
+                issues.append(self._issue("QB-LIMIT-002", "VALIDITY", "BLOCK", "INVALID_LIMIT_PRICE", batch.scope_key, "stock_limit_price contains invalid optional pre_close or up_limit/down_limit relationships", observed={"invalid_count": len(invalid_prices), "sample": invalid_prices[:10]}, expected={"invalid_count": 0}))
             if day:
                 daily = {row.security_code: row for row in session.scalars(select(CleanStockDaily).where(CleanStockDaily.trade_date == date.fromisoformat(day)))}
                 violations = []

@@ -51,7 +51,7 @@ P4_TRADE_DATE_ITEMS = {
 }
 MAPPING_VERSION = "mapping-v1"
 NORMALIZATION_VERSION = "normalization-v3"
-QUALITY_RULE_VERSION = "quality-v2"
+QUALITY_RULE_VERSION = "quality-v3"
 
 
 def _has_physical_raw(item_code: str):
