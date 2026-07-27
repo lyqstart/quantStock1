@@ -40,6 +40,14 @@ HISTORICAL_SOURCE_CODE = re.compile(r"^T[0-9]{6}\.(SH|SZ|BJ)$")
 EXCHANGE_MAP = {"SSE": "SSE", "SZSE": "SZSE", "BSE": "BSE"}
 SUFFIX_EXCHANGE = {"SH": "SSE", "SZ": "SZSE", "BJ": "BSE"}
 LIST_STATUSES = {"L", "D", "P", "G"}
+GOVERNANCE_WRITE_BATCH_SIZE = 1000
+
+
+def _chunk_rows(values: list[dict], size: int = GOVERNANCE_WRITE_BATCH_SIZE):
+    if size <= 0:
+        raise ValueError("chunk size must be positive")
+    for start in range(0, len(values), size):
+        yield values[start : start + size]
 
 
 def _is_historical_source_security_code(*, security_code: str, exchange: str | None, list_status: str | None) -> bool:
@@ -651,8 +659,8 @@ class QualityExecutor:
                 unchanged += 1
                 continue
             changed_rows.append(row)
-        if changed_rows:
-            stmt = pg_insert(model).values(changed_rows)
+        for chunk in _chunk_rows(changed_rows):
+            stmt = pg_insert(model).values(chunk)
             update_fields = {c.name: stmt.excluded[c.name] for c in model.__table__.columns if c.name not in key_fields and c.name != "_created_at"}
             session.execute(stmt.on_conflict_do_update(index_elements=key_fields, set_=update_fields))
         return len(rows), unchanged, len(changed_rows)
@@ -680,8 +688,8 @@ class QualityExecutor:
             if current_history is not None:
                 current_history.observed_to = now
             session.add(SecurityMasterHistory(security_code=row["security_code"], observed_from=now, content_hash=content_hash, payload=payload, clean_batch_id=batch.clean_batch_id))
-        if changed_rows:
-            stmt = pg_insert(SecurityMaster).values(changed_rows)
+        for chunk in _chunk_rows(changed_rows):
+            stmt = pg_insert(SecurityMaster).values(chunk)
             update_fields = {c.name: stmt.excluded[c.name] for c in SecurityMaster.__table__.columns if c.name != "security_code" and c.name != "_created_at"}
             session.execute(stmt.on_conflict_do_update(index_elements=["security_code"], set_=update_fields))
         return len(rows), unchanged, len(changed_rows)
