@@ -11,6 +11,7 @@ def test_p4_date_and_daily_units_are_deterministic() -> None:
     assert _date8("20260727") == date(2026, 7, 27)
     assert _date8("") is None
     assert _int_exact(12.34, 100) == 1234
+    assert _int_exact(0.29, 100) == 29
     assert _int_exact(None, 100) is None
 
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 import math
 import re
 import uuid
+from decimal import Decimal, InvalidOperation
 from datetime import UTC, date, datetime, timedelta
 from typing import Any, Iterable
 
@@ -77,8 +78,11 @@ def _finite(value: float | None) -> bool:
 def _int_exact(value: float | int | None, multiplier: int = 1) -> int | None:
     if value is None:
         return None
-    converted = float(value) * multiplier
-    if not math.isfinite(converted) or not converted.is_integer():
+    try:
+        converted = Decimal(str(value)) * Decimal(multiplier)
+    except (InvalidOperation, ValueError) as exc:
+        raise ValueError("numeric value cannot be represented as an exact integer") from exc
+    if not converted.is_finite() or converted != converted.to_integral_value():
         raise ValueError("numeric value cannot be represented as an exact integer")
     return int(converted)
 
