@@ -24,18 +24,34 @@ class TaskRepository:
         self.session = session
 
     def create_task_idempotent(self, task: CollectTask) -> tuple[CollectTask, bool]:
+        # Duplicate task submission is an expected condition for recurring
+        # scheduler scans. Resolve the common case before attempting INSERT so
+        # an existing idempotency key never becomes a process-level failure.
+        existing = self.session.scalar(
+            select(CollectTask).where(
+                CollectTask.idempotency_version == task.idempotency_version,
+                CollectTask.idempotency_key == task.idempotency_key,
+            )
+        )
+        if existing is not None:
+            return existing, False
+
+        # Keep the database unique constraint as the final concurrency guard.
+        # If another transaction wins the race, roll back only the savepoint
+        # and return the row that now owns the idempotency key.
         try:
             with self.session.begin_nested():
                 self.session.add(task)
                 self.session.flush()
             return task, True
         except IntegrityError:
-            existing = self.session.scalar(
-                select(CollectTask).where(
-                    CollectTask.idempotency_version == task.idempotency_version,
-                    CollectTask.idempotency_key == task.idempotency_key,
+            with self.session.no_autoflush:
+                existing = self.session.scalar(
+                    select(CollectTask).where(
+                        CollectTask.idempotency_version == task.idempotency_version,
+                        CollectTask.idempotency_key == task.idempotency_key,
+                    )
                 )
-            )
             if existing is None:
                 raise
             return existing, False
