@@ -488,6 +488,12 @@ class CollectionExecutor:
         binding: SourceBinding,
         item: DataItem,
     ) -> None:
+        if task.status == "CANCELLED":
+            now = datetime.now(UTC)
+            run.status = "CANCELLED"
+            run.finished_at = now
+            run.heartbeat_at = now
+            return
         remaining = session.scalar(
             select(func.count())
             .select_from(RequestSlice)

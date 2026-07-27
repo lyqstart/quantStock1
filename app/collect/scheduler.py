@@ -2,19 +2,23 @@ from __future__ import annotations
 
 import argparse
 import logging
+import os
+import socket
 import time
-from datetime import date, datetime, time as dtime, timedelta
+from datetime import UTC, date, datetime, time as dtime, timedelta
 from zoneinfo import ZoneInfo
 
 from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 from app.collect.market_data_service import enqueue_trade_date_item
 from app.collect.scheduler_lock import release_scheduler_lock, try_acquire_scheduler_lock
 from app.core.config import get_settings
 from app.core.logging import configure_logging
+from app.core.version import APP_VERSION
 from app.storage.db import get_session_factory
 from app.storage.models.meta import DataItem
-from app.storage.models.ops import DataWatermark, TaskDefinition
+from app.storage.models.ops import DataWatermark, SchedulerState, TaskDefinition
 from app.storage.models.raw import TushareTradeCal
 
 logger = logging.getLogger(__name__)
@@ -26,6 +30,42 @@ SUPPORTED_INCREMENTAL_ITEMS = {
     "stock_suspend",
     "stock_limit_price",
 }
+
+
+def _scheduler_id() -> str:
+    return os.getenv("QUANTSTOCK1_SCHEDULER_ID") or f"{socket.gethostname()}-{os.getpid()}"
+
+
+def _record_scheduler_state(
+    session,
+    *,
+    scheduler_id: str,
+    status: str,
+    last_scan_at: datetime | None = None,
+    next_scan_at: datetime | None = None,
+) -> None:
+    now = datetime.now(UTC)
+    stmt = pg_insert(SchedulerState).values(
+        scheduler_id=scheduler_id,
+        environment=get_settings().env,
+        version=APP_VERSION,
+        started_at=now,
+        heartbeat_at=now,
+        last_scan_at=last_scan_at,
+        next_scan_at=next_scan_at,
+        status=status,
+        metadata_json={},
+    ).on_conflict_do_update(
+        index_elements=["scheduler_id"],
+        set_={
+            "heartbeat_at": now,
+            "last_scan_at": last_scan_at,
+            "next_scan_at": next_scan_at,
+            "status": status,
+            "version": APP_VERSION,
+        },
+    )
+    session.execute(stmt)
 
 
 def _parse_hhmm(value: str | None, default: dtime = dtime(0, 0)) -> dtime:
@@ -92,12 +132,26 @@ def _schedule_definition(session, *, definition: TaskDefinition, current: dateti
     return created_ids
 
 
-def schedule_once(*, now: datetime | None = None) -> dict[str, object]:
+def schedule_once(
+    *,
+    now: datetime | None = None,
+    scheduler_id: str | None = None,
+) -> dict[str, object]:
     current = (now or datetime.now(SHANGHAI)).astimezone(SHANGHAI)
+    instance_id = scheduler_id or _scheduler_id()
+    settings = get_settings()
+    next_scan_at = datetime.now(UTC) + timedelta(seconds=max(5.0, settings.scheduler_scan_seconds))
 
     with get_session_factory()() as session, session.begin():
-        environment = get_settings().env
+        environment = settings.env
         if not try_acquire_scheduler_lock(session, environment):
+            _record_scheduler_state(
+                session,
+                scheduler_id=instance_id,
+                status="STANDBY",
+                last_scan_at=datetime.now(UTC),
+                next_scan_at=next_scan_at,
+            )
             return {"leader": False, "created": 0, "reason": "another scheduler is leader"}
         try:
             definitions = list(
@@ -118,6 +172,13 @@ def schedule_once(*, now: datetime | None = None) -> dict[str, object]:
                     created_by_item[item.code] = len(created)
                     task_ids.extend(created)
 
+            _record_scheduler_state(
+                session,
+                scheduler_id=instance_id,
+                status="LEADER",
+                last_scan_at=datetime.now(UTC),
+                next_scan_at=next_scan_at,
+            )
             return {
                 "leader": True,
                 "created": len(task_ids),
@@ -131,12 +192,20 @@ def schedule_once(*, now: datetime | None = None) -> dict[str, object]:
 
 def run_scheduler(*, once: bool = False) -> int:
     settings = get_settings()
-    while True:
-        result = schedule_once()
-        logger.info("scheduler scan result: %s", result)
-        if once:
-            return 0
-        time.sleep(max(5.0, settings.scheduler_scan_seconds))
+    scheduler_id = _scheduler_id()
+    try:
+        while True:
+            result = schedule_once(scheduler_id=scheduler_id)
+            logger.info("scheduler scan result: %s", result)
+            if once:
+                return 0
+            time.sleep(max(5.0, settings.scheduler_scan_seconds))
+    finally:
+        try:
+            with get_session_factory()() as session, session.begin():
+                _record_scheduler_state(session, scheduler_id=scheduler_id, status="OFFLINE")
+        except Exception:
+            logger.exception("Failed to mark scheduler offline: %s", scheduler_id)
 
 
 def main() -> None:

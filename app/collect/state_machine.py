@@ -7,7 +7,7 @@ TASK_TRANSITIONS: dict[str, set[str]] = {
     "PAUSED": {"PENDING", "CANCELLED"},
     "PARTIAL": {"PENDING", "FAILED", "CANCELLED"},
     "SUCCEEDED": set(),
-    "FAILED": set(),
+    "FAILED": {"PENDING"},
     "CANCELLED": set(),
 }
 
@@ -17,7 +17,7 @@ SLICE_TRANSITIONS: dict[str, set[str]] = {
     "RETRY_WAIT": {"PENDING", "CANCELLED"},
     "LOST": {"PENDING", "CANCELLED"},
     "SUCCEEDED": set(),
-    "FAILED": set(),
+    "FAILED": {"PENDING"},
     "SPLIT": set(),
     "CANCELLED": set(),
 }

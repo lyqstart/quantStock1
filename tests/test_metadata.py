@@ -10,6 +10,6 @@ def test_required_schemas_and_tables_exist_in_metadata() -> None:
         "raw.raw_batch", "raw.tushare_trade_cal", "raw.tushare_stock_basic", "raw.tushare_daily",
         "raw.tushare_adj_factor", "raw.tushare_daily_basic", "raw.tushare_suspend_d",
         "raw.tushare_stk_limit", "raw.tushare_stk_mins", "raw.tushare_income",
-        "raw.tushare_fina_indicator",
+        "raw.tushare_fina_indicator", "audit.audit_event",
     }
     assert expected.issubset(set(Base.metadata.tables))

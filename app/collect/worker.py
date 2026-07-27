@@ -48,6 +48,30 @@ def _register_worker(worker_id: str) -> None:
         session.execute(stmt)
 
 
+def _heartbeat_worker(worker_id: str, *, status: str = "ONLINE") -> None:
+    now = datetime.now(UTC)
+    with get_session_factory()() as session, session.begin():
+        session.execute(
+            pg_insert(WorkerRegistry)
+            .values(
+                worker_id=worker_id,
+                environment=get_settings().env,
+                worker_type="collect",
+                hostname=socket.gethostname(),
+                process_id=os.getpid(),
+                version=APP_VERSION,
+                started_at=now,
+                heartbeat_at=now,
+                status=status,
+                metadata_json={},
+            )
+            .on_conflict_do_update(
+                index_elements=["worker_id"],
+                set_={"heartbeat_at": now, "status": status, "process_id": os.getpid()},
+            )
+        )
+
+
 def run_worker(*, once: bool = False, max_slices: int | None = None) -> int:
     settings = get_settings()
     if settings.tushare_token is None or not settings.tushare_token.get_secret_value().strip():
@@ -60,54 +84,61 @@ def run_worker(*, once: bool = False, max_slices: int | None = None) -> int:
     executor = CollectionExecutor()
 
     processed = 0
-    while True:
-        with get_session_factory()() as session:
-            with session.begin():
-                repository = TaskRepository(session)
-                recovered = repository.recover_expired_claims()
-                if recovered:
-                    logger.warning("Recovered %s expired worker lease(s)", recovered)
-                claimed = repository.claim_next_slice(
-                    worker_id=worker_id,
-                    lease_seconds=settings.worker_lease_seconds,
-                )
-            if claimed is None:
-                if once or max_slices is not None:
-                    return 0
-                time.sleep(settings.worker_poll_seconds)
-                continue
-
-            try:
+    try:
+        while True:
+            _heartbeat_worker(worker_id)
+            with get_session_factory()() as session:
                 with session.begin():
-                    executor.execute_claimed_slice(
-                        session,
-                        claimed=claimed,
+                    repository = TaskRepository(session)
+                    recovered = repository.recover_expired_claims()
+                    if recovered:
+                        logger.warning("Recovered %s expired worker lease(s)", recovered)
+                    claimed = repository.claim_next_slice(
                         worker_id=worker_id,
-                        adapter=adapter,
+                        lease_seconds=settings.worker_lease_seconds,
                     )
-            except Exception as exc:
-                session.rollback()
-                error_type = "WRITE_FAILED" if isinstance(exc, SQLAlchemyError) else "UNKNOWN_ERROR"
-                original = getattr(exc, "orig", None)
-                message = str(original if original is not None else exc).splitlines()[0][:1000]
-                logger.error(
-                    "Slice %s failed with %s: %s",
-                    claimed.slice_id,
-                    error_type,
-                    message,
-                )
-                with get_session_factory()() as failure_session, failure_session.begin():
-                    TaskRepository(failure_session).fail_claim_after_unhandled(
-                        claimed=claimed,
-                        worker_id=worker_id,
-                        error_type=error_type,
-                        message=message,
+                if claimed is None:
+                    if once or max_slices is not None:
+                        return 0
+                    time.sleep(settings.worker_poll_seconds)
+                    continue
+
+                try:
+                    with session.begin():
+                        executor.execute_claimed_slice(
+                            session,
+                            claimed=claimed,
+                            worker_id=worker_id,
+                            adapter=adapter,
+                        )
+                except Exception as exc:
+                    session.rollback()
+                    error_type = "WRITE_FAILED" if isinstance(exc, SQLAlchemyError) else "UNKNOWN_ERROR"
+                    original = getattr(exc, "orig", None)
+                    message = str(original if original is not None else exc).splitlines()[0][:1000]
+                    logger.error(
+                        "Slice %s failed with %s: %s",
+                        claimed.slice_id,
+                        error_type,
+                        message,
                     )
-                if once:
-                    return 1
-        processed += 1
-        if once or (max_slices is not None and processed >= max_slices):
-            return 0
+                    with get_session_factory()() as failure_session, failure_session.begin():
+                        TaskRepository(failure_session).fail_claim_after_unhandled(
+                            claimed=claimed,
+                            worker_id=worker_id,
+                            error_type=error_type,
+                            message=message,
+                        )
+                    if once:
+                        return 1
+            processed += 1
+            if once or (max_slices is not None and processed >= max_slices):
+                return 0
+    finally:
+        try:
+            _heartbeat_worker(worker_id, status="OFFLINE")
+        except Exception:
+            logger.exception("Failed to mark worker offline: %s", worker_id)
 
 
 def main() -> None:

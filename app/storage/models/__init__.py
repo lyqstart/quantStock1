@@ -1,3 +1,4 @@
+from app.storage.models.audit import AuditEvent
 from app.storage.models.base import Base
 from app.storage.models.meta import DataItem, DataSource, SourceBinding
 from app.storage.models.ops import (
