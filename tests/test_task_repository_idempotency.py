@@ -1,47 +1,78 @@
 from __future__ import annotations
 
-from contextlib import nullcontext
+import uuid
+
+from sqlalchemy.dialects import postgresql
 
 from app.collect.repository import TaskRepository
 from app.storage.models.ops import CollectTask
 
 
-class ExistingTaskSession:
+class DuplicateTaskSession:
     def __init__(self, existing: CollectTask) -> None:
         self.existing = existing
-        self.begin_nested_called = False
+        self.statements = []
+        self.scalar_calls = 0
 
-    def scalar(self, _statement):
+    def scalar(self, statement):
+        self.statements.append(statement)
+        self.scalar_calls += 1
+        if self.scalar_calls == 1:
+            # PostgreSQL INSERT ... ON CONFLICT DO NOTHING returned no row.
+            return None
         return self.existing
 
-    def begin_nested(self):
-        self.begin_nested_called = True
-        return nullcontext()
+    def get(self, _model, _key):
+        raise AssertionError("get() must not be used for a duplicate task")
 
 
-def test_duplicate_task_is_returned_without_reinserting() -> None:
-    existing = CollectTask(
-        data_item_id=None,
-        source_binding_id=None,
+class InsertedTaskSession:
+    def __init__(self, persisted: CollectTask) -> None:
+        self.persisted = persisted
+        self.statements = []
+
+    def scalar(self, statement):
+        self.statements.append(statement)
+        return self.persisted.task_id
+
+    def get(self, _model, key):
+        assert key == self.persisted.task_id
+        return self.persisted
+
+
+def _task(key: str) -> CollectTask:
+    return CollectTask(
+        task_id=uuid.uuid4(),
+        data_item_id=uuid.uuid4(),
+        source_binding_id=uuid.uuid4(),
         run_type="INCREMENTAL",
         object_scope={"type": "market"},
         status="PENDING",
-        idempotency_key="same-key",
+        idempotency_key=key,
         idempotency_version=1,
     )
-    duplicate = CollectTask(
-        data_item_id=None,
-        source_binding_id=None,
-        run_type="INCREMENTAL",
-        object_scope={"type": "market"},
-        status="PENDING",
-        idempotency_key="same-key",
-        idempotency_version=1,
-    )
-    session = ExistingTaskSession(existing)
+
+
+def test_duplicate_task_uses_postgres_on_conflict_and_returns_existing() -> None:
+    existing = _task("same-key")
+    duplicate = _task("same-key")
+    session = DuplicateTaskSession(existing)
 
     persisted, created = TaskRepository(session).create_task_idempotent(duplicate)
 
+    sql = str(session.statements[0].compile(dialect=postgresql.dialect()))
+    assert "ON CONFLICT ON CONSTRAINT uq_collect_task_idempotency DO NOTHING" in sql
     assert persisted is existing
     assert created is False
-    assert session.begin_nested_called is False
+
+
+def test_new_task_is_returned_after_atomic_insert() -> None:
+    persisted = _task("new-key")
+    candidate = _task("new-key")
+    persisted.task_id = candidate.task_id
+    session = InsertedTaskSession(persisted)
+
+    result, created = TaskRepository(session).create_task_idempotent(candidate)
+
+    assert result is persisted
+    assert created is True

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import Select, and_, or_, select, update
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.orm import Session
 
 from app.storage.models.meta import SourceBinding
@@ -24,37 +24,42 @@ class TaskRepository:
         self.session = session
 
     def create_task_idempotent(self, task: CollectTask) -> tuple[CollectTask, bool]:
-        # Duplicate task submission is an expected condition for recurring
-        # scheduler scans. Resolve the common case before attempting INSERT so
-        # an existing idempotency key never becomes a process-level failure.
+        """Insert a task atomically, treating an existing idempotency key as normal.
+
+        Scheduler scans are deliberately repeatable.  A pre-check followed by a
+        normal INSERT still has a race window, so PostgreSQL itself is the
+        authority: ON CONFLICT DO NOTHING guarantees duplicate submissions never
+        surface as UniqueViolation errors.
+        """
+        values = {
+            key: value
+            for key, value in vars(task).items()
+            if not key.startswith("_sa_")
+        }
+        stmt = (
+            pg_insert(CollectTask)
+            .values(**values)
+            .on_conflict_do_nothing(constraint="uq_collect_task_idempotency")
+            .returning(CollectTask.task_id)
+        )
+        inserted_task_id = self.session.scalar(stmt)
+        if inserted_task_id is not None:
+            persisted = self.session.get(CollectTask, inserted_task_id)
+            if persisted is None:
+                raise RuntimeError(f"Inserted task not found: {inserted_task_id}")
+            return persisted, True
+
         existing = self.session.scalar(
             select(CollectTask).where(
                 CollectTask.idempotency_version == task.idempotency_version,
                 CollectTask.idempotency_key == task.idempotency_key,
             )
         )
-        if existing is not None:
-            return existing, False
-
-        # Keep the database unique constraint as the final concurrency guard.
-        # If another transaction wins the race, roll back only the savepoint
-        # and return the row that now owns the idempotency key.
-        try:
-            with self.session.begin_nested():
-                self.session.add(task)
-                self.session.flush()
-            return task, True
-        except IntegrityError:
-            with self.session.no_autoflush:
-                existing = self.session.scalar(
-                    select(CollectTask).where(
-                        CollectTask.idempotency_version == task.idempotency_version,
-                        CollectTask.idempotency_key == task.idempotency_key,
-                    )
-                )
-            if existing is None:
-                raise
-            return existing, False
+        if existing is None:
+            raise RuntimeError(
+                "Task insert reported an idempotency conflict but the existing task could not be loaded"
+            )
+        return existing, False
 
 
     def recover_expired_claims(self) -> int:
