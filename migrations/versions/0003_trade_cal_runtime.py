@@ -1,13 +1,13 @@
 """tushare trade calendar runtime support
 
-Revision ID: 0003_tushare_trade_calendar_runtime
+Revision ID: 0003_trade_cal_runtime
 Revises: 0002_seed_catalog
 Create Date: 2026-07-27
 """
 from alembic import op
 import sqlalchemy as sa
 
-revision = "0003_tushare_trade_calendar_runtime"
+revision = "0003_trade_cal_runtime"
 down_revision = "0002_seed_catalog"
 branch_labels = None
 depends_on = None

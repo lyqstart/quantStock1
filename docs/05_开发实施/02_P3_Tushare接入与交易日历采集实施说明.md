@@ -41,7 +41,7 @@
 新增迁移：
 
 ```text
-0003_tushare_trade_calendar_runtime
+0003_trade_cal_runtime
 ```
 
 主要变更：
