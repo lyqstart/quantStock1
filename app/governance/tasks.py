@@ -22,7 +22,7 @@ P4_RAW_MODELS = {
     "stock_daily": TushareDaily,
 }
 MAPPING_VERSION = "mapping-v1"
-NORMALIZATION_VERSION = "normalization-v2"
+NORMALIZATION_VERSION = "normalization-v3"
 QUALITY_RULE_VERSION = "quality-v2"
 
 
