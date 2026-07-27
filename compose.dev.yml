@@ -1,0 +1,32 @@
+name: quantstock1-dev
+
+services:
+  db:
+    image: timescale/timescaledb:2.28.3-pg16
+    environment:
+      POSTGRES_DB: quantstock1
+      POSTGRES_USER: quantstock1
+      POSTGRES_PASSWORD: ${QUANTSTOCK1_DB_PASSWORD:-change_me}
+    volumes:
+      - quantstock1_dev_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quantstock1 -d quantstock1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  api:
+    build: .
+    env_file: .env
+    environment:
+      QUANTSTOCK1_DATABASE_URL: postgresql+psycopg://quantstock1:${QUANTSTOCK1_DB_PASSWORD:-change_me}@db:5432/quantstock1
+    ports:
+      - "127.0.0.1:${QUANTSTOCK1_API_PORT:-18000}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  quantstock1_dev_pgdata:
