@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.storage.models.meta import SourceBinding
-from app.storage.models.ops import CollectTask, RequestSlice
+from app.storage.models.ops import CollectRun, CollectTask, RequestSlice
 
 
 @dataclass(frozen=True)
@@ -39,6 +39,107 @@ class TaskRepository:
             if existing is None:
                 raise
             return existing, False
+
+
+    def recover_expired_claims(self) -> int:
+        """Return expired RUNNING slices to the queue after a lost worker."""
+        now = datetime.now(UTC)
+        rows = list(
+            self.session.scalars(
+                select(RequestSlice)
+                .where(
+                    RequestSlice.status == "RUNNING",
+                    RequestSlice.lease_expires_at.is_not(None),
+                    RequestSlice.lease_expires_at <= now,
+                )
+                .with_for_update(skip_locked=True)
+            )
+        )
+        for slice_row in rows:
+            previous_worker = slice_row.leased_by
+            task = self.session.get(CollectTask, slice_row.task_id)
+            if task is not None:
+                run = self.session.scalar(
+                    select(CollectRun)
+                    .where(
+                        CollectRun.task_id == task.task_id,
+                        CollectRun.status == "RUNNING",
+                        CollectRun.worker_id == previous_worker,
+                    )
+                    .order_by(CollectRun.run_number.desc())
+                    .limit(1)
+                )
+                if run is not None:
+                    run.status = "LOST"
+                    run.finished_at = now
+                    run.error_type = "WORKER_LOST"
+                    run.error_message = "worker lease expired before slice completion"
+                task.status = "PARTIAL"
+                task.last_error_type = "WORKER_LOST"
+                task.last_error_message = "worker lease expired; slice returned to retry queue"
+
+            slice_row.status = "RETRY_WAIT"
+            slice_row.last_error_type = "WORKER_LOST"
+            slice_row.next_retry_at = now
+            slice_row.leased_by = None
+            slice_row.leased_at = None
+            slice_row.lease_expires_at = None
+            slice_row.lease_token = None
+        self.session.flush()
+        return len(rows)
+
+    def fail_claim_after_unhandled(
+        self,
+        *,
+        claimed: ClaimedSlice,
+        worker_id: str,
+        error_type: str,
+        message: str,
+    ) -> None:
+        """Close task state after an unexpected executor/database exception."""
+        now = datetime.now(UTC)
+        slice_row = self.session.scalar(
+            select(RequestSlice)
+            .where(
+                RequestSlice.slice_id == claimed.slice_id,
+                RequestSlice.lease_token == claimed.lease_token,
+                RequestSlice.status == "RUNNING",
+            )
+            .with_for_update()
+        )
+        if slice_row is None:
+            return
+
+        slice_row.status = "FAILED"
+        slice_row.last_error_type = error_type
+        slice_row.next_retry_at = None
+        slice_row.leased_by = None
+        slice_row.leased_at = None
+        slice_row.lease_expires_at = None
+        slice_row.lease_token = None
+
+        task = self.session.get(CollectTask, claimed.task_id)
+        if task is not None:
+            task.status = "FAILED"
+            task.finished_at = now
+            task.last_error_type = error_type
+            task.last_error_message = message[:2000]
+            run = self.session.scalar(
+                select(CollectRun)
+                .where(
+                    CollectRun.task_id == task.task_id,
+                    CollectRun.status == "RUNNING",
+                    CollectRun.worker_id == worker_id,
+                )
+                .order_by(CollectRun.run_number.desc())
+                .limit(1)
+            )
+            if run is not None:
+                run.status = "FAILED"
+                run.finished_at = now
+                run.error_type = error_type
+                run.error_message = message[:2000]
+        self.session.flush()
 
     def claim_next_slice(self, *, worker_id: str, lease_seconds: int = 60) -> ClaimedSlice | None:
         now = datetime.now(UTC)

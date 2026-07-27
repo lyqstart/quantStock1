@@ -26,6 +26,16 @@ STOCK_DAILY_FIELDS = (
     "vol", "amount", "ah_vol", "ah_amount",
 )
 
+RAW_INSERT_BATCH_SIZE = 1000
+
+
+def chunk_rows(values: list[dict], size: int = RAW_INSERT_BATCH_SIZE):
+    if size <= 0:
+        raise ValueError("chunk size must be positive")
+    for start in range(0, len(values), size):
+        yield values[start : start + size]
+
+
 ITEM_FIELDS = {
     "trade_calendar": TRADE_CAL_FIELDS,
     "stock_basic": STOCK_BASIC_FIELDS,
@@ -259,10 +269,14 @@ class CollectionExecutor:
             )
 
         if values:
-            stmt = pg_insert(model).values(values).on_conflict_do_nothing(
-                index_elements=["_source", "_source_api", "_content_hash"]
-            )
-            session.execute(stmt)
+            # Explicitly chunk ON CONFLICT inserts. SQLAlchemy cannot apply its normal
+            # insertmanyvalues page sizing to this PostgreSQL upsert form, and a full
+            # market response can exceed PostgreSQL/driver bind-parameter limits.
+            for chunk in chunk_rows(values):
+                stmt = pg_insert(model).values(chunk).on_conflict_do_nothing(
+                    index_elements=["_source", "_source_api", "_content_hash"]
+                )
+                session.execute(stmt)
         batch.status = "SUCCEEDED"
         batch.finished_at = datetime.now(UTC)
 

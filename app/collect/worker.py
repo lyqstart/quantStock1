@@ -8,6 +8,7 @@ import time
 from datetime import UTC, datetime
 
 from sqlalchemy.dialects.postgresql import insert as pg_insert
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.collect.executor import CollectionExecutor
 from app.collect.repository import TaskRepository
@@ -62,7 +63,11 @@ def run_worker(*, once: bool = False, max_slices: int | None = None) -> int:
     while True:
         with get_session_factory()() as session:
             with session.begin():
-                claimed = TaskRepository(session).claim_next_slice(
+                repository = TaskRepository(session)
+                recovered = repository.recover_expired_claims()
+                if recovered:
+                    logger.warning("Recovered %s expired worker lease(s)", recovered)
+                claimed = repository.claim_next_slice(
                     worker_id=worker_id,
                     lease_seconds=settings.worker_lease_seconds,
                 )
@@ -80,9 +85,24 @@ def run_worker(*, once: bool = False, max_slices: int | None = None) -> int:
                         worker_id=worker_id,
                         adapter=adapter,
                     )
-            except Exception:
-                logger.exception("Unhandled error executing slice %s", claimed.slice_id)
+            except Exception as exc:
                 session.rollback()
+                error_type = "WRITE_FAILED" if isinstance(exc, SQLAlchemyError) else "UNKNOWN_ERROR"
+                original = getattr(exc, "orig", None)
+                message = str(original if original is not None else exc).splitlines()[0][:1000]
+                logger.error(
+                    "Slice %s failed with %s: %s",
+                    claimed.slice_id,
+                    error_type,
+                    message,
+                )
+                with get_session_factory()() as failure_session, failure_session.begin():
+                    TaskRepository(failure_session).fail_claim_after_unhandled(
+                        claimed=claimed,
+                        worker_id=worker_id,
+                        error_type=error_type,
+                        message=message,
+                    )
                 if once:
                     return 1
         processed += 1
