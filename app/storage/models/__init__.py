@@ -32,6 +32,6 @@ from app.storage.models.raw import (
 __all__ = ["Base"]
 
 from app.storage.models.clean import (
-    CleanBatch, CleanBatchInput, CleanCandidateRow, CleanStockDaily, CleanTradeCalendar, SecurityMaster, SecurityMasterHistory,
+    CleanBatch, CleanBatchInput, CleanCandidateRow, CleanSkippedRow, CleanStockDaily, CleanTradeCalendar, SecurityMaster, SecurityMasterHistory,
 )
 from app.storage.models.quality import DataGap, IssueTaskLink, QualityIssue, QualityRun

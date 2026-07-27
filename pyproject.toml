@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "quantstock1"
-version = "0.7.0"
+version = "0.7.1"
 description = "A-share quantitative research and signal-decision platform"
 requires-python = ">=3.11,<3.12"
 dependencies = [

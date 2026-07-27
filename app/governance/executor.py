@@ -24,6 +24,7 @@ from app.storage.models.clean import (
     CleanBatch,
     CleanBatchInput,
     CleanCandidateRow,
+    CleanSkippedRow,
     CleanStockDaily,
     CleanTradeCalendar,
     SecurityMaster,
@@ -35,9 +36,18 @@ from app.storage.models.quality import QualityIssue, QualityRun
 from app.storage.models.raw import RawBatch, TushareDaily, TushareStockBasic, TushareTradeCal
 
 SECURITY_CODE = re.compile(r"^[0-9]{6}\.(SH|SZ|BJ)$")
+HISTORICAL_SOURCE_CODE = re.compile(r"^T[0-9]{6}\.(SH|SZ|BJ)$")
 EXCHANGE_MAP = {"SSE": "SSE", "SZSE": "SZSE", "BSE": "BSE"}
 SUFFIX_EXCHANGE = {"SH": "SSE", "SZ": "SZSE", "BJ": "BSE"}
 LIST_STATUSES = {"L", "D", "P", "G"}
+
+
+def _is_historical_source_security_code(*, security_code: str, exchange: str | None, list_status: str | None) -> bool:
+    """Recognize provider-specific delisted aliases that cannot safely become canonical security_code."""
+    match = HISTORICAL_SOURCE_CODE.fullmatch(security_code)
+    if match is None or list_status != "D":
+        return False
+    return EXCHANGE_MAP.get(str(exchange)) == SUFFIX_EXCHANGE.get(match.group(1))
 
 
 def _date8(value: str | None) -> date | None:
@@ -201,7 +211,7 @@ class CleanExecutor:
         for raw_batch_id in raw_batch_ids:
             session.add(CleanBatchInput(clean_batch_id=clean_batch.clean_batch_id, raw_batch_id=raw_batch_id, input_role="PRIMARY"))
 
-        candidates, raw_rows, rejected_rows = self._normalize(
+        candidates, raw_rows, skipped_rows, rejected_rows = self._normalize(
             session,
             item_code=item.code,
             raw_batch_ids=raw_batch_ids,
@@ -218,13 +228,27 @@ class CleanExecutor:
                 )
             )
 
+        for skipped in skipped_rows:
+            session.add(
+                CleanSkippedRow(
+                    clean_batch_id=clean_batch.clean_batch_id,
+                    raw_batch_id=skipped["raw_batch_id"],
+                    raw_record_id=skipped.get("raw_record_id"),
+                    source_record_key=skipped.get("source_record_key") or {},
+                    reason_code=skipped["reason_code"],
+                    details=skipped.get("details") or {},
+                )
+            )
+
         clean_batch.raw_rows = raw_rows
         clean_batch.accepted_rows = len(candidates)
+        clean_batch.skipped_rows = len(skipped_rows)
         clean_batch.rejected_rows = rejected_rows
         clean_batch.candidate_rows = len(candidates)
         clean_batch.candidate_content_hash = _candidate_hash(candidates)
         run.raw_rows = raw_rows
         run.accepted_rows = len(candidates)
+        run.skipped_rows = len(skipped_rows)
         run.rejected_rows = rejected_rows
         run.status = "SUCCEEDED"
         run.finished_at = datetime.now(UTC)
@@ -265,7 +289,7 @@ class CleanExecutor:
         session.flush()
         return run
 
-    def _normalize(self, session: Session, *, item_code: str, raw_batch_ids: list[uuid.UUID]) -> tuple[list[dict], int, int]:
+    def _normalize(self, session: Session, *, item_code: str, raw_batch_ids: list[uuid.UUID]) -> tuple[list[dict], int, list[dict], int]:
         if item_code == "trade_calendar":
             rows = list(session.scalars(select(TushareTradeCal).where(TushareTradeCal.raw_batch_id.in_(raw_batch_ids))))
             raw_rows = len(rows)
@@ -289,23 +313,44 @@ class CleanExecutor:
                     candidates.append(self._candidate(row.raw_batch_id, key, payload))
                 except (TypeError, ValueError):
                     rejected += 1
-            return candidates, raw_rows, rejected
+            return candidates, raw_rows, [], rejected
 
         if item_code == "stock_basic":
             rows = list(session.scalars(select(TushareStockBasic).where(TushareStockBasic.raw_batch_id.in_(raw_batch_ids))))
             raw_rows = len(rows)
             rows = _latest_by_key(rows, lambda r: r.ts_code)
             candidates = []
+            skipped: list[dict] = []
             rejected = 0
             for row in rows:
                 try:
                     security_code = str(row.ts_code)
+                    status = str(row.list_status or "")
+                    if _is_historical_source_security_code(
+                        security_code=security_code,
+                        exchange=row.exchange,
+                        list_status=status,
+                    ):
+                        skipped.append(
+                            {
+                                "raw_batch_id": row.raw_batch_id,
+                                "raw_record_id": row.raw_id,
+                                "source_record_key": {"ts_code": security_code},
+                                "reason_code": "HISTORICAL_SOURCE_CODE",
+                                "details": {
+                                    "symbol": row.symbol,
+                                    "name": row.name,
+                                    "exchange": row.exchange,
+                                    "list_status": status,
+                                },
+                            }
+                        )
+                        continue
                     if not SECURITY_CODE.fullmatch(security_code):
                         raise ValueError("invalid security code")
                     exchange_code = EXCHANGE_MAP.get(str(row.exchange))
                     if exchange_code is None or SUFFIX_EXCHANGE[security_code[-2:]] != exchange_code:
                         raise ValueError("exchange mismatch")
-                    status = str(row.list_status or "")
                     if status not in LIST_STATUSES:
                         raise ValueError("invalid list status")
                     payload = {
@@ -330,7 +375,7 @@ class CleanExecutor:
                     candidates.append(self._candidate(row.raw_batch_id, {"security_code": security_code}, payload))
                 except (KeyError, TypeError, ValueError):
                     rejected += 1
-            return candidates, raw_rows, rejected
+            return candidates, raw_rows, skipped, rejected
 
         if item_code == "stock_daily":
             rows = list(session.scalars(select(TushareDaily).where(TushareDaily.raw_batch_id.in_(raw_batch_ids))))
@@ -368,7 +413,7 @@ class CleanExecutor:
                     candidates.append(self._candidate(row.raw_batch_id, key, payload))
                 except (TypeError, ValueError):
                     rejected += 1
-            return candidates, raw_rows, rejected
+            return candidates, raw_rows, [], rejected
 
         raise RuntimeError(f"P4 clean unsupported DataItem: {item_code}")
 
@@ -485,6 +530,11 @@ class QualityExecutor:
         issues: list[dict] = []
         if batch.rejected_rows:
             issues.append(self._issue("QB-CLEAN-001", "VALIDITY", "BLOCK", "CLEAN_REJECTED_ROWS", batch.scope_key, f"{batch.rejected_rows} RAW row(s) could not be safely normalized", observed={"rejected_rows": batch.rejected_rows}, expected={"rejected_rows": 0}))
+        if batch.candidate_rows <= 0:
+            issues.append(self._issue("QB-CLEAN-002", "COMPLETENESS", "BLOCK", "ZERO_CANDIDATE_ROWS", batch.scope_key, "non-empty RAW input produced zero canonical CLEAN candidates", observed={"candidate_rows": batch.candidate_rows, "raw_rows": batch.raw_rows}, expected={"candidate_rows": ">0"}))
+        accounted = batch.accepted_rows + batch.skipped_rows + batch.rejected_rows
+        if accounted != batch.raw_rows:
+            issues.append(self._issue("QB-CLEAN-003", "LINEAGE", "BLOCK", "NORMALIZATION_COUNT_MISMATCH", batch.scope_key, "accepted + skipped + rejected does not equal RAW row count", observed={"raw_rows": batch.raw_rows, "accepted_rows": batch.accepted_rows, "skipped_rows": batch.skipped_rows, "rejected_rows": batch.rejected_rows}, expected={"accounted_rows": batch.raw_rows}))
         if batch.accepted_rows != len(candidates):
             issues.append(self._issue("QB-LIN-001", "LINEAGE", "BLOCK", "CANDIDATE_COUNT_MISMATCH", batch.scope_key, "CleanBatch accepted row count does not match staged candidate rows"))
         input_count = int(session.scalar(select(func.count()).select_from(CleanBatchInput).where(CleanBatchInput.clean_batch_id == batch.clean_batch_id)) or 0)

@@ -84,6 +84,22 @@ class CleanCandidateRow(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
 
+class CleanSkippedRow(Base):
+    """RAW record intentionally excluded from canonical CLEAN, with an auditable reason."""
+
+    __tablename__ = "clean_skipped_row"
+    __table_args__ = {"schema": "clean"}
+
+    skipped_row_id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    clean_batch_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("clean.clean_batch.clean_batch_id"), nullable=False)
+    raw_batch_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("raw.raw_batch.raw_batch_id"), nullable=False)
+    raw_record_id: Mapped[int | None] = mapped_column(BigInteger)
+    source_record_key: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
+    reason_code: Mapped[str] = mapped_column(String(64), nullable=False)
+    details: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+
 class CleanTradeCalendar(Base):
     __tablename__ = "trade_calendar"
     __table_args__ = {"schema": "clean"}

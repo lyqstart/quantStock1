@@ -7,6 +7,7 @@ def test_p4_core_tables_exist_in_metadata() -> None:
         "clean.clean_batch",
         "clean.clean_batch_input",
         "clean.clean_candidate_row",
+        "clean.clean_skipped_row",
         "clean.trade_calendar",
         "clean.security_master",
         "clean.security_master_history",

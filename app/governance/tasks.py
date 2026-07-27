@@ -4,27 +4,28 @@ import uuid
 from datetime import date, datetime, time
 from zoneinfo import ZoneInfo
 
-from sqlalchemy import select
+from sqlalchemy import exists, select
 from sqlalchemy.orm import Session
 
 from app.collect.idempotency import canonical_json, sha256_text
 from app.collect.repository import TaskRepository
 from app.storage.models.clean import CleanBatch
 from app.storage.models.meta import DataItem
-from app.storage.models.ops import CollectTask, RequestSlice, TaskDefinition
+from app.storage.models.raw import RawBatch
+from app.storage.models.ops import CollectRun, CollectTask, RequestSlice, TaskDefinition
 
 SHANGHAI = ZoneInfo("Asia/Shanghai")
 P4_ITEMS = {"trade_calendar", "stock_basic", "stock_daily"}
 MAPPING_VERSION = "mapping-v1"
-NORMALIZATION_VERSION = "normalization-v1"
-QUALITY_RULE_VERSION = "quality-v1"
+NORMALIZATION_VERSION = "normalization-v2"
+QUALITY_RULE_VERSION = "quality-v2"
 
 
 def _scope_for_source_task(item_code: str, task: CollectTask) -> tuple[str, dict]:
     if item_code == "trade_calendar":
         exchange = str(task.object_scope.get("exchange", "SSE"))
-        start = task.time_start.date().isoformat() if task.time_start else None
-        end = task.time_end.date().isoformat() if task.time_end else None
+        start = task.time_start.astimezone(SHANGHAI).date().isoformat() if task.time_start else None
+        end = task.time_end.astimezone(SHANGHAI).date().isoformat() if task.time_end else None
         scope = {"exchange_code": exchange, "start_date": start, "end_date": end}
         return f"exchange:{exchange}|start:{start}|end:{end}", scope
     if item_code == "stock_basic":
@@ -219,10 +220,21 @@ def enqueue_clean_latest(
     if item is None:
         raise RuntimeError(f"DataItem missing: {item_code}")
 
+    has_nonempty_raw = exists(
+        select(1)
+        .select_from(CollectRun)
+        .join(RawBatch, RawBatch.run_id == CollectRun.run_id)
+        .where(
+            CollectRun.task_id == CollectTask.task_id,
+            RawBatch.status == "SUCCEEDED",
+            RawBatch.row_count > 0,
+        )
+    )
     stmt = select(CollectTask).where(
         CollectTask.data_item_id == item.data_item_id,
         CollectTask.status == "SUCCEEDED",
         ~CollectTask.object_scope.has_key("stage"),  # noqa: E711 - PostgreSQL JSONB operator
+        has_nonempty_raw,
     )
     if item_code == "stock_daily":
         if trade_date is None:
