@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     build_time: str = "unknown"
     worker_poll_seconds: float = 2.0
     worker_lease_seconds: int = 60
+    scheduler_scan_seconds: float = 60.0
 
 
 @lru_cache(maxsize=1)

@@ -32,6 +32,8 @@ class ProbeResult:
 
 
 TRADE_CAL_FIELDS = ("exchange", "cal_date", "is_open", "pretrade_date")
+STOCK_BASIC_FIELDS = ("ts_code", "symbol", "name", "list_status", "list_date", "exchange")
+STOCK_DAILY_FIELDS = ("ts_code", "trade_date", "open", "high", "low", "close", "vol", "amount")
 
 
 def build_probe_spec(api_name: str, *, now: datetime | None = None) -> ProbeSpec:
@@ -42,6 +44,11 @@ def build_probe_spec(api_name: str, *, now: datetime | None = None) -> ProbeSpec
             params={"exchange": "SSE", "start_date": day, "end_date": day},
             fields=TRADE_CAL_FIELDS,
         )
+    if api_name == "stock_basic":
+        return ProbeSpec(params={"exchange": "", "list_status": "L"}, fields=STOCK_BASIC_FIELDS)
+    if api_name == "daily":
+        day = current.astimezone(SHANGHAI).strftime("%Y%m%d")
+        return ProbeSpec(params={"trade_date": day}, fields=STOCK_DAILY_FIELDS)
     raise ValueError(f"No capability probe spec configured for api: {api_name}")
 
 

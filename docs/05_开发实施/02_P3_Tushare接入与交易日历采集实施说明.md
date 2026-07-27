@@ -2,7 +2,7 @@
 
 > 日期：2026-07-27  
 > 版本：0.2.0  
-> 状态：代码已实现，等待真实Token与PostgreSQL环境验证
+> 状态：真实环境闭环验证通过
 
 ## 1. 本批实现范围
 
@@ -95,43 +95,47 @@ docker compose -f compose.dev.yml up -d db api
 docker compose -f compose.dev.yml --profile collect up -d --build
 ```
 
-## 6. 本地验证结果
+## 6. 验证结果
 
-当前代码已完成：
+代码级验证：
 
-- Python语法编译检查；
-- 15个单元测试全部通过；
-- Alembic迁移链可以生成PostgreSQL SQL；
-- 迁移中的JSONB配置SQL已专项检查。
+- Python语法编译检查通过；
+- Alembic迁移链通过；
+- 迁移版本号长度回归测试已增加；
+- Worker登记字段回归测试已增加。
 
-## 7. 尚未验证的事实
+2026-07-27在`svr3`真实开发环境完成闭环验证：
 
-当前开发环境没有用户真实Tushare Token，也没有连接用户实际PostgreSQL实例。
+```text
+CapabilityProbe = available
+trade_calendar RAW = 208条
+最早日期 = 2026-01-01
+最晚日期 = 2026-07-27
+CollectTask = SUCCEEDED
+```
 
-因此以下不能宣称已经验证：
+因此以下链路已有真实证据：
 
-- 当前Token对`trade_cal`的真实调用；
-- 真实RAW入库；
-- 真实Worker执行；
-- 真实Watermark推进；
-- Docker环境中的完整闭环。
+```text
+Tushare
+→ Worker
+→ RawBatch
+→ raw.tushare_trade_cal
+→ Task成功
+```
 
-这些必须在用户环境执行后形成测试证据。
+## 7. 已处理的真实环境缺陷
+
+真实部署验证发现并修复：
+
+1. Alembic revision ID超过默认32字符；
+2. WorkerRegistry Python属性名与数据库`metadata`列映射使用错误。
+
+两项均已增加回归测试。
 
 ## 8. 下一步
 
-本批合入后，下一步先在实际环境验证：
-
-```text
-CapabilityProbe
-→ 创建trade_calendar任务
-→ Worker执行
-→ RAW入库
-→ Task成功
-→ Watermark推进
-```
-
-验证通过后再实现：
+继续实现：
 
 ```text
 stock_basic

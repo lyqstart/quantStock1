@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import uuid
 from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import func, select
@@ -14,9 +13,24 @@ from app.datasource.errors import ProviderRequestError
 from app.datasource.tushare import TushareAdapter
 from app.storage.models.meta import DataItem, SourceBinding
 from app.storage.models.ops import CollectRun, CollectTask, DataWatermark, RequestSlice, SliceAttempt
-from app.storage.models.raw import RawBatch, TushareTradeCal
+from app.storage.models.raw import RawBatch, TushareDaily, TushareStockBasic, TushareTradeCal
 
 TRADE_CAL_FIELDS = ("exchange", "cal_date", "is_open", "pretrade_date")
+STOCK_BASIC_FIELDS = (
+    "ts_code", "symbol", "name", "area", "industry", "fullname", "enname", "cnspell",
+    "market", "exchange", "curr_type", "list_status", "list_date", "delist_date", "is_hs",
+    "act_name", "act_ent_type",
+)
+STOCK_DAILY_FIELDS = (
+    "ts_code", "trade_date", "open", "high", "low", "close", "pre_close", "change", "pct_chg",
+    "vol", "amount", "ah_vol", "ah_amount",
+)
+
+ITEM_FIELDS = {
+    "trade_calendar": TRADE_CAL_FIELDS,
+    "stock_basic": STOCK_BASIC_FIELDS,
+    "stock_daily": STOCK_DAILY_FIELDS,
+}
 
 
 class CollectionExecutor:
@@ -41,8 +55,9 @@ class CollectionExecutor:
         item = session.get(DataItem, task.data_item_id)
         if binding is None or item is None:
             raise RuntimeError("Task catalog references are missing")
-        if item.code != "trade_calendar":
-            raise RuntimeError(f"Unsupported DataItem in batch2 executor: {item.code}")
+        fields = ITEM_FIELDS.get(item.code)
+        if fields is None:
+            raise RuntimeError(f"Unsupported DataItem in collection executor: {item.code}")
 
         run = self._get_or_create_run(session, task=task, worker_id=worker_id)
         attempt = SliceAttempt(
@@ -58,41 +73,85 @@ class CollectionExecutor:
         session.flush()
 
         effective_limit = binding.effective_calls_per_minute or binding.max_calls_per_minute
-        waited = self.rate_limiter.acquire(
-            key=binding.binding_code,
-            limit_per_minute=effective_limit,
-        )
+        waited = self.rate_limiter.acquire(key=binding.binding_code, limit_per_minute=effective_limit)
         attempt.rate_limit_wait_ms = int(waited * 1000)
 
         try:
             result = adapter.query(
                 api_name=binding.api_name,
                 params=dict(slice_row.request_params),
-                fields=TRADE_CAL_FIELDS,
+                fields=fields,
             )
-            missing = [field for field in TRADE_CAL_FIELDS if field not in result.columns]
+            missing = [field for field in fields if field not in result.columns]
             if missing:
-                raise RuntimeError(f"SCHEMA_CHANGED missing fields: {','.join(missing)}")
-            self._write_trade_calendar(
+                self._handle_provider_failure(
+                    session,
+                    claimed=claimed,
+                    task=task,
+                    run=run,
+                    attempt=attempt,
+                    binding=binding,
+                    error_type="SCHEMA_CHANGED",
+                    message=f"SCHEMA_CHANGED missing fields: {','.join(missing)}",
+                    retryable=False,
+                    attempt_count=slice_row.attempt_count,
+                )
+                return
+
+            if binding.max_rows_per_request and len(result.rows) >= binding.max_rows_per_request:
+                self._handle_provider_failure(
+                    session,
+                    claimed=claimed,
+                    task=task,
+                    run=run,
+                    attempt=attempt,
+                    binding=binding,
+                    error_type="POSSIBLE_TRUNCATION",
+                    message=f"response_rows={len(result.rows)} reached max_rows_per_request={binding.max_rows_per_request}",
+                    retryable=False,
+                    attempt_count=slice_row.attempt_count,
+                )
+                return
+
+            if item.code == "stock_daily" and not result.rows:
+                self._handle_provider_failure(
+                    session,
+                    claimed=claimed,
+                    task=task,
+                    run=run,
+                    attempt=attempt,
+                    binding=binding,
+                    error_type="SOURCE_EMPTY",
+                    message="stock_daily returned zero rows for scheduled trading day",
+                    retryable=True,
+                    attempt_count=slice_row.attempt_count,
+                )
+                return
+
+            self._write_rows(
                 session,
+                item_code=item.code,
                 run=run,
                 slice_row=slice_row,
                 binding=binding,
                 rows=result.rows,
             )
+            now = datetime.now(UTC)
             attempt.status = "SUCCEEDED"
             attempt.response_rows = len(result.rows)
-            attempt.finished_at = datetime.now(UTC)
+            attempt.finished_at = now
             run.request_count += 1
             run.row_count += len(result.rows)
-            binding.last_success_at = datetime.now(UTC)
+            run.heartbeat_at = now
+            binding.last_success_at = now
             binding.capability_status = "available"
+            binding.schema_fingerprint = result.schema_fingerprint
             TaskRepository(session).complete_slice(
                 slice_id=slice_row.slice_id,
                 lease_token=claimed.lease_token,
                 response_rows=len(result.rows),
             )
-            self._finalize_task_if_complete(session, task=task, run=run, binding=binding)
+            self._finalize_task_if_complete(session, task=task, run=run, binding=binding, item=item)
         except ProviderRequestError as exc:
             self._handle_provider_failure(
                 session,
@@ -106,23 +165,6 @@ class CollectionExecutor:
                 retryable=exc.failure.retryable,
                 attempt_count=slice_row.attempt_count,
             )
-        except RuntimeError as exc:
-            message = str(exc)
-            if message.startswith("SCHEMA_CHANGED"):
-                self._handle_provider_failure(
-                    session,
-                    claimed=claimed,
-                    task=task,
-                    run=run,
-                    attempt=attempt,
-                    binding=binding,
-                    error_type="SCHEMA_CHANGED",
-                    message=message,
-                    retryable=False,
-                    attempt_count=slice_row.attempt_count,
-                )
-            else:
-                raise
 
     @staticmethod
     def _get_or_create_run(session: Session, *, task: CollectTask, worker_id: str) -> CollectRun:
@@ -155,36 +197,53 @@ class CollectionExecutor:
         return run
 
     @staticmethod
-    def _write_trade_calendar(
-        session: Session,
-        *,
-        run: CollectRun,
-        slice_row: RequestSlice,
-        binding: SourceBinding,
-        rows: list[dict],
-    ) -> None:
-        now = datetime.now(UTC)
+    def _new_raw_batch(
+        session: Session, *, run: CollectRun, slice_row: RequestSlice, binding: SourceBinding, row_count: int
+    ) -> RawBatch:
         batch = RawBatch(
             run_id=run.run_id,
             slice_id=slice_row.slice_id,
             source_binding_id=binding.source_binding_id,
             request_hash=slice_row.request_hash,
-            row_count=len(rows),
+            row_count=row_count,
             status="WRITING",
             schema_version=binding.field_mapping_version,
-            started_at=now,
+            started_at=datetime.now(UTC),
         )
         session.add(batch)
         session.flush()
+        return batch
 
-        values = []
+    @classmethod
+    def _write_rows(
+        cls,
+        session: Session,
+        *,
+        item_code: str,
+        run: CollectRun,
+        slice_row: RequestSlice,
+        binding: SourceBinding,
+        rows: list[dict],
+    ) -> None:
+        if item_code == "trade_calendar":
+            model = TushareTradeCal
+            fields = TRADE_CAL_FIELDS
+        elif item_code == "stock_basic":
+            model = TushareStockBasic
+            fields = STOCK_BASIC_FIELDS
+        elif item_code == "stock_daily":
+            model = TushareDaily
+            fields = STOCK_DAILY_FIELDS
+        else:  # pragma: no cover - guarded earlier
+            raise RuntimeError(f"Unsupported DataItem writer: {item_code}")
+
+        now = datetime.now(UTC)
+        batch = cls._new_raw_batch(session, run=run, slice_row=slice_row, binding=binding, row_count=len(rows))
+        values: list[dict] = []
         for row in rows:
-            business = {
-                "exchange": row.get("exchange"),
-                "cal_date": row.get("cal_date"),
-                "is_open": str(row.get("is_open")) if row.get("is_open") is not None else None,
-                "pretrade_date": row.get("pretrade_date"),
-            }
+            business = {field: row.get(field) for field in fields}
+            if item_code == "trade_calendar" and business["is_open"] is not None:
+                business["is_open"] = str(business["is_open"])
             values.append(
                 {
                     "_source": "tushare",
@@ -200,7 +259,7 @@ class CollectionExecutor:
             )
 
         if values:
-            stmt = pg_insert(TushareTradeCal).values(values).on_conflict_do_nothing(
+            stmt = pg_insert(model).values(values).on_conflict_do_nothing(
                 index_elements=["_source", "_source_api", "_content_hash"]
             )
             session.execute(stmt)
@@ -267,6 +326,7 @@ class CollectionExecutor:
         task: CollectTask,
         run: CollectRun,
         binding: SourceBinding,
+        item: DataItem,
     ) -> None:
         remaining = session.scalar(
             select(func.count())
@@ -282,26 +342,39 @@ class CollectionExecutor:
         now = datetime.now(UTC)
         task.status = "SUCCEEDED"
         task.finished_at = now
+        task.last_error_type = None
+        task.last_error_message = None
         run.status = "SUCCEEDED"
         run.finished_at = now
         run.heartbeat_at = now
+        run.error_type = None
+        run.error_message = None
 
-        exchange = str(task.object_scope.get("exchange", "SSE"))
-        existing = session.scalar(
+        if item.code == "trade_calendar":
+            scope_key, frequency, collected_at = str(task.object_scope.get("exchange", "SSE")), "day", task.time_end
+        elif item.code == "stock_daily":
+            scope_key, frequency, collected_at = "GLOBAL", "day", task.time_end
+        else:
+            scope_key, frequency, collected_at = "GLOBAL", "", now
+
+        watermark = session.scalar(
             select(DataWatermark).where(
                 DataWatermark.data_item_id == task.data_item_id,
-                DataWatermark.scope_key == exchange,
-                DataWatermark.frequency == "day",
+                DataWatermark.scope_key == scope_key,
+                DataWatermark.frequency == frequency,
             )
         )
-        if existing is None:
-            existing = DataWatermark(
+        if watermark is None:
+            watermark = DataWatermark(
                 data_item_id=task.data_item_id,
                 source_binding_id=binding.source_binding_id,
-                scope_key=exchange,
-                frequency="day",
+                scope_key=scope_key,
+                frequency=frequency,
             )
-            session.add(existing)
-        existing.initialized_from = task.time_start
-        existing.initialized_to = task.time_end
-        existing.latest_collected_at = task.time_end
+            session.add(watermark)
+        if task.time_start is not None:
+            watermark.initialized_from = task.time_start if watermark.initialized_from is None else min(watermark.initialized_from, task.time_start)
+        if task.time_end is not None:
+            watermark.initialized_to = task.time_end if watermark.initialized_to is None else max(watermark.initialized_to, task.time_end)
+        watermark.latest_collected_at = collected_at or now
+        watermark.expected_at = task.expected_business_time

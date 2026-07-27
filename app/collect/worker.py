@@ -47,7 +47,7 @@ def _register_worker(worker_id: str) -> None:
         session.execute(stmt)
 
 
-def run_worker(*, once: bool = False) -> int:
+def run_worker(*, once: bool = False, max_slices: int | None = None) -> int:
     settings = get_settings()
     if settings.tushare_token is None or not settings.tushare_token.get_secret_value().strip():
         logger.error("QUANTSTOCK1_TUSHARE_TOKEN is not configured")
@@ -58,6 +58,7 @@ def run_worker(*, once: bool = False) -> int:
     adapter = TushareAdapter(token=settings.tushare_token)
     executor = CollectionExecutor()
 
+    processed = 0
     while True:
         with get_session_factory()() as session:
             with session.begin():
@@ -66,7 +67,7 @@ def run_worker(*, once: bool = False) -> int:
                     lease_seconds=settings.worker_lease_seconds,
                 )
             if claimed is None:
-                if once:
+                if once or max_slices is not None:
                     return 0
                 time.sleep(settings.worker_poll_seconds)
                 continue
@@ -84,7 +85,8 @@ def run_worker(*, once: bool = False) -> int:
                 session.rollback()
                 if once:
                     return 1
-        if once:
+        processed += 1
+        if once or (max_slices is not None and processed >= max_slices):
             return 0
 
 
@@ -92,8 +94,9 @@ def main() -> None:
     configure_logging()
     parser = argparse.ArgumentParser()
     parser.add_argument("--once", action="store_true")
+    parser.add_argument("--max-slices", type=int, default=None)
     args = parser.parse_args()
-    raise SystemExit(run_worker(once=args.once))
+    raise SystemExit(run_worker(once=args.once, max_slices=args.max_slices))
 
 
 if __name__ == "__main__":
