@@ -140,11 +140,20 @@ def enqueue_trade_date_item(
     if not created:
         return persisted, False
 
+    pagination_mode = str((binding.config or {}).get("pagination_mode", ""))
+    page_size = None
+    if pagination_mode == "offset":
+        configured_page_size = int((binding.config or {}).get("page_size") or binding.max_rows_per_request or 0)
+        if configured_page_size <= 0:
+            raise RuntimeError(f"{binding.binding_code} offset pagination requires a positive page size")
+        page_size = configured_page_size
+
     plan = plan_trade_date_slice(
         trade_date=trade_date,
         source_binding_code=binding.binding_code,
         api_name=binding.api_name,
         mapping_version=binding.field_mapping_version,
+        page_size=page_size,
     )
     session.add(
         RequestSlice(

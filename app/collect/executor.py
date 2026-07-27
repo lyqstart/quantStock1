@@ -6,7 +6,7 @@ from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.orm import Session
 
-from app.collect.idempotency import canonical_json, sha256_text
+from app.collect.idempotency import build_request_hash, canonical_json, sha256_text
 from app.collect.rate_limit import LocalRateLimiter
 from app.collect.repository import ClaimedSlice, TaskRepository
 from app.datasource.errors import ProviderRequestError
@@ -83,6 +83,27 @@ EXPECTED_NON_EMPTY_ITEMS = {
 TRADE_DATE_ITEMS = EXPECTED_NON_EMPTY_ITEMS | {"stock_suspend"}
 
 
+def next_offset_page_params(
+    *,
+    request_params: dict,
+    response_rows: int,
+    max_rows_per_request: int | None,
+    pagination_mode: str | None,
+) -> dict | None:
+    if pagination_mode != "offset":
+        return None
+    page_size = int(request_params.get("limit") or max_rows_per_request or 0)
+    if page_size <= 0:
+        raise ValueError("offset pagination requires a positive page size")
+    if response_rows < page_size:
+        return None
+    current_offset = int(request_params.get("offset") or 0)
+    return {**request_params, "limit": page_size, "offset": current_offset + page_size}
+
+
+def is_continuation_page(request_params: dict, pagination_mode: str | None) -> bool:
+    return pagination_mode == "offset" and int(request_params.get("offset") or 0) > 0
+
 
 class CollectionExecutor:
     def __init__(self, *, rate_limiter: LocalRateLimiter | None = None) -> None:
@@ -149,7 +170,19 @@ class CollectionExecutor:
                 )
                 return
 
-            if binding.max_rows_per_request and len(result.rows) >= binding.max_rows_per_request:
+            pagination_mode = str((binding.config or {}).get("pagination_mode", "")) or None
+            next_page_params = next_offset_page_params(
+                request_params=dict(slice_row.request_params),
+                response_rows=len(result.rows),
+                max_rows_per_request=binding.max_rows_per_request,
+                pagination_mode=pagination_mode,
+            )
+
+            if (
+                binding.max_rows_per_request
+                and len(result.rows) >= binding.max_rows_per_request
+                and pagination_mode != "offset"
+            ):
                 self._handle_provider_failure(
                     session,
                     claimed=claimed,
@@ -164,7 +197,11 @@ class CollectionExecutor:
                 )
                 return
 
-            if item.code in EXPECTED_NON_EMPTY_ITEMS and not result.rows:
+            if (
+                item.code in EXPECTED_NON_EMPTY_ITEMS
+                and not result.rows
+                and not is_continuation_page(dict(slice_row.request_params), pagination_mode)
+            ):
                 self._handle_provider_failure(
                     session,
                     claimed=claimed,
@@ -187,6 +224,14 @@ class CollectionExecutor:
                 binding=binding,
                 rows=result.rows,
             )
+            if next_page_params is not None:
+                self._ensure_next_page_slice(
+                    session,
+                    task=task,
+                    slice_row=slice_row,
+                    binding=binding,
+                    request_params=next_page_params,
+                )
             now = datetime.now(UTC)
             attempt.status = "SUCCEEDED"
             attempt.response_rows = len(result.rows)
@@ -216,6 +261,48 @@ class CollectionExecutor:
                 retryable=exc.failure.retryable,
                 attempt_count=slice_row.attempt_count,
             )
+
+    @staticmethod
+    def _ensure_next_page_slice(
+        session: Session,
+        *,
+        task: CollectTask,
+        slice_row: RequestSlice,
+        binding: SourceBinding,
+        request_params: dict,
+    ) -> None:
+        offset = int(request_params.get("offset") or 0)
+        partition_key = f"trade_date:{request_params.get('trade_date')}:offset:{offset}"
+        existing = session.scalar(
+            select(RequestSlice).where(
+                RequestSlice.task_id == task.task_id,
+                RequestSlice.partition_key == partition_key,
+            )
+        )
+        if existing is not None:
+            return
+        page_size = int(request_params.get("limit") or binding.max_rows_per_request or 1)
+        session.add(
+            RequestSlice(
+                task_id=task.task_id,
+                partition_key=partition_key,
+                slice_order=max(slice_row.slice_order + 1, offset // max(page_size, 1)),
+                request_params=request_params,
+                request_hash=build_request_hash(
+                    source_binding_code=binding.binding_code,
+                    api_name=binding.api_name,
+                    request_params=request_params,
+                    mapping_version=binding.field_mapping_version,
+                ),
+                time_start=slice_row.time_start,
+                time_end=slice_row.time_end,
+                object_key=slice_row.object_key,
+                frequency=slice_row.frequency,
+                status="PENDING",
+                priority=slice_row.priority,
+            )
+        )
+        session.flush()
 
     @staticmethod
     def _get_or_create_run(session: Session, *, task: CollectTask, worker_id: str) -> CollectRun:

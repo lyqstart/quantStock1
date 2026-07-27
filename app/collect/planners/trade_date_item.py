@@ -21,11 +21,18 @@ def plan_trade_date_slice(
     source_binding_code: str,
     api_name: str,
     mapping_version: str,
+    page_size: int | None = None,
 ) -> TradeDateSlicePlan:
     ymd = trade_date.strftime("%Y%m%d")
-    params = {"trade_date": ymd}
+    params: dict[str, str | int] = {"trade_date": ymd}
+    partition_key = f"trade_date:{ymd}"
+    if page_size is not None:
+        if page_size <= 0:
+            raise ValueError("page_size must be positive")
+        params.update({"limit": page_size, "offset": 0})
+        partition_key += ":offset:0"
     return TradeDateSlicePlan(
-        partition_key=f"trade_date:{ymd}",
+        partition_key=partition_key,
         slice_order=0,
         trade_date=trade_date,
         request_params=params,
