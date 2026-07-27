@@ -39,7 +39,7 @@ def _register_worker(worker_id: str) -> None:
             started_at=now,
             heartbeat_at=now,
             status="ONLINE",
-            metadata={},
+            metadata_json={},
         ).on_conflict_do_update(
             index_elements=["worker_id"],
             set_={"heartbeat_at": now, "status": "ONLINE", "process_id": os.getpid()},
