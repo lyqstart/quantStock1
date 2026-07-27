@@ -92,7 +92,7 @@ def main() -> None:
     financial.add_argument("--reason", default="manual financial sample")
 
     clean_latest = sub.add_parser("enqueue-clean-latest")
-    clean_latest.add_argument("--item", required=True, choices=["trade_calendar", "stock_basic", "stock_daily"])
+    clean_latest.add_argument("--item", required=True, choices=["trade_calendar", "stock_basic", "stock_daily", "stock_adj_factor", "stock_daily_basic", "stock_suspend", "stock_limit_price"])
     clean_latest.add_argument("--date", type=_parse_date, default=None)
     clean_latest.add_argument("--reason", default="manual P4 clean from existing RAW")
 

@@ -26,7 +26,12 @@ from app.storage.models.clean import (
     CleanBatchInput,
     CleanCandidateRow,
     CleanSkippedRow,
+    CleanStockAdjFactor,
+    CleanStockAdjFactorHistory,
     CleanStockDaily,
+    CleanStockDailyBasic,
+    CleanStockLimitPrice,
+    CleanStockSuspendEvent,
     CleanTradeCalendar,
     SecurityMaster,
     SecurityMasterHistory,
@@ -34,13 +39,23 @@ from app.storage.models.clean import (
 from app.storage.models.meta import DataItem, SourceBinding
 from app.storage.models.ops import CleanRun, CollectRun, CollectTask, DataWatermark, RequestSlice
 from app.storage.models.quality import QualityIssue, QualityRun
-from app.storage.models.raw import RawBatch, TushareDaily, TushareStockBasic, TushareTradeCal
+from app.storage.models.raw import (
+    RawBatch,
+    TushareAdjFactor,
+    TushareDaily,
+    TushareDailyBasic,
+    TushareStkLimit,
+    TushareStockBasic,
+    TushareSuspendD,
+    TushareTradeCal,
+)
 
 SECURITY_CODE = re.compile(r"^[0-9]{6}\.(SH|SZ|BJ)$")
 HISTORICAL_SOURCE_CODE = re.compile(r"^T[0-9]{6}\.(SH|SZ|BJ)$")
 EXCHANGE_MAP = {"SSE": "SSE", "SZSE": "SZSE", "BSE": "BSE"}
 SUFFIX_EXCHANGE = {"SH": "SSE", "SZ": "SZSE", "BJ": "BSE"}
 LIST_STATUSES = {"L", "D", "P", "G"}
+LIMIT_STATUSES = set(range(0, 7))
 GOVERNANCE_WRITE_BATCH_SIZE = 1000
 
 
@@ -427,6 +442,163 @@ class CleanExecutor:
                     rejected += 1
             return candidates, raw_rows, [], rejected
 
+        if item_code == "stock_adj_factor":
+            rows = list(session.scalars(select(TushareAdjFactor).where(TushareAdjFactor.raw_batch_id.in_(raw_batch_ids))))
+            raw_rows = len(rows)
+            rows = _latest_by_key(rows, lambda r: (r.ts_code, r.trade_date))
+            candidates = []
+            rejected = 0
+            for row in rows:
+                try:
+                    security_code = str(row.ts_code)
+                    if not SECURITY_CODE.fullmatch(security_code):
+                        raise ValueError("invalid security code")
+                    trade_date = _date8(row.trade_date)
+                    if trade_date is None:
+                        raise ValueError("trade date missing")
+                    if row.adj_factor is None or not _finite(row.adj_factor) or float(row.adj_factor) <= 0:
+                        raise ValueError("invalid adjustment factor")
+                    payload = {
+                        "security_code": security_code,
+                        "trade_date": trade_date.isoformat(),
+                        "adj_factor": float(row.adj_factor),
+                    }
+                    key = {"security_code": security_code, "trade_date": trade_date.isoformat()}
+                    candidates.append(self._candidate(row.raw_batch_id, key, payload))
+                except (TypeError, ValueError):
+                    rejected += 1
+            return candidates, raw_rows, [], rejected
+
+        if item_code == "stock_daily_basic":
+            rows = list(session.scalars(select(TushareDailyBasic).where(TushareDailyBasic.raw_batch_id.in_(raw_batch_ids))))
+            raw_rows = len(rows)
+            rows = _latest_by_key(rows, lambda r: (r.ts_code, r.trade_date))
+            candidates = []
+            rejected = 0
+            numeric_fields = (
+                "close", "turnover_rate", "turnover_rate_f", "volume_ratio", "pe", "pe_ttm",
+                "pb", "ps", "ps_ttm", "dv_ratio", "dv_ttm", "total_share", "float_share",
+                "free_share", "total_mv", "circ_mv",
+            )
+            for row in rows:
+                try:
+                    security_code = str(row.ts_code)
+                    if not SECURITY_CODE.fullmatch(security_code):
+                        raise ValueError("invalid security code")
+                    trade_date = _date8(row.trade_date)
+                    if trade_date is None:
+                        raise ValueError("trade date missing")
+                    if not all(_finite(getattr(row, field)) for field in numeric_fields):
+                        raise ValueError("non-finite numeric value")
+                    limit_status = row.limit_status
+                    if limit_status is not None and int(limit_status) not in LIMIT_STATUSES:
+                        raise ValueError("invalid limit_status")
+                    payload = {
+                        "security_code": security_code,
+                        "trade_date": trade_date.isoformat(),
+                        "close": row.close,
+                        "turnover_rate": row.turnover_rate,
+                        "turnover_rate_free": row.turnover_rate_f,
+                        "volume_ratio": row.volume_ratio,
+                        "pe": row.pe,
+                        "pe_ttm": row.pe_ttm,
+                        "pb": row.pb,
+                        "ps": row.ps,
+                        "ps_ttm": row.ps_ttm,
+                        "dividend_yield": row.dv_ratio,
+                        "dividend_yield_ttm": row.dv_ttm,
+                        "total_share": _int_exact(row.total_share, 10000),
+                        "float_share": _int_exact(row.float_share, 10000),
+                        "free_share": _int_exact(row.free_share, 10000),
+                        "total_market_value_cny": None if row.total_mv is None else float(row.total_mv) * 10000.0,
+                        "circulating_market_value_cny": None if row.circ_mv is None else float(row.circ_mv) * 10000.0,
+                        "limit_status": None if limit_status is None else int(limit_status),
+                    }
+                    key = {"security_code": security_code, "trade_date": trade_date.isoformat()}
+                    candidates.append(self._candidate(row.raw_batch_id, key, payload))
+                except (TypeError, ValueError):
+                    rejected += 1
+            return candidates, raw_rows, [], rejected
+
+        if item_code == "stock_suspend":
+            rows = list(session.scalars(select(TushareSuspendD).where(TushareSuspendD.raw_batch_id.in_(raw_batch_ids))))
+            raw_rows = len(rows)
+            rows = _latest_by_key(
+                rows,
+                lambda r: (r.ts_code, r.trade_date, r.suspend_type, str(r.suspend_timing or "").strip()),
+            )
+            candidates = []
+            rejected = 0
+            for row in rows:
+                try:
+                    security_code = str(row.ts_code)
+                    if not SECURITY_CODE.fullmatch(security_code):
+                        raise ValueError("invalid security code")
+                    trade_date = _date8(row.trade_date)
+                    if trade_date is None:
+                        raise ValueError("trade date missing")
+                    event_type = str(row.suspend_type or "").strip().upper()
+                    if event_type not in {"S", "R"}:
+                        raise ValueError("invalid suspend event type")
+                    timing = _blank_to_none(row.suspend_timing)
+                    payload = {
+                        "security_code": security_code,
+                        "trade_date": trade_date.isoformat(),
+                        "event_type": event_type,
+                        "suspend_timing": timing,
+                    }
+                    key = {
+                        "security_code": security_code,
+                        "trade_date": trade_date.isoformat(),
+                        "event_type": event_type,
+                        "suspend_timing": timing,
+                    }
+                    candidates.append(self._candidate(row.raw_batch_id, key, payload))
+                except (TypeError, ValueError):
+                    rejected += 1
+            return candidates, raw_rows, [], rejected
+
+        if item_code == "stock_limit_price":
+            rows = list(session.scalars(select(TushareStkLimit).where(TushareStkLimit.raw_batch_id.in_(raw_batch_ids))))
+            raw_rows = len(rows)
+            rows = _latest_by_key(rows, lambda r: (r.ts_code, r.trade_date))
+            known_codes = set(session.scalars(select(SecurityMaster.security_code)))
+            candidates = []
+            skipped: list[dict] = []
+            rejected = 0
+            for row in rows:
+                try:
+                    security_code = str(row.ts_code)
+                    if not SECURITY_CODE.fullmatch(security_code):
+                        raise ValueError("invalid security code")
+                    if security_code not in known_codes:
+                        skipped.append({
+                            "raw_batch_id": row.raw_batch_id,
+                            "raw_record_id": row.raw_id,
+                            "source_record_key": {"ts_code": security_code, "trade_date": row.trade_date},
+                            "reason_code": "OUT_OF_SCOPE_SECURITY",
+                            "details": {"source_api": row.source_api},
+                        })
+                        continue
+                    trade_date = _date8(row.trade_date)
+                    if trade_date is None:
+                        raise ValueError("trade date missing")
+                    numeric = [row.pre_close, row.up_limit, row.down_limit]
+                    if not all(_finite(v) for v in numeric):
+                        raise ValueError("non-finite limit price")
+                    payload = {
+                        "security_code": security_code,
+                        "trade_date": trade_date.isoformat(),
+                        "pre_close": row.pre_close,
+                        "up_limit": row.up_limit,
+                        "down_limit": row.down_limit,
+                    }
+                    key = {"security_code": security_code, "trade_date": trade_date.isoformat()}
+                    candidates.append(self._candidate(row.raw_batch_id, key, payload))
+                except (TypeError, ValueError):
+                    rejected += 1
+            return candidates, raw_rows, skipped, rejected
+
         raise RuntimeError(f"P4 clean unsupported DataItem: {item_code}")
 
     @staticmethod
@@ -542,7 +714,7 @@ class QualityExecutor:
         issues: list[dict] = []
         if batch.rejected_rows:
             issues.append(self._issue("QB-CLEAN-001", "VALIDITY", "BLOCK", "CLEAN_REJECTED_ROWS", batch.scope_key, f"{batch.rejected_rows} RAW row(s) could not be safely normalized", observed={"rejected_rows": batch.rejected_rows}, expected={"rejected_rows": 0}))
-        if batch.candidate_rows <= 0:
+        if batch.raw_rows > 0 and batch.candidate_rows <= 0:
             issues.append(self._issue("QB-CLEAN-002", "COMPLETENESS", "BLOCK", "ZERO_CANDIDATE_ROWS", batch.scope_key, "non-empty RAW input produced zero canonical CLEAN candidates", observed={"candidate_rows": batch.candidate_rows, "raw_rows": batch.raw_rows}, expected={"candidate_rows": ">0"}))
         accounted = batch.accepted_rows + batch.skipped_rows + batch.rejected_rows
         if accounted != batch.raw_rows:
@@ -603,6 +775,80 @@ class QualityExecutor:
                 if payload["amount_cny"] is not None and payload["amount_cny"] < 0:
                     issues.append(self._issue("QB-DAY-008", "VALIDITY", "BLOCK", "NEGATIVE_AMOUNT", payload["security_code"], "amount_cny is negative"))
                     break
+
+
+        elif item.code == "stock_adj_factor":
+            day = batch.scope_json.get("trade_date")
+            if day and session.scalar(select(CleanTradeCalendar.is_open).where(CleanTradeCalendar.exchange_code == "SSE", CleanTradeCalendar.calendar_date == date.fromisoformat(day))) is not True:
+                issues.append(self._issue("QB-ADJ-005", "CONSISTENCY", "BLOCK", "INVALID_TRADE_DATE", batch.scope_key, "stock_adj_factor trade_date is not an open day in the published trade calendar"))
+            codes = {p["security_code"] for p in payloads}
+            known = set(session.scalars(select(SecurityMaster.security_code).where(SecurityMaster.security_code.in_(codes)))) if codes else set()
+            unknown = sorted(codes - known)
+            if unknown:
+                issues.append(self._issue("QB-ADJ-006", "CONSISTENCY", "BLOCK", "UNKNOWN_SECURITY", batch.scope_key, "stock_adj_factor contains securities missing from published security_master", observed={"unknown_count": len(unknown), "sample": unknown[:10]}, expected={"unknown_count": 0}))
+            invalid = [p["security_code"] for p in payloads if p["adj_factor"] is None or not math.isfinite(float(p["adj_factor"])) or float(p["adj_factor"]) <= 0]
+            if invalid:
+                issues.append(self._issue("QB-ADJ-003", "VALIDITY", "BLOCK", "INVALID_ADJ_FACTOR", batch.scope_key, "stock_adj_factor contains non-positive or non-finite factors", observed={"invalid_count": len(invalid), "sample": invalid[:10]}, expected={"invalid_count": 0}))
+
+        elif item.code == "stock_daily_basic":
+            day = batch.scope_json.get("trade_date")
+            if day and session.scalar(select(CleanTradeCalendar.is_open).where(CleanTradeCalendar.exchange_code == "SSE", CleanTradeCalendar.calendar_date == date.fromisoformat(day))) is not True:
+                issues.append(self._issue("QB-DB-002", "CONSISTENCY", "BLOCK", "INVALID_TRADE_DATE", batch.scope_key, "stock_daily_basic trade_date is not an open day in the published trade calendar"))
+            codes = {p["security_code"] for p in payloads}
+            known = set(session.scalars(select(SecurityMaster.security_code).where(SecurityMaster.security_code.in_(codes)))) if codes else set()
+            unknown = sorted(codes - known)
+            if unknown:
+                issues.append(self._issue("QB-DB-006", "CONSISTENCY", "BLOCK", "UNKNOWN_SECURITY", batch.scope_key, "stock_daily_basic contains securities missing from published security_master", observed={"unknown_count": len(unknown), "sample": unknown[:10]}, expected={"unknown_count": 0}))
+            negative = []
+            for payload in payloads:
+                values = (payload["total_share"], payload["float_share"], payload["free_share"], payload["total_market_value_cny"], payload["circulating_market_value_cny"])
+                if any(v is not None and v < 0 for v in values):
+                    negative.append(payload["security_code"])
+            if negative:
+                issues.append(self._issue("QB-DB-003", "VALIDITY", "BLOCK", "NEGATIVE_CAPITAL_VALUE", batch.scope_key, "stock_daily_basic contains negative share or market value", observed={"invalid_count": len(negative), "sample": negative[:10]}, expected={"invalid_count": 0}))
+            if day:
+                daily_close = {row.security_code: row.close for row in session.scalars(select(CleanStockDaily).where(CleanStockDaily.trade_date == date.fromisoformat(day)))}
+                mismatches = [p["security_code"] for p in payloads if p["security_code"] in daily_close and p["close"] != daily_close[p["security_code"]]]
+                if mismatches:
+                    issues.append(self._issue("QB-DB-005", "CONSISTENCY", "BLOCK", "CLOSE_MISMATCH", batch.scope_key, "stock_daily_basic close conflicts with published stock_daily close", observed={"mismatch_count": len(mismatches), "sample": mismatches[:10]}, expected={"mismatch_count": 0}))
+
+        elif item.code == "stock_suspend":
+            codes = {p["security_code"] for p in payloads}
+            known = set(session.scalars(select(SecurityMaster.security_code).where(SecurityMaster.security_code.in_(codes)))) if codes else set()
+            unknown = sorted(codes - known)
+            if unknown:
+                issues.append(self._issue("QB-SUS-003", "CONSISTENCY", "BLOCK", "UNKNOWN_SECURITY", batch.scope_key, "stock_suspend contains securities missing from published security_master", observed={"unknown_count": len(unknown), "sample": unknown[:10]}, expected={"unknown_count": 0}))
+            invalid_types = [p["security_code"] for p in payloads if p["event_type"] not in {"S", "R"}]
+            if invalid_types:
+                issues.append(self._issue("QB-SUS-001", "VALIDITY", "BLOCK", "INVALID_EVENT_TYPE", batch.scope_key, "stock_suspend contains an event type other than S/R", observed={"invalid_count": len(invalid_types), "sample": invalid_types[:10]}, expected={"invalid_count": 0}))
+
+        elif item.code == "stock_limit_price":
+            day = batch.scope_json.get("trade_date")
+            if day and session.scalar(select(CleanTradeCalendar.is_open).where(CleanTradeCalendar.exchange_code == "SSE", CleanTradeCalendar.calendar_date == date.fromisoformat(day))) is not True:
+                issues.append(self._issue("QB-LIMIT-006", "CONSISTENCY", "BLOCK", "INVALID_TRADE_DATE", batch.scope_key, "stock_limit_price trade_date is not an open day in the published trade calendar"))
+            invalid_prices = []
+            for payload in payloads:
+                pre, up, down = payload["pre_close"], payload["up_limit"], payload["down_limit"]
+                if any(v is None or not math.isfinite(float(v)) for v in (pre, up, down)) or pre <= 0 or up <= down:
+                    invalid_prices.append(payload["security_code"])
+            if invalid_prices:
+                issues.append(self._issue("QB-LIMIT-002", "VALIDITY", "BLOCK", "INVALID_LIMIT_PRICE", batch.scope_key, "stock_limit_price contains invalid pre_close/up_limit/down_limit relationships", observed={"invalid_count": len(invalid_prices), "sample": invalid_prices[:10]}, expected={"invalid_count": 0}))
+            if day:
+                daily = {row.security_code: row for row in session.scalars(select(CleanStockDaily).where(CleanStockDaily.trade_date == date.fromisoformat(day)))}
+                violations = []
+                for payload in payloads:
+                    row = daily.get(payload["security_code"])
+                    if (
+                        row is not None
+                        and row.high is not None
+                        and row.low is not None
+                        and payload["up_limit"] is not None
+                        and payload["down_limit"] is not None
+                    ):
+                        if row.high > payload["up_limit"] or row.low < payload["down_limit"]:
+                            violations.append(payload["security_code"])
+                if violations:
+                    issues.append(self._issue("QB-LIMIT-005", "CONSISTENCY", "BLOCK", "DAILY_OUTSIDE_LIMIT", batch.scope_key, "published daily high/low exceeds official limit range", observed={"violation_count": len(violations), "sample": violations[:10]}, expected={"violation_count": 0}))
         return issues
 
     @staticmethod
@@ -636,6 +882,24 @@ class QualityExecutor:
             rows = [{**row.payload, "trade_date": date.fromisoformat(row.payload["trade_date"]), **common} for row in candidates]
             business = ["open", "high", "low", "close", "pre_close", "change", "pct_change", "volume_share", "amount_cny", "after_hours_volume_share", "after_hours_amount_cny"]
             return self._upsert_simple(session, CleanStockDaily, rows, ["security_code", "trade_date"], business, batch)
+        if item_code == "stock_adj_factor":
+            rows = [{**row.payload, "trade_date": date.fromisoformat(row.payload["trade_date"]), **common} for row in candidates]
+            return self._publish_adj_factor(session, rows=rows, batch=batch)
+        if item_code == "stock_daily_basic":
+            rows = [{**row.payload, "trade_date": date.fromisoformat(row.payload["trade_date"]), **common} for row in candidates]
+            business = [
+                "close", "turnover_rate", "turnover_rate_free", "volume_ratio", "pe", "pe_ttm",
+                "pb", "ps", "ps_ttm", "dividend_yield", "dividend_yield_ttm", "total_share",
+                "float_share", "free_share", "total_market_value_cny", "circulating_market_value_cny",
+                "limit_status",
+            ]
+            return self._upsert_simple(session, CleanStockDailyBasic, rows, ["security_code", "trade_date"], business, batch)
+        if item_code == "stock_suspend":
+            rows = [{**row.payload, "trade_date": date.fromisoformat(row.payload["trade_date"]), **common} for row in candidates]
+            return self._publish_suspend_events(session, rows=rows)
+        if item_code == "stock_limit_price":
+            rows = [{**row.payload, "trade_date": date.fromisoformat(row.payload["trade_date"]), **common} for row in candidates]
+            return self._upsert_simple(session, CleanStockLimitPrice, rows, ["security_code", "trade_date"], ["pre_close", "up_limit", "down_limit"], batch)
         raise RuntimeError(f"P4 quality publish unsupported DataItem: {item_code}")
 
     @staticmethod
@@ -648,7 +912,7 @@ class QualityExecutor:
             dates = {r["calendar_date"] for r in rows}
             for obj in session.scalars(select(model).where(model.exchange_code.in_(exchange_codes), model.calendar_date.in_(dates))):
                 existing[(obj.exchange_code, obj.calendar_date)] = obj
-        elif model is CleanStockDaily:
+        elif model in {CleanStockDaily, CleanStockDailyBasic, CleanStockLimitPrice}:
             dates = {r["trade_date"] for r in rows}
             codes = {r["security_code"] for r in rows}
             for obj in session.scalars(select(model).where(model.trade_date.in_(dates), model.security_code.in_(codes))):
@@ -668,6 +932,107 @@ class QualityExecutor:
             update_fields = {c.name: stmt.excluded[c.name] for c in model.__table__.columns if c.name not in key_fields and c.name != "_created_at"}
             session.execute(stmt.on_conflict_do_update(index_elements=key_fields, set_=update_fields))
         return len(rows), unchanged, len(changed_rows)
+
+    @staticmethod
+    def _publish_adj_factor(session: Session, *, rows: list[dict], batch: CleanBatch) -> tuple[int, int, int]:
+        if not rows:
+            return 0, 0, 0
+        codes = {r["security_code"] for r in rows}
+        dates = {r["trade_date"] for r in rows}
+        existing = {
+            (obj.security_code, obj.trade_date): obj
+            for obj in session.scalars(
+                select(CleanStockAdjFactor).where(
+                    CleanStockAdjFactor.security_code.in_(codes),
+                    CleanStockAdjFactor.trade_date.in_(dates),
+                )
+            )
+        }
+        current_history = {
+            (obj.security_code, obj.trade_date): obj
+            for obj in session.scalars(
+                select(CleanStockAdjFactorHistory).where(
+                    CleanStockAdjFactorHistory.security_code.in_(codes),
+                    CleanStockAdjFactorHistory.trade_date.in_(dates),
+                    CleanStockAdjFactorHistory.observed_to.is_(None),
+                )
+            )
+        }
+        unchanged = 0
+        changed_rows: list[dict] = []
+        now = datetime.now(UTC)
+        for row in rows:
+            key = (row["security_code"], row["trade_date"])
+            old = existing.get(key)
+            if old is not None and old.adj_factor == row["adj_factor"]:
+                unchanged += 1
+                continue
+            changed_rows.append(row)
+            previous = current_history.get(key)
+            if previous is not None:
+                previous.observed_to = now
+            content_hash = sha256_text(canonical_json({
+                "security_code": row["security_code"],
+                "trade_date": row["trade_date"].isoformat(),
+                "adj_factor": row["adj_factor"],
+            }))
+            session.add(CleanStockAdjFactorHistory(
+                security_code=row["security_code"],
+                trade_date=row["trade_date"],
+                adj_factor=row["adj_factor"],
+                observed_from=now,
+                content_hash=content_hash,
+                clean_batch_id=batch.clean_batch_id,
+                source="tushare",
+            ))
+        for chunk in _chunk_rows(changed_rows):
+            stmt = pg_insert(CleanStockAdjFactor).values(chunk)
+            update_fields = {
+                c.name: stmt.excluded[c.name]
+                for c in CleanStockAdjFactor.__table__.columns
+                if c.name not in {"security_code", "trade_date", "_created_at"}
+            }
+            session.execute(
+                stmt.on_conflict_do_update(
+                    index_elements=["security_code", "trade_date"],
+                    set_=update_fields,
+                )
+            )
+        return len(rows), unchanged, len(changed_rows)
+
+    @staticmethod
+    def _publish_suspend_events(session: Session, *, rows: list[dict]) -> tuple[int, int, int]:
+        if not rows:
+            return 0, 0, 0
+        prepared = []
+        for row in rows:
+            key = canonical_json({
+                "security_code": row["security_code"],
+                "trade_date": row["trade_date"].isoformat(),
+                "event_type": row["event_type"],
+                "suspend_timing": row["suspend_timing"],
+            })
+            prepared.append({**row, "suspend_event_id": uuid.uuid5(uuid.NAMESPACE_URL, f"quantstock1:stock_suspend_event:{key}")})
+        ids = [r["suspend_event_id"] for r in prepared]
+        existing = {obj.suspend_event_id: obj for obj in session.scalars(select(CleanStockSuspendEvent).where(CleanStockSuspendEvent.suspend_event_id.in_(ids)))}
+        business = ["security_code", "trade_date", "event_type", "suspend_timing"]
+        unchanged = 0
+        changed_rows = []
+        for row in prepared:
+            old = existing.get(row["suspend_event_id"])
+            if old is not None and all(getattr(old, field) == row[field] for field in business):
+                unchanged += 1
+                continue
+            changed_rows.append(row)
+        for chunk in _chunk_rows(changed_rows):
+            stmt = pg_insert(CleanStockSuspendEvent).values(chunk)
+            update_fields = {
+                c.name: stmt.excluded[c.name]
+                for c in CleanStockSuspendEvent.__table__.columns
+                if c.name not in {"suspend_event_id", "_created_at"}
+            }
+            session.execute(stmt.on_conflict_do_update(index_elements=["suspend_event_id"], set_=update_fields))
+        return len(prepared), unchanged, len(changed_rows)
 
     @staticmethod
     def _publish_security_master(session: Session, *, rows: list[dict], batch: CleanBatch) -> tuple[int, int, int]:

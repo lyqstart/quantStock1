@@ -11,15 +11,43 @@ from app.collect.idempotency import canonical_json, sha256_text
 from app.collect.repository import TaskRepository
 from app.storage.models.clean import CleanBatch
 from app.storage.models.meta import DataItem
-from app.storage.models.raw import RawBatch, TushareDaily, TushareStockBasic, TushareTradeCal
+from app.storage.models.raw import (
+    RawBatch,
+    TushareAdjFactor,
+    TushareDaily,
+    TushareDailyBasic,
+    TushareStkLimit,
+    TushareStockBasic,
+    TushareSuspendD,
+    TushareTradeCal,
+)
 from app.storage.models.ops import CollectRun, CollectTask, RequestSlice, TaskDefinition
 
 SHANGHAI = ZoneInfo("Asia/Shanghai")
-P4_ITEMS = {"trade_calendar", "stock_basic", "stock_daily"}
+P4_ITEMS = {
+    "trade_calendar",
+    "stock_basic",
+    "stock_daily",
+    "stock_adj_factor",
+    "stock_daily_basic",
+    "stock_suspend",
+    "stock_limit_price",
+}
 P4_RAW_MODELS = {
     "trade_calendar": TushareTradeCal,
     "stock_basic": TushareStockBasic,
     "stock_daily": TushareDaily,
+    "stock_adj_factor": TushareAdjFactor,
+    "stock_daily_basic": TushareDailyBasic,
+    "stock_suspend": TushareSuspendD,
+    "stock_limit_price": TushareStkLimit,
+}
+P4_TRADE_DATE_ITEMS = {
+    "stock_daily",
+    "stock_adj_factor",
+    "stock_daily_basic",
+    "stock_suspend",
+    "stock_limit_price",
 }
 MAPPING_VERSION = "mapping-v1"
 NORMALIZATION_VERSION = "normalization-v3"
@@ -49,9 +77,9 @@ def _scope_for_source_task(item_code: str, task: CollectTask) -> tuple[str, dict
         return f"exchange:{exchange}|start:{start}|end:{end}", scope
     if item_code == "stock_basic":
         return "GLOBAL", {"market": "CN_A"}
-    if item_code == "stock_daily":
+    if item_code in P4_TRADE_DATE_ITEMS:
         if task.time_start is None:
-            raise ValueError("stock_daily source task has no trade date")
+            raise ValueError(f"{item_code} source task has no trade date")
         day = task.time_start.astimezone(SHANGHAI).date().isoformat()
         return f"trade_date:{day.replace('-', '')}", {"trade_date": day, "market": "CN_A"}
     raise ValueError(f"P4 clean is not implemented for {item_code}")
@@ -234,21 +262,24 @@ def enqueue_clean_latest(
     reason: str = "manual P4 clean from existing RAW",
 ) -> tuple[CollectTask, bool]:
     if item_code not in P4_ITEMS:
-        raise ValueError(f"P4-1 clean is not implemented for {item_code}")
+        raise ValueError(f"P4 clean is not implemented for {item_code}")
     item = session.scalar(select(DataItem).where(DataItem.code == item_code))
     if item is None:
         raise RuntimeError(f"DataItem missing: {item_code}")
 
-    has_physical_raw = _has_physical_raw(item_code)
     stmt = select(CollectTask).where(
         CollectTask.data_item_id == item.data_item_id,
         CollectTask.status == "SUCCEEDED",
         ~CollectTask.object_scope.has_key("stage"),  # noqa: E711 - PostgreSQL JSONB operator
-        has_physical_raw,
     )
-    if item_code == "stock_daily":
+    # Empty suspend_d responses are meaningful (no suspension event on that day),
+    # so they may be cleaned from a successful zero-row RawBatch. Other P4 items
+    # must have physical RAW rows to avoid selecting idempotent duplicate batches.
+    if item_code != "stock_suspend":
+        stmt = stmt.where(_has_physical_raw(item_code))
+    if item_code in P4_TRADE_DATE_ITEMS:
         if trade_date is None:
-            raise ValueError("trade_date is required for stock_daily")
+            raise ValueError(f"trade_date is required for {item_code}")
         start = datetime.combine(trade_date, time.min, tzinfo=SHANGHAI)
         end = datetime.combine(trade_date, time.max, tzinfo=SHANGHAI)
         stmt = stmt.where(CollectTask.time_start >= start, CollectTask.time_start <= end)

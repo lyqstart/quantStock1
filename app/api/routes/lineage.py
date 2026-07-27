@@ -27,6 +27,8 @@ def data(
     trade_date: date | None = Query(default=None),
     exchange_code: str | None = Query(default=None),
     calendar_date: date | None = Query(default=None),
+    event_type: str | None = Query(default=None),
+    suspend_timing: str | None = Query(default=None),
     session: Session = Depends(get_db_session),
 ) -> dict:
     try:
@@ -37,6 +39,8 @@ def data(
             trade_date=trade_date,
             exchange_code=exchange_code,
             calendar_date=calendar_date,
+            event_type=event_type,
+            suspend_timing=suspend_timing,
         )
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc

@@ -1,7 +1,7 @@
 import uuid
 from datetime import date, datetime
 
-from sqlalchemy import BigInteger, Boolean, Date, DateTime, Float, ForeignKey, Identity, Integer, String, Text, UniqueConstraint, func
+from sqlalchemy import BigInteger, Boolean, Date, DateTime, Float, ForeignKey, Identity, Integer, SmallInteger, String, Text, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -182,6 +182,114 @@ class CleanStockDaily(Base):
     amount_cny: Mapped[float | None] = mapped_column(Float)
     after_hours_volume_share: Mapped[int | None] = mapped_column(BigInteger)
     after_hours_amount_cny: Mapped[float | None] = mapped_column(Float)
+    clean_batch_id: Mapped[uuid.UUID] = mapped_column("_clean_batch_id", UUID(as_uuid=True), ForeignKey("clean.clean_batch.clean_batch_id"), nullable=False)
+    source: Mapped[str] = mapped_column("_source", String(32), nullable=False)
+    available_at: Mapped[datetime] = mapped_column("_available_at", DateTime(timezone=True), nullable=False)
+    quality_status: Mapped[str] = mapped_column("_quality_status", String(16), nullable=False)
+    mapping_version: Mapped[str] = mapped_column("_mapping_version", String(32), nullable=False)
+    normalization_version: Mapped[str] = mapped_column("_normalization_version", String(32), nullable=False)
+    quality_rule_version: Mapped[str] = mapped_column("_quality_rule_version", String(32), nullable=False)
+    created_at: Mapped[datetime] = mapped_column("_created_at", DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column("_updated_at", DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+
+
+class CleanStockAdjFactor(Base):
+    __tablename__ = "stock_adj_factor"
+    __table_args__ = {"schema": "clean"}
+
+    security_code: Mapped[str] = mapped_column(String(16), primary_key=True)
+    trade_date: Mapped[date] = mapped_column(Date, primary_key=True)
+    adj_factor: Mapped[float] = mapped_column(Float, nullable=False)
+    clean_batch_id: Mapped[uuid.UUID] = mapped_column("_clean_batch_id", UUID(as_uuid=True), ForeignKey("clean.clean_batch.clean_batch_id"), nullable=False)
+    source: Mapped[str] = mapped_column("_source", String(32), nullable=False)
+    available_at: Mapped[datetime] = mapped_column("_available_at", DateTime(timezone=True), nullable=False)
+    quality_status: Mapped[str] = mapped_column("_quality_status", String(16), nullable=False)
+    mapping_version: Mapped[str] = mapped_column("_mapping_version", String(32), nullable=False)
+    normalization_version: Mapped[str] = mapped_column("_normalization_version", String(32), nullable=False)
+    quality_rule_version: Mapped[str] = mapped_column("_quality_rule_version", String(32), nullable=False)
+    created_at: Mapped[datetime] = mapped_column("_created_at", DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column("_updated_at", DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+
+
+class CleanStockAdjFactorHistory(Base):
+    __tablename__ = "stock_adj_factor_history"
+    __table_args__ = {"schema": "clean"}
+
+    adj_factor_version_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    security_code: Mapped[str] = mapped_column(String(16), nullable=False)
+    trade_date: Mapped[date] = mapped_column(Date, nullable=False)
+    adj_factor: Mapped[float] = mapped_column(Float, nullable=False)
+    observed_from: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    observed_to: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    content_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    clean_batch_id: Mapped[uuid.UUID] = mapped_column("_clean_batch_id", UUID(as_uuid=True), ForeignKey("clean.clean_batch.clean_batch_id"), nullable=False)
+    source: Mapped[str] = mapped_column("_source", String(32), nullable=False)
+    created_at: Mapped[datetime] = mapped_column("_created_at", DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+
+class CleanStockDailyBasic(Base):
+    __tablename__ = "stock_daily_basic"
+    __table_args__ = {"schema": "clean"}
+
+    security_code: Mapped[str] = mapped_column(String(16), primary_key=True)
+    trade_date: Mapped[date] = mapped_column(Date, primary_key=True)
+    close: Mapped[float | None] = mapped_column(Float)
+    turnover_rate: Mapped[float | None] = mapped_column(Float)
+    turnover_rate_free: Mapped[float | None] = mapped_column(Float)
+    volume_ratio: Mapped[float | None] = mapped_column(Float)
+    pe: Mapped[float | None] = mapped_column(Float)
+    pe_ttm: Mapped[float | None] = mapped_column(Float)
+    pb: Mapped[float | None] = mapped_column(Float)
+    ps: Mapped[float | None] = mapped_column(Float)
+    ps_ttm: Mapped[float | None] = mapped_column(Float)
+    dividend_yield: Mapped[float | None] = mapped_column(Float)
+    dividend_yield_ttm: Mapped[float | None] = mapped_column(Float)
+    total_share: Mapped[int | None] = mapped_column(BigInteger)
+    float_share: Mapped[int | None] = mapped_column(BigInteger)
+    free_share: Mapped[int | None] = mapped_column(BigInteger)
+    total_market_value_cny: Mapped[float | None] = mapped_column(Float)
+    circulating_market_value_cny: Mapped[float | None] = mapped_column(Float)
+    limit_status: Mapped[int | None] = mapped_column(SmallInteger)
+    clean_batch_id: Mapped[uuid.UUID] = mapped_column("_clean_batch_id", UUID(as_uuid=True), ForeignKey("clean.clean_batch.clean_batch_id"), nullable=False)
+    source: Mapped[str] = mapped_column("_source", String(32), nullable=False)
+    available_at: Mapped[datetime] = mapped_column("_available_at", DateTime(timezone=True), nullable=False)
+    quality_status: Mapped[str] = mapped_column("_quality_status", String(16), nullable=False)
+    mapping_version: Mapped[str] = mapped_column("_mapping_version", String(32), nullable=False)
+    normalization_version: Mapped[str] = mapped_column("_normalization_version", String(32), nullable=False)
+    quality_rule_version: Mapped[str] = mapped_column("_quality_rule_version", String(32), nullable=False)
+    created_at: Mapped[datetime] = mapped_column("_created_at", DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column("_updated_at", DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+
+
+class CleanStockSuspendEvent(Base):
+    __tablename__ = "stock_suspend_event"
+    __table_args__ = {"schema": "clean"}
+
+    suspend_event_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    security_code: Mapped[str] = mapped_column(String(16), nullable=False)
+    trade_date: Mapped[date] = mapped_column(Date, nullable=False)
+    event_type: Mapped[str] = mapped_column(String(8), nullable=False)
+    suspend_timing: Mapped[str | None] = mapped_column(String(64))
+    clean_batch_id: Mapped[uuid.UUID] = mapped_column("_clean_batch_id", UUID(as_uuid=True), ForeignKey("clean.clean_batch.clean_batch_id"), nullable=False)
+    source: Mapped[str] = mapped_column("_source", String(32), nullable=False)
+    available_at: Mapped[datetime] = mapped_column("_available_at", DateTime(timezone=True), nullable=False)
+    quality_status: Mapped[str] = mapped_column("_quality_status", String(16), nullable=False)
+    mapping_version: Mapped[str] = mapped_column("_mapping_version", String(32), nullable=False)
+    normalization_version: Mapped[str] = mapped_column("_normalization_version", String(32), nullable=False)
+    quality_rule_version: Mapped[str] = mapped_column("_quality_rule_version", String(32), nullable=False)
+    created_at: Mapped[datetime] = mapped_column("_created_at", DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column("_updated_at", DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+
+
+class CleanStockLimitPrice(Base):
+    __tablename__ = "stock_limit_price"
+    __table_args__ = {"schema": "clean"}
+
+    security_code: Mapped[str] = mapped_column(String(16), primary_key=True)
+    trade_date: Mapped[date] = mapped_column(Date, primary_key=True)
+    pre_close: Mapped[float | None] = mapped_column(Float)
+    up_limit: Mapped[float | None] = mapped_column(Float)
+    down_limit: Mapped[float | None] = mapped_column(Float)
     clean_batch_id: Mapped[uuid.UUID] = mapped_column("_clean_batch_id", UUID(as_uuid=True), ForeignKey("clean.clean_batch.clean_batch_id"), nullable=False)
     source: Mapped[str] = mapped_column("_source", String(32), nullable=False)
     available_at: Mapped[datetime] = mapped_column("_available_at", DateTime(timezone=True), nullable=False)

@@ -6,7 +6,17 @@ from datetime import date
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.storage.models.clean import CleanBatch, CleanBatchInput, CleanStockDaily, CleanTradeCalendar, SecurityMaster
+from app.storage.models.clean import (
+    CleanBatch,
+    CleanBatchInput,
+    CleanStockAdjFactor,
+    CleanStockDaily,
+    CleanStockDailyBasic,
+    CleanStockLimitPrice,
+    CleanStockSuspendEvent,
+    CleanTradeCalendar,
+    SecurityMaster,
+)
 from app.storage.models.meta import DataItem, SourceBinding
 from app.storage.models.ops import CleanRun, CollectRun, CollectTask
 from app.storage.models.quality import QualityRun
@@ -92,6 +102,8 @@ def data_lineage(
     trade_date: date | None = None,
     exchange_code: str | None = None,
     calendar_date: date | None = None,
+    event_type: str | None = None,
+    suspend_timing: str | None = None,
 ) -> dict | None:
     row = None
     business_key: dict = {}
@@ -110,8 +122,42 @@ def data_lineage(
             raise ValueError("trade_calendar requires exchange_code and calendar_date")
         row = session.get(CleanTradeCalendar, {"exchange_code": exchange_code, "calendar_date": calendar_date})
         business_key = {"exchange_code": exchange_code, "calendar_date": calendar_date.isoformat()}
+    elif data_item == "stock_adj_factor":
+        if security_code is None or trade_date is None:
+            raise ValueError("stock_adj_factor requires security_code and trade_date")
+        row = session.get(CleanStockAdjFactor, {"security_code": security_code, "trade_date": trade_date})
+        business_key = {"security_code": security_code, "trade_date": trade_date.isoformat()}
+    elif data_item == "stock_daily_basic":
+        if security_code is None or trade_date is None:
+            raise ValueError("stock_daily_basic requires security_code and trade_date")
+        row = session.get(CleanStockDailyBasic, {"security_code": security_code, "trade_date": trade_date})
+        business_key = {"security_code": security_code, "trade_date": trade_date.isoformat()}
+    elif data_item == "stock_limit_price":
+        if security_code is None or trade_date is None:
+            raise ValueError("stock_limit_price requires security_code and trade_date")
+        row = session.get(CleanStockLimitPrice, {"security_code": security_code, "trade_date": trade_date})
+        business_key = {"security_code": security_code, "trade_date": trade_date.isoformat()}
+    elif data_item == "stock_suspend":
+        if security_code is None or trade_date is None or event_type is None:
+            raise ValueError("stock_suspend requires security_code, trade_date and event_type")
+        stmt = select(CleanStockSuspendEvent).where(
+            CleanStockSuspendEvent.security_code == security_code,
+            CleanStockSuspendEvent.trade_date == trade_date,
+            CleanStockSuspendEvent.event_type == event_type,
+        )
+        if suspend_timing is None:
+            stmt = stmt.where(CleanStockSuspendEvent.suspend_timing.is_(None))
+        else:
+            stmt = stmt.where(CleanStockSuspendEvent.suspend_timing == suspend_timing)
+        row = session.scalar(stmt.limit(1))
+        business_key = {
+            "security_code": security_code,
+            "trade_date": trade_date.isoformat(),
+            "event_type": event_type,
+            "suspend_timing": suspend_timing,
+        }
     else:
-        raise ValueError(f"P4-1 lineage is not implemented for {data_item}")
+        raise ValueError(f"P4 lineage is not implemented for {data_item}")
     if row is None:
         return None
     batch_id = row.clean_batch_id

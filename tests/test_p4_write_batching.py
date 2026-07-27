@@ -91,3 +91,58 @@ def test_chunk_rows_rejects_invalid_size() -> None:
         assert "positive" in str(exc)
     else:
         raise AssertionError("expected ValueError")
+
+
+def test_stock_daily_basic_publish_uses_safe_batches() -> None:
+    from app.storage.models.clean import CleanStockDailyBasic
+
+    rows = []
+    for i in range(5523):
+        rows.append(
+            {
+                "security_code": f"{i:06d}.SZ",
+                "trade_date": date(2026, 7, 24),
+                "close": 1.0,
+                "turnover_rate": 1.0,
+                "turnover_rate_free": 1.0,
+                "volume_ratio": 1.0,
+                "pe": 1.0,
+                "pe_ttm": 1.0,
+                "pb": 1.0,
+                "ps": 1.0,
+                "ps_ttm": 1.0,
+                "dividend_yield": 1.0,
+                "dividend_yield_ttm": 1.0,
+                "total_share": 10000,
+                "float_share": 9000,
+                "free_share": 8000,
+                "total_market_value_cny": 100000.0,
+                "circulating_market_value_cny": 90000.0,
+                "limit_status": 0,
+                "_clean_batch_id": None,
+                "_source": "tushare",
+                "_available_at": None,
+                "_quality_status": "PASS",
+                "_mapping_version": "mapping-v1",
+                "_normalization_version": "normalization-v3",
+                "_quality_rule_version": "quality-v2",
+                "_updated_at": None,
+            }
+        )
+    session = _FakeSession()
+    business = [
+        "close", "turnover_rate", "turnover_rate_free", "volume_ratio", "pe", "pe_ttm",
+        "pb", "ps", "ps_ttm", "dividend_yield", "dividend_yield_ttm", "total_share",
+        "float_share", "free_share", "total_market_value_cny", "circulating_market_value_cny",
+        "limit_status",
+    ]
+    published, unchanged, changed = QualityExecutor._upsert_simple(
+        session,
+        CleanStockDailyBasic,
+        rows,
+        ["security_code", "trade_date"],
+        business,
+        batch=None,
+    )
+    assert (published, unchanged, changed) == (5523, 0, 5523)
+    assert len(session.executed) == 6
