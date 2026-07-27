@@ -34,6 +34,10 @@ class ProbeResult:
 TRADE_CAL_FIELDS = ("exchange", "cal_date", "is_open", "pretrade_date")
 STOCK_BASIC_FIELDS = ("ts_code", "symbol", "name", "list_status", "list_date", "exchange")
 STOCK_DAILY_FIELDS = ("ts_code", "trade_date", "open", "high", "low", "close", "vol", "amount")
+ADJ_FACTOR_FIELDS = ("ts_code", "trade_date", "adj_factor")
+DAILY_BASIC_FIELDS = ("ts_code", "trade_date", "close", "turnover_rate", "pe", "pb", "total_mv")
+SUSPEND_D_FIELDS = ("ts_code", "trade_date", "suspend_timing", "suspend_type")
+STK_LIMIT_FIELDS = ("trade_date", "ts_code", "pre_close", "up_limit", "down_limit")
 
 
 def build_probe_spec(api_name: str, *, now: datetime | None = None) -> ProbeSpec:
@@ -49,6 +53,18 @@ def build_probe_spec(api_name: str, *, now: datetime | None = None) -> ProbeSpec
     if api_name == "daily":
         day = current.astimezone(SHANGHAI).strftime("%Y%m%d")
         return ProbeSpec(params={"trade_date": day}, fields=STOCK_DAILY_FIELDS)
+    if api_name == "adj_factor":
+        day = current.astimezone(SHANGHAI).strftime("%Y%m%d")
+        return ProbeSpec(params={"trade_date": day}, fields=ADJ_FACTOR_FIELDS)
+    if api_name == "daily_basic":
+        day = current.astimezone(SHANGHAI).strftime("%Y%m%d")
+        return ProbeSpec(params={"trade_date": day}, fields=DAILY_BASIC_FIELDS)
+    if api_name == "suspend_d":
+        day = current.astimezone(SHANGHAI).strftime("%Y%m%d")
+        return ProbeSpec(params={"trade_date": day}, fields=SUSPEND_D_FIELDS)
+    if api_name == "stk_limit":
+        day = current.astimezone(SHANGHAI).strftime("%Y%m%d")
+        return ProbeSpec(params={"trade_date": day}, fields=STK_LIMIT_FIELDS)
     raise ValueError(f"No capability probe spec configured for api: {api_name}")
 
 

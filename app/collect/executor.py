@@ -13,7 +13,16 @@ from app.datasource.errors import ProviderRequestError
 from app.datasource.tushare import TushareAdapter
 from app.storage.models.meta import DataItem, SourceBinding
 from app.storage.models.ops import CollectRun, CollectTask, DataWatermark, RequestSlice, SliceAttempt
-from app.storage.models.raw import RawBatch, TushareDaily, TushareStockBasic, TushareTradeCal
+from app.storage.models.raw import (
+    RawBatch,
+    TushareAdjFactor,
+    TushareDaily,
+    TushareDailyBasic,
+    TushareStkLimit,
+    TushareStockBasic,
+    TushareSuspendD,
+    TushareTradeCal,
+)
 
 TRADE_CAL_FIELDS = ("exchange", "cal_date", "is_open", "pretrade_date")
 STOCK_BASIC_FIELDS = (
@@ -25,6 +34,14 @@ STOCK_DAILY_FIELDS = (
     "ts_code", "trade_date", "open", "high", "low", "close", "pre_close", "change", "pct_chg",
     "vol", "amount", "ah_vol", "ah_amount",
 )
+ADJ_FACTOR_FIELDS = ("ts_code", "trade_date", "adj_factor")
+DAILY_BASIC_FIELDS = (
+    "ts_code", "trade_date", "close", "turnover_rate", "turnover_rate_f", "volume_ratio",
+    "pe", "pe_ttm", "pb", "ps", "ps_ttm", "dv_ratio", "dv_ttm", "total_share",
+    "float_share", "free_share", "total_mv", "circ_mv", "limit_status",
+)
+SUSPEND_D_FIELDS = ("ts_code", "trade_date", "suspend_timing", "suspend_type")
+STK_LIMIT_FIELDS = ("trade_date", "ts_code", "pre_close", "up_limit", "down_limit")
 
 RAW_INSERT_BATCH_SIZE = 1000
 
@@ -40,7 +57,31 @@ ITEM_FIELDS = {
     "trade_calendar": TRADE_CAL_FIELDS,
     "stock_basic": STOCK_BASIC_FIELDS,
     "stock_daily": STOCK_DAILY_FIELDS,
+    "stock_adj_factor": ADJ_FACTOR_FIELDS,
+    "stock_daily_basic": DAILY_BASIC_FIELDS,
+    "stock_suspend": SUSPEND_D_FIELDS,
+    "stock_limit_price": STK_LIMIT_FIELDS,
 }
+
+ITEM_MODELS = {
+    "trade_calendar": TushareTradeCal,
+    "stock_basic": TushareStockBasic,
+    "stock_daily": TushareDaily,
+    "stock_adj_factor": TushareAdjFactor,
+    "stock_daily_basic": TushareDailyBasic,
+    "stock_suspend": TushareSuspendD,
+    "stock_limit_price": TushareStkLimit,
+}
+
+EXPECTED_NON_EMPTY_ITEMS = {
+    "stock_daily",
+    "stock_adj_factor",
+    "stock_daily_basic",
+    "stock_limit_price",
+}
+
+TRADE_DATE_ITEMS = EXPECTED_NON_EMPTY_ITEMS | {"stock_suspend"}
+
 
 
 class CollectionExecutor:
@@ -123,7 +164,7 @@ class CollectionExecutor:
                 )
                 return
 
-            if item.code == "stock_daily" and not result.rows:
+            if item.code in EXPECTED_NON_EMPTY_ITEMS and not result.rows:
                 self._handle_provider_failure(
                     session,
                     claimed=claimed,
@@ -132,7 +173,7 @@ class CollectionExecutor:
                     attempt=attempt,
                     binding=binding,
                     error_type="SOURCE_EMPTY",
-                    message="stock_daily returned zero rows for scheduled trading day",
+                    message=f"{item.code} returned zero rows for scheduled trading day",
                     retryable=True,
                     attempt_count=slice_row.attempt_count,
                 )
@@ -235,16 +276,9 @@ class CollectionExecutor:
         binding: SourceBinding,
         rows: list[dict],
     ) -> None:
-        if item_code == "trade_calendar":
-            model = TushareTradeCal
-            fields = TRADE_CAL_FIELDS
-        elif item_code == "stock_basic":
-            model = TushareStockBasic
-            fields = STOCK_BASIC_FIELDS
-        elif item_code == "stock_daily":
-            model = TushareDaily
-            fields = STOCK_DAILY_FIELDS
-        else:  # pragma: no cover - guarded earlier
+        model = ITEM_MODELS.get(item_code)
+        fields = ITEM_FIELDS.get(item_code)
+        if model is None or fields is None:  # pragma: no cover - guarded earlier
             raise RuntimeError(f"Unsupported DataItem writer: {item_code}")
 
         now = datetime.now(UTC)
@@ -366,8 +400,8 @@ class CollectionExecutor:
 
         if item.code == "trade_calendar":
             scope_key, frequency, collected_at = str(task.object_scope.get("exchange", "SSE")), "day", task.time_end
-        elif item.code == "stock_daily":
-            scope_key, frequency, collected_at = "GLOBAL", "day", task.time_end
+        elif item.code in TRADE_DATE_ITEMS:
+            scope_key, frequency, collected_at = "GLOBAL", (item.frequency or "day"), task.time_end
         else:
             scope_key, frequency, collected_at = "GLOBAL", "", now
 

@@ -4,12 +4,19 @@ import argparse
 import json
 from datetime import date
 
-from app.collect.market_data_service import enqueue_stock_basic, enqueue_stock_daily
+from app.collect.market_data_service import enqueue_stock_basic, enqueue_stock_daily, enqueue_trade_date_item
 from app.collect.scheduler import schedule_once
 from app.collect.trade_calendar_service import enqueue_trade_calendar
 from app.core.logging import configure_logging
 from app.datasource.capability import probe_binding
 from app.storage.db import get_session_factory
+
+TRADE_DATE_CLI_ITEMS = (
+    "stock_adj_factor",
+    "stock_daily_basic",
+    "stock_suspend",
+    "stock_limit_price",
+)
 
 
 def _parse_date(value: str) -> date:
@@ -40,6 +47,12 @@ def main() -> None:
     stock_daily.add_argument("--run-type", default="BACKFILL", choices=["BACKFILL", "INCREMENTAL", "RERUN"])
     stock_daily.add_argument("--reason", default="manual stock daily collection")
 
+    market_item = sub.add_parser("enqueue-market-item")
+    market_item.add_argument("--item", required=True, choices=TRADE_DATE_CLI_ITEMS)
+    market_item.add_argument("--date", required=True, type=_parse_date)
+    market_item.add_argument("--run-type", default="BACKFILL", choices=["BACKFILL", "INCREMENTAL", "RERUN"])
+    market_item.add_argument("--reason", default="manual market item collection")
+
     sub.add_parser("scheduler-once")
 
     args = parser.parse_args()
@@ -66,6 +79,15 @@ def main() -> None:
         elif args.command == "enqueue-stock-daily":
             task, created = enqueue_stock_daily(
                 session,
+                trade_date=args.date,
+                run_type=args.run_type,
+                requested_by="operator",
+                reason=args.reason,
+            )
+        elif args.command == "enqueue-market-item":
+            task, created = enqueue_trade_date_item(
+                session,
+                item_code=args.item,
                 trade_date=args.date,
                 run_type=args.run_type,
                 requested_by="operator",

@@ -22,3 +22,12 @@ def test_stock_daily_probe_uses_one_trade_date() -> None:
     spec = build_probe_spec("daily", now=now)
     assert spec.params == {"trade_date": "20260727"}
     assert "trade_date" in spec.fields
+
+
+def test_core_daily_item_probes_use_one_trade_date() -> None:
+    now = datetime(2026, 7, 27, 18, 0, tzinfo=ZoneInfo("Asia/Shanghai"))
+    for api_name in ("adj_factor", "daily_basic", "suspend_d", "stk_limit"):
+        spec = build_probe_spec(api_name, now=now)
+        assert spec.params == {"trade_date": "20260727"}
+        assert "trade_date" in spec.fields
+        assert "ts_code" in spec.fields

@@ -8,12 +8,19 @@ from sqlalchemy.orm import Session
 
 from app.collect.idempotency import build_task_idempotency_key
 from app.collect.planners.stock_basic import plan_stock_basic_slices
-from app.collect.planners.stock_daily import plan_stock_daily_slice
+from app.collect.planners.trade_date_item import plan_trade_date_slice
 from app.collect.repository import TaskRepository
 from app.storage.models.meta import DataItem, SourceBinding
 from app.storage.models.ops import CollectTask, RequestSlice, TaskDefinition
 
 SHANGHAI = ZoneInfo("Asia/Shanghai")
+TRADE_DATE_ITEMS = {
+    "stock_daily",
+    "stock_adj_factor",
+    "stock_daily_basic",
+    "stock_suspend",
+    "stock_limit_price",
+}
 
 
 def _catalog(session: Session, code: str) -> tuple[DataItem, SourceBinding]:
@@ -80,19 +87,26 @@ def enqueue_stock_basic(
     return persisted, True
 
 
-def enqueue_stock_daily(
+def enqueue_trade_date_item(
     session: Session,
     *,
+    item_code: str,
     trade_date: date,
     run_type: str = "INCREMENTAL",
     requested_by: str = "scheduler",
-    reason: str = "scheduled stock daily collection",
+    reason: str | None = None,
 ) -> tuple[CollectTask, bool]:
-    item, binding = _catalog(session, "stock_daily")
-    definition = session.scalar(select(TaskDefinition).where(TaskDefinition.task_code == "stock_daily_incremental"))
+    if item_code not in TRADE_DATE_ITEMS:
+        raise ValueError(f"Unsupported trade-date DataItem: {item_code}")
+
+    item, binding = _catalog(session, item_code)
+    definition = session.scalar(
+        select(TaskDefinition).where(TaskDefinition.task_code == f"{item_code}_incremental")
+    )
     start_dt = datetime.combine(trade_date, time.min, tzinfo=SHANGHAI)
     end_dt = datetime.combine(trade_date, time.max, tzinfo=SHANGHAI)
     object_scope = {"type": "market", "market": "CN_A"}
+    frequency = item.frequency or "day"
     key = build_task_idempotency_key(
         data_item_code=item.code,
         source_binding_code=binding.binding_code,
@@ -100,7 +114,7 @@ def enqueue_stock_daily(
         object_scope=object_scope,
         time_start=start_dt,
         time_end=end_dt,
-        frequency="day",
+        frequency=frequency,
     )
     task = CollectTask(
         task_definition_id=definition.task_definition_id if definition is not None and run_type == "INCREMENTAL" else None,
@@ -110,12 +124,12 @@ def enqueue_stock_daily(
         object_scope=object_scope,
         time_start=start_dt,
         time_end=end_dt,
-        frequency="day",
-        priority=0 if run_type == "INCREMENTAL" else 20,
+        frequency=frequency,
+        priority=(definition.priority if definition is not None else 0) if run_type == "INCREMENTAL" else 20,
         status="PENDING",
         idempotency_key=key,
         requested_by=requested_by,
-        reason=reason,
+        reason=reason or f"{item_code} collection",
         definition_version=definition.definition_version if definition is not None and run_type == "INCREMENTAL" else None,
         source_binding_version=binding.request_policy_version,
         expected_business_time=end_dt,
@@ -126,9 +140,10 @@ def enqueue_stock_daily(
     if not created:
         return persisted, False
 
-    plan = plan_stock_daily_slice(
+    plan = plan_trade_date_slice(
         trade_date=trade_date,
         source_binding_code=binding.binding_code,
+        api_name=binding.api_name,
         mapping_version=binding.field_mapping_version,
     )
     session.add(
@@ -141,10 +156,28 @@ def enqueue_stock_daily(
             time_start=start_dt,
             time_end=end_dt,
             object_key="CN_A",
-            frequency="day",
+            frequency=frequency,
             status="PENDING",
             priority=persisted.priority,
         )
     )
     session.flush()
     return persisted, True
+
+
+def enqueue_stock_daily(
+    session: Session,
+    *,
+    trade_date: date,
+    run_type: str = "INCREMENTAL",
+    requested_by: str = "scheduler",
+    reason: str = "scheduled stock daily collection",
+) -> tuple[CollectTask, bool]:
+    return enqueue_trade_date_item(
+        session,
+        item_code="stock_daily",
+        trade_date=trade_date,
+        run_type=run_type,
+        requested_by=requested_by,
+        reason=reason,
+    )
