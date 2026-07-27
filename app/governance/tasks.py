@@ -11,14 +11,33 @@ from app.collect.idempotency import canonical_json, sha256_text
 from app.collect.repository import TaskRepository
 from app.storage.models.clean import CleanBatch
 from app.storage.models.meta import DataItem
-from app.storage.models.raw import RawBatch
+from app.storage.models.raw import RawBatch, TushareDaily, TushareStockBasic, TushareTradeCal
 from app.storage.models.ops import CollectRun, CollectTask, RequestSlice, TaskDefinition
 
 SHANGHAI = ZoneInfo("Asia/Shanghai")
 P4_ITEMS = {"trade_calendar", "stock_basic", "stock_daily"}
+P4_RAW_MODELS = {
+    "trade_calendar": TushareTradeCal,
+    "stock_basic": TushareStockBasic,
+    "stock_daily": TushareDaily,
+}
 MAPPING_VERSION = "mapping-v1"
 NORMALIZATION_VERSION = "normalization-v2"
 QUALITY_RULE_VERSION = "quality-v2"
+
+
+def _has_physical_raw(item_code: str):
+    raw_model = P4_RAW_MODELS[item_code]
+    return exists(
+        select(1)
+        .select_from(CollectRun)
+        .join(RawBatch, RawBatch.run_id == CollectRun.run_id)
+        .join(raw_model, raw_model.raw_batch_id == RawBatch.raw_batch_id)
+        .where(
+            CollectRun.task_id == CollectTask.task_id,
+            RawBatch.status == "SUCCEEDED",
+        )
+    )
 
 
 def _scope_for_source_task(item_code: str, task: CollectTask) -> tuple[str, dict]:
@@ -220,21 +239,12 @@ def enqueue_clean_latest(
     if item is None:
         raise RuntimeError(f"DataItem missing: {item_code}")
 
-    has_nonempty_raw = exists(
-        select(1)
-        .select_from(CollectRun)
-        .join(RawBatch, RawBatch.run_id == CollectRun.run_id)
-        .where(
-            CollectRun.task_id == CollectTask.task_id,
-            RawBatch.status == "SUCCEEDED",
-            RawBatch.row_count > 0,
-        )
-    )
+    has_physical_raw = _has_physical_raw(item_code)
     stmt = select(CollectTask).where(
         CollectTask.data_item_id == item.data_item_id,
         CollectTask.status == "SUCCEEDED",
         ~CollectTask.object_scope.has_key("stage"),  # noqa: E711 - PostgreSQL JSONB operator
-        has_nonempty_raw,
+        has_physical_raw,
     )
     if item_code == "stock_daily":
         if trade_date is None:
