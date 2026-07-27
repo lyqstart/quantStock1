@@ -552,3 +552,8 @@ class CollectionExecutor:
             watermark.initialized_to = task.time_end if watermark.initialized_to is None else max(watermark.initialized_to, task.time_end)
         watermark.latest_collected_at = collected_at or now
         watermark.expected_at = task.expected_business_time
+
+        # P4 supported DataItems automatically continue into the clean/quality chain.
+        from app.governance.tasks import enqueue_clean_for_collect_task
+
+        enqueue_clean_for_collect_task(session, task)

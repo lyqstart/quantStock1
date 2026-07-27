@@ -4,6 +4,7 @@ from app.storage.models.meta import DataItem, DataSource, SourceBinding
 from app.storage.models.ops import (
     CircuitBreakerState,
     CollectRun,
+    CleanRun,
     CollectTask,
     DataWatermark,
     RateLimitState,
@@ -29,3 +30,8 @@ from app.storage.models.raw import (
 )
 
 __all__ = ["Base"]
+
+from app.storage.models.clean import (
+    CleanBatch, CleanBatchInput, CleanCandidateRow, CleanStockDaily, CleanTradeCalendar, SecurityMaster, SecurityMasterHistory,
+)
+from app.storage.models.quality import DataGap, IssueTaskLink, QualityIssue, QualityRun

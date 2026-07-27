@@ -16,6 +16,7 @@ from app.collect.scheduler import schedule_once
 from app.collect.trade_calendar_service import enqueue_trade_calendar
 from app.core.logging import configure_logging
 from app.datasource.capability import probe_binding
+from app.governance.tasks import enqueue_clean_latest
 from app.storage.db import get_session_factory
 
 SHANGHAI = ZoneInfo("Asia/Shanghai")
@@ -90,6 +91,11 @@ def main() -> None:
     )
     financial.add_argument("--reason", default="manual financial sample")
 
+    clean_latest = sub.add_parser("enqueue-clean-latest")
+    clean_latest.add_argument("--item", required=True, choices=["trade_calendar", "stock_basic", "stock_daily"])
+    clean_latest.add_argument("--date", type=_parse_date, default=None)
+    clean_latest.add_argument("--reason", default="manual P4 clean from existing RAW")
+
     sub.add_parser("scheduler-once")
 
     args = parser.parse_args()
@@ -149,6 +155,14 @@ def main() -> None:
                 start_date=args.start,
                 end_date=args.end,
                 run_type=args.run_type,
+                requested_by="operator",
+                reason=args.reason,
+            )
+        elif args.command == "enqueue-clean-latest":
+            task, created = enqueue_clean_latest(
+                session,
+                item_code=args.item,
+                trade_date=args.date,
                 requested_by="operator",
                 reason=args.reason,
             )

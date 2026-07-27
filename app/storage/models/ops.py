@@ -200,6 +200,33 @@ class TaskCheckpoint(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
 
+class CleanRun(Base):
+    __tablename__ = "clean_run"
+    __table_args__ = (UniqueConstraint("task_id", "run_number", name="uq_clean_run_task_number"), {"schema": "ops"})
+
+    clean_run_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    task_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("ops.collect_task.task_id"), nullable=False)
+    run_number: Mapped[int] = mapped_column(Integer, nullable=False)
+    worker_id: Mapped[str | None] = mapped_column(String(128))
+    trace_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    data_item_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("meta.data_item.data_item_id"), nullable=False)
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="RUNNING")
+    mapping_version: Mapped[str] = mapped_column(String(32), nullable=False)
+    normalization_version: Mapped[str] = mapped_column(String(32), nullable=False)
+    app_version: Mapped[str] = mapped_column(String(64), nullable=False)
+    code_revision: Mapped[str] = mapped_column(String(64), nullable=False)
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    heartbeat_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    raw_rows: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
+    accepted_rows: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
+    skipped_rows: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
+    rejected_rows: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
+    error_type: Mapped[str | None] = mapped_column(String(64))
+    error_message: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+
 class RateLimitState(Base):
     __tablename__ = "rate_limit_state"
     __table_args__ = {"schema": "ops"}

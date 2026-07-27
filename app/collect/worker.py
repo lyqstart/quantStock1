@@ -16,6 +16,7 @@ from app.core.config import get_settings
 from app.core.logging import configure_logging
 from app.core.version import APP_VERSION
 from app.datasource.tushare import TushareAdapter
+from app.governance.executor import CleanExecutor, QualityExecutor, prepare_stage_run
 from app.storage.db import get_session_factory
 from app.storage.models.ops import WorkerRegistry
 
@@ -33,7 +34,7 @@ def _register_worker(worker_id: str) -> None:
         stmt = pg_insert(WorkerRegistry).values(
             worker_id=worker_id,
             environment=settings.env,
-            worker_type="collect",
+            worker_type="unified",
             hostname=socket.gethostname(),
             process_id=os.getpid(),
             version=APP_VERSION,
@@ -43,7 +44,14 @@ def _register_worker(worker_id: str) -> None:
             metadata_json={},
         ).on_conflict_do_update(
             index_elements=["worker_id"],
-            set_={"heartbeat_at": now, "status": "ONLINE", "process_id": os.getpid()},
+            set_={
+                "heartbeat_at": now,
+                "status": "ONLINE",
+                "process_id": os.getpid(),
+                "worker_type": "unified",
+                "hostname": socket.gethostname(),
+                "version": APP_VERSION,
+            },
         )
         session.execute(stmt)
 
@@ -56,7 +64,7 @@ def _heartbeat_worker(worker_id: str, *, status: str = "ONLINE") -> None:
             .values(
                 worker_id=worker_id,
                 environment=get_settings().env,
-                worker_type="collect",
+                worker_type="unified",
                 hostname=socket.gethostname(),
                 process_id=os.getpid(),
                 version=APP_VERSION,
@@ -67,21 +75,26 @@ def _heartbeat_worker(worker_id: str, *, status: str = "ONLINE") -> None:
             )
             .on_conflict_do_update(
                 index_elements=["worker_id"],
-                set_={"heartbeat_at": now, "status": status, "process_id": os.getpid()},
+                set_={
+                    "heartbeat_at": now,
+                    "status": status,
+                    "process_id": os.getpid(),
+                    "worker_type": "unified",
+                    "hostname": socket.gethostname(),
+                    "version": APP_VERSION,
+                },
             )
         )
 
 
 def run_worker(*, once: bool = False, max_slices: int | None = None) -> int:
     settings = get_settings()
-    if settings.tushare_token is None or not settings.tushare_token.get_secret_value().strip():
-        logger.error("QUANTSTOCK1_TUSHARE_TOKEN is not configured")
-        return 2
-
     worker_id = _worker_id()
     _register_worker(worker_id)
-    adapter = TushareAdapter(token=settings.tushare_token)
-    executor = CollectionExecutor()
+    collect_executor = CollectionExecutor()
+    clean_executor = CleanExecutor()
+    quality_executor = QualityExecutor()
+    adapter = None
 
     processed = 0
     try:
@@ -103,14 +116,32 @@ def run_worker(*, once: bool = False, max_slices: int | None = None) -> int:
                     time.sleep(settings.worker_poll_seconds)
                     continue
 
+                stage = str(claimed.request_params.get("stage") or "COLLECT").upper()
+                if stage in {"CLEAN", "QUALITY"}:
+                    with get_session_factory()() as run_session, run_session.begin():
+                        prepare_stage_run(run_session, claimed=claimed, worker_id=worker_id)
+
                 try:
                     with session.begin():
-                        executor.execute_claimed_slice(
-                            session,
-                            claimed=claimed,
-                            worker_id=worker_id,
-                            adapter=adapter,
-                        )
+                        if stage == "CLEAN":
+                            clean_executor.execute_claimed_slice(
+                                session, claimed=claimed, worker_id=worker_id
+                            )
+                        elif stage == "QUALITY":
+                            quality_executor.execute_claimed_slice(
+                                session, claimed=claimed, worker_id=worker_id
+                            )
+                        else:
+                            if settings.tushare_token is None or not settings.tushare_token.get_secret_value().strip():
+                                raise RuntimeError("QUANTSTOCK1_TUSHARE_TOKEN is not configured")
+                            if adapter is None:
+                                adapter = TushareAdapter(token=settings.tushare_token)
+                            collect_executor.execute_claimed_slice(
+                                session,
+                                claimed=claimed,
+                                worker_id=worker_id,
+                                adapter=adapter,
+                            )
                 except Exception as exc:
                     session.rollback()
                     error_type = "WRITE_FAILED" if isinstance(exc, SQLAlchemyError) else "UNKNOWN_ERROR"

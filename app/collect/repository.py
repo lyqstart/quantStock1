@@ -84,21 +84,53 @@ class TaskRepository:
             previous_worker = slice_row.leased_by
             task = self.session.get(CollectTask, slice_row.task_id)
             if task is not None:
-                run = self.session.scalar(
-                    select(CollectRun)
-                    .where(
-                        CollectRun.task_id == task.task_id,
-                        CollectRun.status == "RUNNING",
-                        CollectRun.worker_id == previous_worker,
+                stage = str((task.object_scope or {}).get("stage") or "COLLECT").upper()
+                if stage == "CLEAN":
+                    from app.storage.models.ops import CleanRun
+
+                    run = self.session.scalar(
+                        select(CleanRun)
+                        .where(
+                            CleanRun.task_id == task.task_id,
+                            CleanRun.status == "RUNNING",
+                            CleanRun.worker_id == previous_worker,
+                        )
+                        .order_by(CleanRun.run_number.desc())
+                        .limit(1)
                     )
-                    .order_by(CollectRun.run_number.desc())
-                    .limit(1)
-                )
-                if run is not None:
-                    run.status = "LOST"
-                    run.finished_at = now
-                    run.error_type = "WORKER_LOST"
-                    run.error_message = "worker lease expired before slice completion"
+                    if run is not None:
+                        run.status = "LOST"
+                        run.finished_at = now
+                        run.error_type = "WORKER_LOST"
+                        run.error_message = "worker lease expired before clean completion"
+                elif stage == "QUALITY":
+                    from app.storage.models.quality import QualityRun
+
+                    run = self.session.scalar(
+                        select(QualityRun)
+                        .where(QualityRun.task_id == task.task_id, QualityRun.status == "RUNNING")
+                        .order_by(QualityRun.started_at.desc())
+                        .limit(1)
+                    )
+                    if run is not None:
+                        run.status = "LOST"
+                        run.finished_at = now
+                else:
+                    run = self.session.scalar(
+                        select(CollectRun)
+                        .where(
+                            CollectRun.task_id == task.task_id,
+                            CollectRun.status == "RUNNING",
+                            CollectRun.worker_id == previous_worker,
+                        )
+                        .order_by(CollectRun.run_number.desc())
+                        .limit(1)
+                    )
+                    if run is not None:
+                        run.status = "LOST"
+                        run.finished_at = now
+                        run.error_type = "WORKER_LOST"
+                        run.error_message = "worker lease expired before slice completion"
                 task.status = "PARTIAL"
                 task.last_error_type = "WORKER_LOST"
                 task.last_error_message = "worker lease expired; slice returned to retry queue"
@@ -149,21 +181,61 @@ class TaskRepository:
             task.finished_at = now
             task.last_error_type = error_type
             task.last_error_message = message[:2000]
-            run = self.session.scalar(
-                select(CollectRun)
-                .where(
-                    CollectRun.task_id == task.task_id,
-                    CollectRun.status == "RUNNING",
-                    CollectRun.worker_id == worker_id,
+            stage = str((task.object_scope or {}).get("stage") or "COLLECT").upper()
+            if stage == "CLEAN":
+                from app.storage.models.ops import CleanRun
+
+                run = self.session.scalar(
+                    select(CleanRun)
+                    .where(
+                        CleanRun.task_id == task.task_id,
+                        CleanRun.status == "RUNNING",
+                        CleanRun.worker_id == worker_id,
+                    )
+                    .order_by(CleanRun.run_number.desc())
+                    .limit(1)
                 )
-                .order_by(CollectRun.run_number.desc())
-                .limit(1)
-            )
-            if run is not None:
-                run.status = "FAILED"
-                run.finished_at = now
-                run.error_type = error_type
-                run.error_message = message[:2000]
+                if run is not None:
+                    run.status = "FAILED"
+                    run.finished_at = now
+                    run.error_type = error_type
+                    run.error_message = message[:2000]
+            elif stage == "QUALITY":
+                from app.storage.models.clean import CleanBatch
+                from app.storage.models.quality import QualityRun
+
+                run = self.session.scalar(
+                    select(QualityRun)
+                    .where(
+                        QualityRun.task_id == task.task_id,
+                        QualityRun.status == "RUNNING",
+                    )
+                    .order_by(QualityRun.started_at.desc())
+                    .limit(1)
+                )
+                if run is not None:
+                    run.status = "FAILED"
+                    run.finished_at = now
+                    batch = self.session.get(CleanBatch, run.clean_batch_id)
+                    if batch is not None and batch.status == "VALIDATING":
+                        batch.status = "CANDIDATE"
+                        batch.current_quality_run_id = run.quality_run_id
+            else:
+                run = self.session.scalar(
+                    select(CollectRun)
+                    .where(
+                        CollectRun.task_id == task.task_id,
+                        CollectRun.status == "RUNNING",
+                        CollectRun.worker_id == worker_id,
+                    )
+                    .order_by(CollectRun.run_number.desc())
+                    .limit(1)
+                )
+                if run is not None:
+                    run.status = "FAILED"
+                    run.finished_at = now
+                    run.error_type = error_type
+                    run.error_message = message[:2000]
         self.session.flush()
 
     def claim_next_slice(self, *, worker_id: str, lease_seconds: int = 60) -> ClaimedSlice | None:
@@ -175,7 +247,10 @@ class TaskRepository:
             .where(
                 CollectTask.status.in_(("PENDING", "RUNNING", "PARTIAL")),
                 SourceBinding.enabled.is_(True),
-                SourceBinding.capability_status.not_in(("permission_denied", "schema_changed", "temporarily_unavailable")),
+                or_(
+                    CollectTask.object_scope["stage"].astext.in_(("CLEAN", "QUALITY")),
+                    SourceBinding.capability_status.not_in(("permission_denied", "schema_changed", "temporarily_unavailable")),
+                ),
                 RequestSlice.status.in_(("PENDING", "RETRY_WAIT")),
                 or_(RequestSlice.next_retry_at.is_(None), RequestSlice.next_retry_at <= now),
             )
