@@ -31,11 +31,15 @@ class TaskRepository:
         authority: ON CONFLICT DO NOTHING guarantees duplicate submissions never
         surface as UniqueViolation errors.
         """
+        idempotency_version = task.idempotency_version or 1
         values = {
             key: value
             for key, value in vars(task).items()
             if not key.startswith("_sa_")
         }
+        # SQLAlchemy ORM defaults are not populated on a transient instance.
+        # Keep the INSERT and the conflict lookup on the same effective version.
+        values["idempotency_version"] = idempotency_version
         stmt = (
             pg_insert(CollectTask)
             .values(**values)
@@ -51,7 +55,7 @@ class TaskRepository:
 
         existing = self.session.scalar(
             select(CollectTask).where(
-                CollectTask.idempotency_version == task.idempotency_version,
+                CollectTask.idempotency_version == idempotency_version,
                 CollectTask.idempotency_key == task.idempotency_key,
             )
         )

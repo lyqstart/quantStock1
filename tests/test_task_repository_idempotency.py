@@ -40,8 +40,8 @@ class InsertedTaskSession:
         return self.persisted
 
 
-def _task(key: str) -> CollectTask:
-    return CollectTask(
+def _task(key: str, *, explicit_version: bool = True) -> CollectTask:
+    kwargs = dict(
         task_id=uuid.uuid4(),
         data_item_id=uuid.uuid4(),
         source_binding_id=uuid.uuid4(),
@@ -49,8 +49,10 @@ def _task(key: str) -> CollectTask:
         object_scope={"type": "market"},
         status="PENDING",
         idempotency_key=key,
-        idempotency_version=1,
     )
+    if explicit_version:
+        kwargs["idempotency_version"] = 1
+    return CollectTask(**kwargs)
 
 
 def test_duplicate_task_uses_postgres_on_conflict_and_returns_existing() -> None:
@@ -76,3 +78,20 @@ def test_new_task_is_returned_after_atomic_insert() -> None:
 
     assert result is persisted
     assert created is True
+
+
+def test_duplicate_task_uses_effective_default_idempotency_version() -> None:
+    existing = _task("same-key")
+    duplicate = _task("same-key", explicit_version=False)
+    assert duplicate.idempotency_version is None
+    session = DuplicateTaskSession(existing)
+
+    persisted, created = TaskRepository(session).create_task_idempotent(duplicate)
+
+    insert_compiled = session.statements[0].compile(dialect=postgresql.dialect())
+    lookup_compiled = session.statements[1].compile(dialect=postgresql.dialect())
+    assert insert_compiled.params["idempotency_version"] == 1
+    assert 1 in lookup_compiled.params.values()
+    assert "same-key" in lookup_compiled.params.values()
+    assert persisted is existing
+    assert created is False
