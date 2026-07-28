@@ -1,0 +1,39 @@
+{"event": "START", "probe": "trade_cal_sse"}
+{"cal_date_max": "20260728", "cal_date_min": "20260720", "columns": ["exchange", "cal_date", "is_open", "pretrade_date"], "event": "DONE", "probe": "trade_cal_sse", "rows": 9, "seconds": 0.15, "status": "AVAILABLE"}
+{"event": "START", "probe": "trade_cal_szse"}
+{"cal_date_max": "20260728", "cal_date_min": "20260720", "columns": ["exchange", "cal_date", "is_open", "pretrade_date"], "event": "DONE", "probe": "trade_cal_szse", "rows": 9, "seconds": 0.13, "status": "AVAILABLE"}
+{"event": "START", "probe": "trade_cal_bse"}
+{"columns": ["exchange", "cal_date", "is_open", "pretrade_date"], "event": "DONE", "probe": "trade_cal_bse", "rows": 0, "seconds": 0.145, "status": "AVAILABLE"}
+{"event": "START", "probe": "stock_basic_L"}
+{"columns": ["ts_code", "symbol", "name", "market", "exchange", "list_status", "list_date", "delist_date"], "event": "DONE", "list_date_max": "20260727", "list_date_min": "19901219", "probe": "stock_basic_L", "rows": 5533, "seconds": 0.292, "status": "AVAILABLE"}
+{"event": "START", "probe": "stock_basic_D"}
+{"columns": ["ts_code", "symbol", "name", "market", "exchange", "list_status", "list_date", "delist_date"], "delist_date_max": "20260717", "delist_date_min": "19990712", "event": "DONE", "list_date_max": "20220525", "list_date_min": "19901201", "probe": "stock_basic_D", "rows": 338, "seconds": 0.143, "status": "AVAILABLE"}
+{"event": "START", "probe": "stock_basic_P"}
+{"columns": ["ts_code", "symbol", "name", "market", "exchange", "list_status", "list_date", "delist_date"], "event": "DONE", "probe": "stock_basic_P", "rows": 0, "seconds": 0.129, "status": "AVAILABLE"}
+{"event": "START", "probe": "stock_basic_G"}
+{"columns": ["ts_code", "symbol", "name", "market", "exchange", "list_status", "list_date", "delist_date"], "event": "DONE", "probe": "stock_basic_G", "rows": 0, "seconds": 0.126, "status": "AVAILABLE"}
+{"event": "START", "probe": "daily_20260724"}
+{"columns": ["ts_code", "trade_date", "open", "high", "low", "close", "pre_close", "change", "pct_chg", "vol", "amount", "ah_vol", "ah_amount"], "event": "DONE", "probe": "daily_20260724", "rows": 5526, "seconds": 0.425, "status": "AVAILABLE", "trade_date_max": "20260724", "trade_date_min": "20260724"}
+{"event": "START", "probe": "adj_factor_20260724"}
+{"columns": ["ts_code", "trade_date", "adj_factor"], "event": "DONE", "probe": "adj_factor_20260724", "rows": 5544, "seconds": 0.254, "status": "AVAILABLE", "trade_date_max": "20260724", "trade_date_min": "20260724"}
+{"event": "START", "probe": "daily_basic_20260724"}
+{"columns": ["ts_code", "trade_date", "close", "turnover_rate", "turnover_rate_f", "volume_ratio", "pe", "pe_ttm", "pb", "ps", "ps_ttm", "dv_ratio", "dv_ttm", "total_share", "float_share", "free_share", "total_mv", "circ_mv"], "event": "DONE", "probe": "daily_basic_20260724", "rows": 5526, "seconds": 0.547, "status": "AVAILABLE", "trade_date_max": "20260724", "trade_date_min": "20260724"}
+{"event": "START", "probe": "suspend_d_20260724"}
+{"columns": ["ts_code", "trade_date", "suspend_timing", "suspend_type"], "event": "DONE", "probe": "suspend_d_20260724", "rows": 5, "seconds": 0.116, "status": "AVAILABLE", "trade_date_max": "20260724", "trade_date_min": "20260724"}
+{"event": "START", "probe": "stk_limit_page_1"}
+{"columns": ["trade_date", "ts_code", "up_limit", "down_limit"], "event": "DONE", "probe": "stk_limit_page_1", "rows": 5800, "seconds": 0.248, "status": "AVAILABLE", "trade_date_max": "20260724", "trade_date_min": "20260724"}
+{"event": "START", "probe": "stk_limit_page_2"}
+{"columns": ["trade_date", "ts_code", "up_limit", "down_limit"], "event": "DONE", "probe": "stk_limit_page_2", "rows": 1907, "seconds": 0.201, "status": "AVAILABLE", "trade_date_max": "20260724", "trade_date_min": "20260724"}
+{"event": "START", "probe": "stk_mins_current_day"}
+{"columns": ["ts_code", "trade_time", "close", "open", "high", "low", "vol", "amount"], "event": "DONE", "probe": "stk_mins_current_day", "rows": 241, "seconds": 1.045, "status": "AVAILABLE", "trade_time_max": "2026-07-24 15:00:00", "trade_time_min": "2026-07-24 09:30:00"}
+{"event": "START", "probe": "stk_mins_2009_probe"}
+{"columns": ["ts_code", "trade_time", "close", "open", "high", "low", "vol", "amount"], "event": "DONE", "probe": "stk_mins_2009_probe", "rows": 1205, "seconds": 0.334, "status": "AVAILABLE", "trade_time_max": "2009-01-09 15:00:00", "trade_time_min": "2009-01-05 09:30:00"}
+{"event": "START", "probe": "income_standard"}
+{"ann_date_max": "20260425", "ann_date_min": "20250315", "columns": ["ts_code", "ann_date", "f_ann_date", "end_date", "report_type", "comp_type", "basic_eps", "total_revenue", "revenue", "total_profit", "n_income", "update_flag"], "end_date_max": "20260331", "end_date_min": "20241231", "event": "DONE", "f_ann_date_max": "20260425", "f_ann_date_min": "20250315", "probe": "income_standard", "rows": 6, "seconds": 0.116, "status": "AVAILABLE"}
+{"event": "START", "probe": "fina_indicator_standard"}
+{"ann_date_max": "20260425", "ann_date_min": "20250419", "columns": ["ts_code", "ann_date", "end_date", "eps", "dt_eps", "roe", "roa", "netprofit_margin", "grossprofit_margin", "debt_to_assets", "update_flag"], "end_date_max": "20260331", "end_date_min": "20250331", "event": "DONE", "probe": "fina_indicator_standard", "rows": 6, "seconds": 0.111, "status": "AVAILABLE"}
+{"event": "START", "probe": "income_vip"}
+{"error": "抱歉，您没有接口(income_vip)访问权限，权限的具体详情访问：https://tushare.pro/document/1?doc_id=108。", "error_type": "Exception", "event": "DONE", "probe": "income_vip", "seconds": 0.134, "status": "UNAVAILABLE"}
+{"event": "START", "probe": "fina_indicator_vip"}
+{"error": "抱歉，您没有接口(fina_indicator_vip)访问权限，权限的具体详情访问：https://tushare.pro/document/1?doc_id=108。", "error_type": "Exception", "event": "DONE", "probe": "fina_indicator_vip", "seconds": 0.112, "status": "UNAVAILABLE"}
+{"checked_at": "2026-07-28T08:57:16.674412+00:00", "event": "COMPLETE", "sdk_version": "1.4.29", "token": "MASKED"}
