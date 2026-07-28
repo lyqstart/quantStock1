@@ -1,49 +1,68 @@
-from app.storage.minute_metrics import _hypertable_size
+from datetime import date
+
+from app.storage.minute_metrics import (
+    _count_clean_rows,
+    _count_raw_rows,
+)
 
 
-class _Mappings:
-    def __init__(self, row):
-        self._row = row
+class _ScalarResult:
+    def __init__(self, value: int):
+        self.value = value
 
-    def one(self):
-        return self._row
-
-
-class _Result:
-    def __init__(self, row):
-        self._row = row
-
-    def mappings(self):
-        return _Mappings(self._row)
+    def scalar_one(self) -> int:
+        return self.value
 
 
-class _Session:
-    def __init__(self):
-        self.sql = ""
-        self.params = None
+class _RecordingSession:
+    def __init__(self, value: int = 7):
+        self.value = value
+        self.calls: list[tuple[str, dict[str, object] | None]] = []
 
-    def execute(self, statement, params):
-        self.sql = str(statement)
-        self.params = params
-        return _Result(
-            {
-                "table_bytes": 100,
-                "index_bytes": 40,
-                "toast_bytes": 10,
-                "total_bytes": 150,
-            }
-        )
+    def execute(self, statement, params=None):
+        self.calls.append((str(statement), params))
+        return _ScalarResult(self.value)
 
 
-def test_hypertable_size_uses_timescale_chunk_aware_size_function() -> None:
-    session = _Session()
-    result = _hypertable_size(session, "clean.stock_minute")
+def test_raw_count_without_date_has_no_nullable_parameter() -> None:
+    session = _RecordingSession()
 
-    assert "hypertable_detailed_size" in session.sql
-    assert session.params == {"relation": "clean.stock_minute"}
-    assert result == {
-        "table_bytes": 100,
-        "index_bytes": 40,
-        "toast_bytes": 10,
-        "total_bytes": 150,
-    }
+    assert _count_raw_rows(session, None) == 7
+
+    sql, params = session.calls[0]
+    assert ":trade_date" not in sql
+    assert params is None
+
+
+def test_raw_count_with_date_uses_explicit_date_contract() -> None:
+    session = _RecordingSession()
+    trade_date = date(2026, 7, 24)
+
+    assert _count_raw_rows(session, trade_date) == 7
+
+    sql, params = session.calls[0]
+    assert "IS NULL" not in sql
+    assert "CAST(:trade_date AS date)" in sql
+    assert params == {"trade_date": trade_date}
+
+
+def test_clean_count_without_date_has_no_nullable_parameter() -> None:
+    session = _RecordingSession()
+
+    assert _count_clean_rows(session, None) == 7
+
+    sql, params = session.calls[0]
+    assert ":trade_date" not in sql
+    assert params is None
+
+
+def test_clean_count_with_date_uses_explicit_date_contract() -> None:
+    session = _RecordingSession()
+    trade_date = date(2026, 7, 24)
+
+    assert _count_clean_rows(session, trade_date) == 7
+
+    sql, params = session.calls[0]
+    assert "IS NULL" not in sql
+    assert "CAST(:trade_date AS date)" in sql
+    assert params == {"trade_date": trade_date}
