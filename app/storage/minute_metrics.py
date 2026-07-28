@@ -22,6 +22,26 @@ def _relation_size(session: Session, relation: str) -> dict[str, int]:
     return {key: int(row[key] or 0) for key in ("table_bytes", "index_bytes", "total_bytes")}
 
 
+def _hypertable_size(session: Session, relation: str) -> dict[str, int]:
+    row = session.execute(
+        text(
+            """
+            SELECT
+              COALESCE(SUM(table_bytes), 0)::bigint AS table_bytes,
+              COALESCE(SUM(index_bytes), 0)::bigint AS index_bytes,
+              COALESCE(SUM(toast_bytes), 0)::bigint AS toast_bytes,
+              COALESCE(SUM(total_bytes), 0)::bigint AS total_bytes
+            FROM hypertable_detailed_size(to_regclass(:relation))
+            """
+        ),
+        {"relation": relation},
+    ).mappings().one()
+    return {
+        key: int(row[key] or 0)
+        for key in ("table_bytes", "index_bytes", "toast_bytes", "total_bytes")
+    }
+
+
 def _hypertable_dimension(session: Session, *, schema: str, table: str) -> dict[str, Any] | None:
     row = session.execute(
         text(
@@ -77,8 +97,12 @@ def minute_storage_report(session: Session, *, trade_date: date | None = None) -
     database_size = int(session.execute(text("SELECT pg_database_size(current_database())")).scalar_one())
 
     raw_size = _relation_size(session, "raw.tushare_stk_mins")
-    clean_size = _relation_size(session, "clean.stock_minute")
     dimension = _hypertable_dimension(session, schema="clean", table="stock_minute")
+    clean_size = (
+        _hypertable_size(session, "clean.stock_minute")
+        if dimension is not None
+        else _relation_size(session, "clean.stock_minute")
+    )
 
     return {
         "trade_date": trade_date.isoformat() if trade_date else None,
