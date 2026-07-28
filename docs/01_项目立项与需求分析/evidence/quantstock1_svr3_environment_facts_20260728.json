@@ -1,0 +1,137 @@
+{
+  "evidence_date": "2026-07-28",
+  "topic_closed_date": "2026-07-29",
+  "repository_commit_before_topic": "fa0126e",
+  "deployed_application_commit_at_audit": "b95af7dd0c708654d855316145456adc54e89c1d",
+  "application_version": "0.9.4",
+  "server": {
+    "name": "svr3",
+    "os": "CentOS Linux 8",
+    "kernel": "4.18.0-553.97.1.el8_10.x86_64",
+    "architecture": "x86_64",
+    "timezone_evidence": "+08:00",
+    "docker_visible_cpus": 4,
+    "memory_total_gib_approx": 62,
+    "memory_available_gib_approx": 53,
+    "swap_total_gib_approx": 15,
+    "swap_used_mib_approx": 520
+  },
+  "filesystems": [
+    {
+      "mount": "/",
+      "filesystem": "XFS",
+      "capacity_gib": 937,
+      "used_gib": 671,
+      "free_gib": 266,
+      "usage_percent": 72
+    },
+    {
+      "mount": "/mnt/2t_ssd",
+      "filesystem": "XFS",
+      "capacity_tib": 1.9,
+      "used_gib": 852,
+      "free_tib": 1.1,
+      "usage_percent": 45
+    },
+    {
+      "mount": "/mnt/1t_back",
+      "filesystem": "XFS",
+      "capacity_gib": 932,
+      "used_gib": 164,
+      "free_gib": 768,
+      "usage_percent": 18
+    }
+  ],
+  "paths": {
+    "repository": "/mnt/1t_back/project/quantstock1",
+    "docker_root": "/var/lib/docker",
+    "postgres_volume": "/var/lib/docker/volumes/quantstock1-dev_quantstock1_dev_pgdata/_data",
+    "backup_directory_observed": "/backup"
+  },
+  "docker": {
+    "engine_version": "26.1.3",
+    "compose_version": "2.27.0",
+    "storage_driver": "overlay2",
+    "visible_memory_bytes": 66931044352
+  },
+  "services": [
+    {
+      "service": "api",
+      "status": "running",
+      "host_binding": "127.0.0.1:18000",
+      "container_port": 8000
+    },
+    {
+      "service": "db",
+      "status": "running_healthy",
+      "host_binding_ipv4": "0.0.0.0:5432",
+      "host_binding_ipv6": "[::]:5432"
+    },
+    {
+      "service": "worker",
+      "status": "running",
+      "host_binding": null
+    },
+    {
+      "service": "scheduler",
+      "status": "running",
+      "host_binding": null
+    }
+  ],
+  "database": {
+    "postgresql_version": "16.14",
+    "timescaledb_version": "2.28.3",
+    "logical_size_mib_approx": 78,
+    "physical_volume_size_mib_approx": 169,
+    "business_table_count": 46,
+    "minute_hypertable": "clean.stock_minute",
+    "minute_chunk_interval": "7 days",
+    "minute_compression_enabled": false
+  },
+  "application_runtime": {
+    "python": "3.11.15",
+    "pandas": "2.3.3",
+    "sqlalchemy": "2.0.51",
+    "tushare_sdk": "1.4.29",
+    "alembic_revision": "0012_p4_minute_governance",
+    "quality_rules": "quality-v4"
+  },
+  "network": {
+    "tushare_endpoint": "api.tushare.pro",
+    "https_status": 200,
+    "dns_seconds_approx": 0.004,
+    "tcp_seconds_approx": 0.004,
+    "tls_seconds_approx": 0.17,
+    "total_seconds_approx": 0.224
+  },
+  "secrets": {
+    "environment_variable_names_observed": [
+      "QUANTSTOCK1_API_PORT",
+      "QUANTSTOCK1_BUILD_TIME",
+      "QUANTSTOCK1_DATABASE_URL",
+      "QUANTSTOCK1_DB_PASSWORD",
+      "QUANTSTOCK1_ENV",
+      "QUANTSTOCK1_GIT_COMMIT",
+      "QUANTSTOCK1_LOG_LEVEL",
+      "QUANTSTOCK1_TUSHARE_TOKEN",
+      "QUANTSTOCK1_WORKER_LEASE_SECONDS",
+      "QUANTSTOCK1_WORKER_POLL_SECONDS"
+    ],
+    "secret_values_recorded": false,
+    "external_secret_store_confirmed": false
+  },
+  "confirmed_absences_or_unknowns": {
+    "opencode_on_server": "not_found",
+    "scheduled_database_backup": "not_confirmed",
+    "restore_test": "not_confirmed",
+    "off_host_backup": "not_confirmed",
+    "firewall_rules": "not_confirmed",
+    "postgres_hba_rules": "not_confirmed",
+    "database_tls": "not_confirmed",
+    "ssh_hardening": "not_confirmed",
+    "ntp_status": "not_confirmed",
+    "central_monitoring": "not_confirmed",
+    "log_rotation": "not_confirmed",
+    "container_resource_limits": "not_confirmed"
+  }
+}
