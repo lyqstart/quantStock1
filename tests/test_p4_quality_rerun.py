@@ -58,7 +58,7 @@ def test_enqueue_clean_latest_queues_new_quality_for_old_blocked_batch(monkeypat
     assert result == (clean_task, False)
     assert len(calls) == 1
     assert calls[0]["clean_batch"] is batch
-    assert "quality-v3" in calls[0]["reason"]
+    assert "quality-v4" in calls[0]["reason"]
 
 
 def test_enqueue_clean_latest_does_not_repeat_same_quality_version(monkeypatch):

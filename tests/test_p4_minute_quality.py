@@ -75,7 +75,9 @@ def test_complete_241_minute_grid_has_no_session_or_gap_block() -> None:
         batch=_batch(len(grid)),
         candidates=[_candidate(t) for t in grid],
     )
-    blocked_codes = {issue["rule_code"] for issue in issues if issue["severity"] == "BLOCK"}
+    blocked_codes = {
+        issue["rule_code"] for issue in issues if issue["severity"] == "BLOCK"
+    }
     assert "QB-MIN-003" not in blocked_codes
     assert "QB-MIN-012" not in blocked_codes
     assert not blocked_codes
