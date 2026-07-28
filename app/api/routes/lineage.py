@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import date
+from datetime import date, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
@@ -29,6 +29,8 @@ def data(
     calendar_date: date | None = Query(default=None),
     event_type: str | None = Query(default=None),
     suspend_timing: str | None = Query(default=None),
+    frequency: str | None = Query(default=None),
+    trade_time: datetime | None = Query(default=None),
     session: Session = Depends(get_db_session),
 ) -> dict:
     try:
@@ -41,6 +43,8 @@ def data(
             calendar_date=calendar_date,
             event_type=event_type,
             suspend_timing=suspend_timing,
+            frequency=frequency,
+            trade_time=trade_time,
         )
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc

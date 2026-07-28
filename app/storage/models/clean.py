@@ -299,3 +299,19 @@ class CleanStockLimitPrice(Base):
     quality_rule_version: Mapped[str] = mapped_column("_quality_rule_version", String(32), nullable=False)
     created_at: Mapped[datetime] = mapped_column("_created_at", DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column("_updated_at", DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+
+class CleanStockMinute(Base):
+    __tablename__ = "stock_minute"
+    __table_args__ = {"schema": "clean"}
+
+    security_code: Mapped[str] = mapped_column(String(16), primary_key=True)
+    frequency: Mapped[str] = mapped_column(String(8), primary_key=True)
+    trade_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), primary_key=True)
+    open: Mapped[float] = mapped_column(Float, nullable=False)
+    high: Mapped[float] = mapped_column(Float, nullable=False)
+    low: Mapped[float] = mapped_column(Float, nullable=False)
+    close: Mapped[float] = mapped_column(Float, nullable=False)
+    volume_share: Mapped[int | None] = mapped_column(BigInteger)
+    amount_cny: Mapped[float | None] = mapped_column(Float)
+    clean_batch_id: Mapped[uuid.UUID] = mapped_column("_clean_batch_id", UUID(as_uuid=True), ForeignKey("clean.clean_batch.clean_batch_id"), nullable=False)
+

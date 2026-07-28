@@ -17,6 +17,7 @@ from app.storage.models.raw import (
     TushareDaily,
     TushareDailyBasic,
     TushareStkLimit,
+    TushareStkMins,
     TushareStockBasic,
     TushareSuspendD,
     TushareTradeCal,
@@ -32,6 +33,7 @@ P4_ITEMS = {
     "stock_daily_basic",
     "stock_suspend",
     "stock_limit_price",
+    "stock_minute",
 }
 P4_RAW_MODELS = {
     "trade_calendar": TushareTradeCal,
@@ -41,6 +43,7 @@ P4_RAW_MODELS = {
     "stock_daily_basic": TushareDailyBasic,
     "stock_suspend": TushareSuspendD,
     "stock_limit_price": TushareStkLimit,
+    "stock_minute": TushareStkMins,
 }
 P4_TRADE_DATE_ITEMS = {
     "stock_daily",
@@ -82,6 +85,16 @@ def _scope_for_source_task(item_code: str, task: CollectTask) -> tuple[str, dict
             raise ValueError(f"{item_code} source task has no trade date")
         day = task.time_start.astimezone(SHANGHAI).date().isoformat()
         return f"trade_date:{day.replace('-', '')}", {"trade_date": day, "market": "CN_A"}
+    if item_code == "stock_minute":
+        if task.time_start is None:
+            raise ValueError("stock_minute source task has no trade date")
+        security_code = str((task.object_scope or {}).get("ts_code") or "")
+        frequency = str(task.frequency or "")
+        if not security_code or not frequency:
+            raise ValueError("stock_minute source task is missing ts_code or frequency")
+        day = task.time_start.astimezone(SHANGHAI).date().isoformat()
+        scope = {"security_code": security_code, "frequency": frequency, "trade_date": day}
+        return f"security:{security_code}|frequency:{frequency}|trade_date:{day.replace('-', '')}", scope
     raise ValueError(f"P4 clean is not implemented for {item_code}")
 
 
@@ -258,6 +271,8 @@ def enqueue_clean_latest(
     *,
     item_code: str,
     trade_date: date | None = None,
+    security_code: str | None = None,
+    frequency: str | None = None,
     requested_by: str = "operator",
     reason: str = "manual P4 clean from existing RAW",
 ) -> tuple[CollectTask, bool]:
@@ -283,6 +298,17 @@ def enqueue_clean_latest(
         start = datetime.combine(trade_date, time.min, tzinfo=SHANGHAI)
         end = datetime.combine(trade_date, time.max, tzinfo=SHANGHAI)
         stmt = stmt.where(CollectTask.time_start >= start, CollectTask.time_start <= end)
+    elif item_code == "stock_minute":
+        if trade_date is None or security_code is None or frequency is None:
+            raise ValueError("trade_date, security_code and frequency are required for stock_minute")
+        start = datetime.combine(trade_date, time.min, tzinfo=SHANGHAI)
+        end = datetime.combine(trade_date, time.max, tzinfo=SHANGHAI)
+        stmt = stmt.where(
+            CollectTask.time_start >= start,
+            CollectTask.time_start <= end,
+            CollectTask.frequency == frequency,
+            CollectTask.object_scope["ts_code"].astext == security_code,
+        )
     source_task = session.scalar(stmt.order_by(CollectTask.finished_at.desc()).limit(1))
     if source_task is None:
         raise ValueError(f"no SUCCEEDED collection task found for {item_code}")

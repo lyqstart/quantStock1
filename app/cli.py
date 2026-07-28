@@ -17,6 +17,7 @@ from app.collect.trade_calendar_service import enqueue_trade_calendar
 from app.core.logging import configure_logging
 from app.datasource.capability import probe_binding
 from app.governance.tasks import enqueue_clean_latest
+from app.storage.minute_metrics import minute_storage_report
 from app.storage.db import get_session_factory
 
 SHANGHAI = ZoneInfo("Asia/Shanghai")
@@ -92,9 +93,14 @@ def main() -> None:
     financial.add_argument("--reason", default="manual financial sample")
 
     clean_latest = sub.add_parser("enqueue-clean-latest")
-    clean_latest.add_argument("--item", required=True, choices=["trade_calendar", "stock_basic", "stock_daily", "stock_adj_factor", "stock_daily_basic", "stock_suspend", "stock_limit_price"])
+    clean_latest.add_argument("--item", required=True, choices=["trade_calendar", "stock_basic", "stock_daily", "stock_adj_factor", "stock_daily_basic", "stock_suspend", "stock_limit_price", "stock_minute"])
     clean_latest.add_argument("--date", type=_parse_date, default=None)
+    clean_latest.add_argument("--ts-code", default=None)
+    clean_latest.add_argument("--freq", default=None)
     clean_latest.add_argument("--reason", default="manual P4 clean from existing RAW")
+
+    minute_report = sub.add_parser("minute-storage-report")
+    minute_report.add_argument("--date", type=_parse_date, default=None)
 
     sub.add_parser("scheduler-once")
 
@@ -163,9 +169,14 @@ def main() -> None:
                 session,
                 item_code=args.item,
                 trade_date=args.date,
+                security_code=args.ts_code,
+                frequency=args.freq,
                 requested_by="operator",
                 reason=args.reason,
             )
+        elif args.command == "minute-storage-report":
+            print(json.dumps(minute_storage_report(session, trade_date=args.date), ensure_ascii=False, default=str))
+            return
         else:  # pragma: no cover
             raise RuntimeError(f"Unhandled command: {args.command}")
         print(json.dumps({"task_id": str(task.task_id), "created": created}, ensure_ascii=False))

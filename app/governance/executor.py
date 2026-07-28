@@ -15,6 +15,13 @@ from app.collect.idempotency import canonical_json, sha256_text
 from app.collect.repository import ClaimedSlice, TaskRepository
 from app.core.config import get_settings
 from app.core.version import APP_VERSION
+from app.governance.minute_rules import (
+    FORMAL_MINUTE_FREQUENCY,
+    SHANGHAI,
+    expected_minute_grid,
+    normalize_minute_frequency,
+    parse_provider_trade_time,
+)
 from app.governance.tasks import (
     MAPPING_VERSION,
     NORMALIZATION_VERSION,
@@ -31,6 +38,7 @@ from app.storage.models.clean import (
     CleanStockDaily,
     CleanStockDailyBasic,
     CleanStockLimitPrice,
+    CleanStockMinute,
     CleanStockSuspendEvent,
     CleanTradeCalendar,
     SecurityMaster,
@@ -45,6 +53,7 @@ from app.storage.models.raw import (
     TushareDaily,
     TushareDailyBasic,
     TushareStkLimit,
+    TushareStkMins,
     TushareStockBasic,
     TushareSuspendD,
     TushareTradeCal,
@@ -599,6 +608,59 @@ class CleanExecutor:
                     rejected += 1
             return candidates, raw_rows, skipped, rejected
 
+        if item_code == "stock_minute":
+            rows = list(session.scalars(select(TushareStkMins).where(TushareStkMins.raw_batch_id.in_(raw_batch_ids))))
+            raw_rows = len(rows)
+            rows = _latest_by_key(rows, lambda r: (r.ts_code, r.frequency, r.trade_time))
+            candidates = []
+            skipped: list[dict] = []
+            rejected = 0
+            for row in rows:
+                try:
+                    security_code = str(row.ts_code)
+                    if not SECURITY_CODE.fullmatch(security_code):
+                        raise ValueError("invalid security code")
+                    frequency = normalize_minute_frequency(row.frequency)
+                    if frequency is None:
+                        raise ValueError("invalid minute frequency")
+                    if frequency != FORMAL_MINUTE_FREQUENCY:
+                        skipped.append({
+                            "raw_batch_id": row.raw_batch_id,
+                            "raw_record_id": row.raw_id,
+                            "source_record_key": {
+                                "ts_code": security_code,
+                                "frequency": str(row.frequency),
+                                "trade_time": str(row.trade_time),
+                            },
+                            "reason_code": "NON_BASE_MINUTE_FREQUENCY",
+                            "details": {"formal_frequency": FORMAL_MINUTE_FREQUENCY},
+                        })
+                        continue
+                    trade_time = parse_provider_trade_time(row.trade_time)
+                    numeric = [row.open, row.high, row.low, row.close, row.vol, row.amount]
+                    if not all(_finite(v) for v in numeric):
+                        raise ValueError("non-finite minute numeric value")
+                    payload = {
+                        "security_code": security_code,
+                        "frequency": frequency,
+                        "trade_time": trade_time.isoformat(),
+                        "open": row.open,
+                        "high": row.high,
+                        "low": row.low,
+                        "close": row.close,
+                        "volume_share": _int_exact(row.vol),
+                        "amount_cny": None if row.amount is None else float(row.amount),
+                    }
+                    key = {
+                        "security_code": security_code,
+                        "frequency": frequency,
+                        "trade_time": trade_time.isoformat(),
+                    }
+                    candidates.append(self._candidate(row.raw_batch_id, key, payload))
+                except (TypeError, ValueError):
+                    rejected += 1
+            return candidates, raw_rows, skipped, rejected
+
         raise RuntimeError(f"P4 clean unsupported DataItem: {item_code}")
 
     @staticmethod
@@ -778,6 +840,106 @@ class QualityExecutor:
                     break
 
 
+        elif item.code == "stock_minute":
+            day_text = str(batch.scope_json.get("trade_date") or "")
+            security_code = str(batch.scope_json.get("security_code") or "")
+            frequency = str(batch.scope_json.get("frequency") or "")
+            if frequency != FORMAL_MINUTE_FREQUENCY:
+                issues.append(self._issue("QB-MIN-010", "VALIDITY", "BLOCK", "UNSUPPORTED_FORMAL_FREQUENCY", batch.scope_key, "stock_minute CLEAN only publishes the formal 1min base frequency", observed={"frequency": frequency}, expected={"frequency": FORMAL_MINUTE_FREQUENCY}))
+                return issues
+            try:
+                day = date.fromisoformat(day_text)
+            except ValueError:
+                issues.append(self._issue("QB-MIN-002", "VALIDITY", "BLOCK", "INVALID_TRADE_DATE", batch.scope_key, "stock_minute scope has an invalid trade date"))
+                return issues
+
+            master = session.scalar(select(SecurityMaster).where(SecurityMaster.security_code == security_code))
+            if master is None:
+                issues.append(self._issue("QB-MIN-011", "CONSISTENCY", "BLOCK", "UNKNOWN_SECURITY", batch.scope_key, "stock_minute security is missing from published security_master", observed={"security_code": security_code}))
+
+            daily_row = session.scalar(
+                select(CleanStockDaily).where(
+                    CleanStockDaily.security_code == security_code,
+                    CleanStockDaily.trade_date == day,
+                )
+            )
+            calendar_open = None
+            if master is not None:
+                calendar_open = session.scalar(
+                    select(CleanTradeCalendar.is_open).where(
+                        CleanTradeCalendar.exchange_code == master.exchange_code,
+                        CleanTradeCalendar.calendar_date == day,
+                    )
+                )
+            if daily_row is None and calendar_open is not True:
+                issues.append(self._issue("QB-MIN-002", "CONSISTENCY", "BLOCK", "INVALID_TRADE_DATE", batch.scope_key, "stock_minute trade date has neither published daily data nor an open exchange calendar record"))
+
+            expected = set(expected_minute_grid(day, frequency))
+            actual_times: list[datetime] = []
+            seen_keys: set[tuple[str, str, datetime]] = set()
+            invalid_ohlc: list[str] = []
+            invalid_relation: list[str] = []
+            negative_volume: list[str] = []
+            negative_amount: list[str] = []
+            duplicate_keys: list[str] = []
+            for payload in payloads:
+                current_time = datetime.fromisoformat(payload["trade_time"]).astimezone(SHANGHAI)
+                actual_times.append(current_time)
+                key = (payload["security_code"], payload["frequency"], current_time)
+                if key in seen_keys:
+                    duplicate_keys.append(current_time.isoformat())
+                seen_keys.add(key)
+                o, h, l, c = payload["open"], payload["high"], payload["low"], payload["close"]
+                if any(v is None or not math.isfinite(float(v)) for v in (o, h, l, c)):
+                    invalid_ohlc.append(current_time.isoformat())
+                    continue
+                if h < max(o, l, c) or l > min(o, h, c):
+                    invalid_relation.append(current_time.isoformat())
+                if payload["volume_share"] is not None and payload["volume_share"] < 0:
+                    negative_volume.append(current_time.isoformat())
+                if payload["amount_cny"] is not None and payload["amount_cny"] < 0:
+                    negative_amount.append(current_time.isoformat())
+
+            if duplicate_keys:
+                issues.append(self._issue("QB-MIN-001", "UNIQUENESS", "BLOCK", "DUPLICATE_BUSINESS_KEY", batch.scope_key, "stock_minute contains duplicate business keys", observed={"duplicate_count": len(duplicate_keys), "sample": duplicate_keys[:10]}, expected={"duplicate_count": 0}))
+            wrong_date = [t.isoformat() for t in actual_times if t.date() != day]
+            if wrong_date:
+                issues.append(self._issue("QB-MIN-002", "VALIDITY", "BLOCK", "TRADE_TIME_DATE_MISMATCH", batch.scope_key, "stock_minute trade_time falls outside the scoped trade date", observed={"invalid_count": len(wrong_date), "sample": wrong_date[:10]}, expected={"trade_date": day.isoformat()}))
+            outside = sorted(t.isoformat() for t in set(actual_times) - expected)
+            if outside:
+                issues.append(self._issue("QB-MIN-003", "VALIDITY", "BLOCK", "OUTSIDE_FORMAL_SESSION", batch.scope_key, "stock_minute contains timestamps outside the formal minute grid", observed={"invalid_count": len(outside), "sample": outside[:10]}, expected={"session_rule": "cn-a-minute-session-v1"}))
+            if invalid_ohlc:
+                issues.append(self._issue("QB-MIN-004", "VALIDITY", "BLOCK", "INVALID_OHLC", batch.scope_key, "stock_minute contains NULL or non-finite OHLC", observed={"invalid_count": len(invalid_ohlc), "sample": invalid_ohlc[:10]}, expected={"invalid_count": 0}))
+            if invalid_relation:
+                issues.append(self._issue("QB-MIN-005", "VALIDITY", "BLOCK", "INVALID_OHLC_RELATION", batch.scope_key, "stock_minute contains invalid high/low relationships", observed={"invalid_count": len(invalid_relation), "sample": invalid_relation[:10]}, expected={"invalid_count": 0}))
+            if negative_volume:
+                issues.append(self._issue("QB-MIN-007", "VALIDITY", "BLOCK", "NEGATIVE_VOLUME", batch.scope_key, "stock_minute contains negative volume", observed={"invalid_count": len(negative_volume), "sample": negative_volume[:10]}, expected={"invalid_count": 0}))
+            if negative_amount:
+                issues.append(self._issue("QB-MIN-008", "VALIDITY", "BLOCK", "NEGATIVE_AMOUNT", batch.scope_key, "stock_minute contains negative amount", observed={"invalid_count": len(negative_amount), "sample": negative_amount[:10]}, expected={"invalid_count": 0}))
+
+            actual_set = set(actual_times)
+            missing = sorted(t.isoformat() for t in expected - actual_set)
+            if missing:
+                issues.append(self._issue("QB-MIN-012", "CONTINUITY", "BLOCK", "MISSING_MINUTE_GRID", batch.scope_key, "stock_minute is missing timestamps from the formal minute grid", observed={"missing_count": len(missing), "sample": missing[:10], "actual_count": len(actual_set)}, expected={"expected_count": len(expected), "session_rule": "cn-a-minute-session-v1"}))
+
+            if daily_row is not None and not missing and not outside and payloads:
+                ordered = sorted(payloads, key=lambda p: p["trade_time"])
+                minute_ohlc = {
+                    "open": ordered[0]["open"],
+                    "high": max(p["high"] for p in ordered),
+                    "low": min(p["low"] for p in ordered),
+                    "close": ordered[-1]["close"],
+                }
+                daily_ohlc = {"open": daily_row.open, "high": daily_row.high, "low": daily_row.low, "close": daily_row.close}
+                mismatched = [name for name in minute_ohlc if daily_ohlc[name] is not None and not math.isclose(float(minute_ohlc[name]), float(daily_ohlc[name]), rel_tol=1e-10, abs_tol=1e-10)]
+                if mismatched:
+                    issues.append(self._issue("QB-MIN-009", "CONSISTENCY", "BLOCK", "DAILY_OHLC_MISMATCH", batch.scope_key, "complete minute OHLC conflicts with published stock_daily", observed={"fields": mismatched, "minute": minute_ohlc, "daily": daily_ohlc}, expected={"fields": "equal"}))
+                minute_volume = sum(int(p["volume_share"] or 0) for p in payloads)
+                minute_amount = sum(float(p["amount_cny"] or 0.0) for p in payloads)
+                if (daily_row.volume_share is not None and minute_volume != daily_row.volume_share) or (daily_row.amount_cny is not None and not math.isclose(minute_amount, float(daily_row.amount_cny), rel_tol=1e-9, abs_tol=0.01)):
+                    issues.append(self._issue("QB-MIN-013", "CONSISTENCY", "WARN", "DAILY_VOLUME_AMOUNT_DIFFERENCE", batch.scope_key, "minute volume/amount aggregate differs from published stock_daily; retained as observation pending market-coverage validation", observed={"minute_volume_share": minute_volume, "daily_volume_share": daily_row.volume_share, "minute_amount_cny": minute_amount, "daily_amount_cny": daily_row.amount_cny}))
+
+
         elif item.code == "stock_adj_factor":
             day = batch.scope_json.get("trade_date")
             if day and session.scalar(select(CleanTradeCalendar.is_open).where(CleanTradeCalendar.exchange_code == "SSE", CleanTradeCalendar.calendar_date == date.fromisoformat(day))) is not True:
@@ -909,6 +1071,23 @@ class QualityExecutor:
         if item_code == "stock_limit_price":
             rows = [{**row.payload, "trade_date": date.fromisoformat(row.payload["trade_date"]), **common} for row in candidates]
             return self._upsert_simple(session, CleanStockLimitPrice, rows, ["security_code", "trade_date"], ["pre_close", "up_limit", "down_limit"], batch)
+        if item_code == "stock_minute":
+            rows = [
+                {
+                    "security_code": row.payload["security_code"],
+                    "frequency": row.payload["frequency"],
+                    "trade_time": datetime.fromisoformat(row.payload["trade_time"]),
+                    "open": row.payload["open"],
+                    "high": row.payload["high"],
+                    "low": row.payload["low"],
+                    "close": row.payload["close"],
+                    "volume_share": row.payload["volume_share"],
+                    "amount_cny": row.payload["amount_cny"],
+                    "_clean_batch_id": batch.clean_batch_id,
+                }
+                for row in candidates
+            ]
+            return self._publish_minute(session, rows=rows)
         raise RuntimeError(f"P4 quality publish unsupported DataItem: {item_code}")
 
     @staticmethod
@@ -940,6 +1119,51 @@ class QualityExecutor:
             stmt = pg_insert(model).values(chunk)
             update_fields = {c.name: stmt.excluded[c.name] for c in model.__table__.columns if c.name not in key_fields and c.name != "_created_at"}
             session.execute(stmt.on_conflict_do_update(index_elements=key_fields, set_=update_fields))
+        return len(rows), unchanged, len(changed_rows)
+
+    @staticmethod
+    def _publish_minute(session: Session, *, rows: list[dict]) -> tuple[int, int, int]:
+        if not rows:
+            return 0, 0, 0
+        codes = {r["security_code"] for r in rows}
+        frequencies = {r["frequency"] for r in rows}
+        times = {r["trade_time"] for r in rows}
+        existing = {
+            (obj.security_code, obj.frequency, obj.trade_time): obj
+            for obj in session.scalars(
+                select(CleanStockMinute).where(
+                    CleanStockMinute.security_code.in_(codes),
+                    CleanStockMinute.frequency.in_(frequencies),
+                    CleanStockMinute.trade_time.in_(times),
+                )
+            )
+        }
+        business = ["open", "high", "low", "close", "volume_share", "amount_cny"]
+        unchanged = 0
+        changed_rows = []
+        for row in rows:
+            key = (row["security_code"], row["frequency"], row["trade_time"])
+            old = existing.get(key)
+            if old is not None and all(getattr(old, field) == row[field] for field in business):
+                unchanged += 1
+                continue
+            changed_rows.append(row)
+        for chunk in _chunk_rows(changed_rows):
+            stmt = pg_insert(CleanStockMinute).values(chunk)
+            session.execute(
+                stmt.on_conflict_do_update(
+                    index_elements=["security_code", "frequency", "trade_time"],
+                    set_={
+                        "open": stmt.excluded.open,
+                        "high": stmt.excluded.high,
+                        "low": stmt.excluded.low,
+                        "close": stmt.excluded.close,
+                        "volume_share": stmt.excluded.volume_share,
+                        "amount_cny": stmt.excluded.amount_cny,
+                        "_clean_batch_id": stmt.excluded._clean_batch_id,
+                    },
+                )
+            )
         return len(rows), unchanged, len(changed_rows)
 
     @staticmethod
@@ -1087,6 +1311,8 @@ class QualityExecutor:
             scope_key = str(batch.scope_json.get("exchange_code", "SSE")); frequency = "day"
         elif item.code == "stock_daily":
             scope_key = "GLOBAL"; frequency = item.frequency or "day"
+        elif item.code == "stock_minute":
+            scope_key = str(batch.scope_json.get("security_code", "")); frequency = str(batch.scope_json.get("frequency", ""))
         else:
             scope_key = "GLOBAL"; frequency = item.frequency or ""
         watermark = session.scalar(select(DataWatermark).where(DataWatermark.data_item_id == item.data_item_id, DataWatermark.scope_key == scope_key, DataWatermark.frequency == frequency))

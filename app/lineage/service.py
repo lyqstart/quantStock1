@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import date
+from datetime import date, datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -13,6 +13,7 @@ from app.storage.models.clean import (
     CleanStockDaily,
     CleanStockDailyBasic,
     CleanStockLimitPrice,
+    CleanStockMinute,
     CleanStockSuspendEvent,
     CleanTradeCalendar,
     SecurityMaster,
@@ -104,6 +105,8 @@ def data_lineage(
     calendar_date: date | None = None,
     event_type: str | None = None,
     suspend_timing: str | None = None,
+    frequency: str | None = None,
+    trade_time: datetime | None = None,
 ) -> dict | None:
     row = None
     business_key: dict = {}
@@ -156,9 +159,27 @@ def data_lineage(
             "event_type": event_type,
             "suspend_timing": suspend_timing,
         }
+    elif data_item == "stock_minute":
+        if security_code is None or frequency is None or trade_time is None:
+            raise ValueError("stock_minute requires security_code, frequency and trade_time")
+        row = session.get(
+            CleanStockMinute,
+            {"security_code": security_code, "frequency": frequency, "trade_time": trade_time},
+        )
+        business_key = {
+            "security_code": security_code,
+            "frequency": frequency,
+            "trade_time": trade_time.isoformat(),
+        }
     else:
         raise ValueError(f"P4 lineage is not implemented for {data_item}")
     if row is None:
         return None
     batch_id = row.clean_batch_id
-    return {"data_item": data_item, "business_key": business_key, "quality_status": row.quality_status, "lineage": clean_batch_lineage(session, batch_id)}
+    lineage = clean_batch_lineage(session, batch_id)
+    if data_item == "stock_minute":
+        latest_quality = lineage["quality_runs"][-1]["status"] if lineage and lineage["quality_runs"] else None
+        quality_status = {"PASSED": "PASS", "WARNED": "WARN"}.get(latest_quality, latest_quality)
+    else:
+        quality_status = row.quality_status
+    return {"data_item": data_item, "business_key": business_key, "quality_status": quality_status, "lineage": lineage}

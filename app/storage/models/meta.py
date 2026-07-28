@@ -53,6 +53,31 @@ class DataItem(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
 
+class StoragePolicy(Base):
+    __tablename__ = "storage_policy"
+    __table_args__ = (
+        UniqueConstraint("policy_code", "policy_version", name="uq_storage_policy_code_version"),
+        {"schema": "meta"},
+    )
+
+    storage_policy_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    policy_code: Mapped[str] = mapped_column(String(128), nullable=False)
+    data_item_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("meta.data_item.data_item_id"), nullable=False)
+    data_layer: Mapped[str] = mapped_column(String(16), nullable=False)
+    storage_class: Mapped[str] = mapped_column(String(16), nullable=False)
+    partition_mode: Mapped[str | None] = mapped_column(String(64))
+    chunk_interval: Mapped[str | None] = mapped_column(String(64))
+    compression_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    hot_mutable_window: Mapped[str | None] = mapped_column(String(64))
+    online_retention: Mapped[str | None] = mapped_column(String(64))
+    archive_required: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    policy_version: Mapped[str] = mapped_column(String(32), nullable=False)
+    enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    notes: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+
+
 class SourceBinding(Base):
     __tablename__ = "source_binding"
     __table_args__ = (
