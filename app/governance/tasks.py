@@ -294,4 +294,33 @@ def enqueue_clean_latest(
     )
     if result is None:  # pragma: no cover
         raise RuntimeError(f"unsupported P4 item: {item_code}")
-    return result
+
+    clean_task, created = result
+    if not created and clean_task.status == "SUCCEEDED":
+        scope_key, _scope_json = _scope_for_source_task(item_code, source_task)
+        existing_batch = session.scalar(
+            select(CleanBatch)
+            .where(
+                CleanBatch.data_item_id == item.data_item_id,
+                CleanBatch.scope_key == scope_key,
+                CleanBatch.mapping_version == MAPPING_VERSION,
+                CleanBatch.normalization_version == NORMALIZATION_VERSION,
+                CleanBatch.source_task_id == source_task.task_id,
+            )
+            .order_by(CleanBatch.created_at.desc())
+            .limit(1)
+        )
+        if (
+            existing_batch is not None
+            and existing_batch.status in {"CANDIDATE", "VALIDATING", "BLOCKED"}
+            and existing_batch.quality_rule_version != QUALITY_RULE_VERSION
+        ):
+            enqueue_quality_for_clean_batch(
+                session,
+                clean_task=clean_task,
+                clean_batch=existing_batch,
+                requested_by=requested_by,
+                reason=f"quality rerun after rule version change: {QUALITY_RULE_VERSION}",
+            )
+
+    return clean_task, created

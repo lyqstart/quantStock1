@@ -678,6 +678,7 @@ class QualityExecutor:
         run.issues_created = len(issues)
         run.finished_at = datetime.now(UTC)
         batch.current_quality_run_id = run.quality_run_id
+        batch.quality_rule_version = QUALITY_RULE_VERSION
         batch.validated_at = run.finished_at
 
         if blocked:
