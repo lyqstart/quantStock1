@@ -17,6 +17,7 @@ from app.collect.trade_calendar_service import enqueue_trade_calendar
 from app.core.logging import configure_logging
 from app.datasource.capability import probe_binding
 from app.governance.tasks import enqueue_clean_latest
+from app.storage.minute_benchmark import minute_capacity_benchmark
 from app.storage.minute_metrics import minute_storage_report
 from app.storage.db import get_session_factory
 
@@ -102,6 +103,21 @@ def main() -> None:
     minute_report = sub.add_parser("minute-storage-report")
     minute_report.add_argument("--date", type=_parse_date, default=None)
 
+    minute_benchmark = sub.add_parser("minute-capacity-benchmark")
+    minute_benchmark.add_argument("--date", required=True, type=_parse_date)
+    minute_benchmark.add_argument("--ts-code", required=True)
+    minute_benchmark.add_argument(
+        "--freq",
+        default="1min",
+        choices=["1min", "5min", "15min", "30min", "60min"],
+    )
+    minute_benchmark.add_argument("--range-start", type=_parse_date, default=None)
+    minute_benchmark.add_argument("--range-end", type=_parse_date, default=None)
+    minute_benchmark.add_argument("--market-stocks", type=int, default=5500)
+    minute_benchmark.add_argument("--trading-days", type=int, default=245)
+    minute_benchmark.add_argument("--points-per-stock", type=int, default=241)
+    minute_benchmark.add_argument("--repeat", type=int, default=3)
+
     sub.add_parser("scheduler-once")
 
     args = parser.parse_args()
@@ -175,7 +191,23 @@ def main() -> None:
                 reason=args.reason,
             )
         elif args.command == "minute-storage-report":
-            print(json.dumps(minute_storage_report(session, trade_date=args.date), ensure_ascii=False, default=str))
+            report = minute_storage_report(session, trade_date=args.date)
+            print(json.dumps(report, ensure_ascii=False, default=str))
+            return
+        elif args.command == "minute-capacity-benchmark":
+            report = minute_capacity_benchmark(
+                session,
+                trade_date=args.date,
+                security_code=args.ts_code,
+                frequency=args.freq,
+                range_start=args.range_start,
+                range_end=args.range_end,
+                market_stocks=args.market_stocks,
+                trading_days=args.trading_days,
+                expected_points_per_stock=args.points_per_stock,
+                repeat=args.repeat,
+            )
+            print(json.dumps(report, ensure_ascii=False, default=str))
             return
         else:  # pragma: no cover
             raise RuntimeError(f"Unhandled command: {args.command}")
