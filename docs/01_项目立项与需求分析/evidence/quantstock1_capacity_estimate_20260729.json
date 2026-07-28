@@ -1,0 +1,135 @@
+{
+  "formed_at": "2026-07-29",
+  "repository_commit": "25399e0",
+  "evidence_classification": {
+    "measured": "来自当前服务器数据库和真实Tushare样本",
+    "calculated": "由实测值按公开公式计算",
+    "planning_assumption": "仅用于初步容量边界，实施前必须用真实全量样本校准"
+  },
+  "measured_facts": {
+    "current_database_logical_mib_approx": 78,
+    "current_postgres_volume_mib_approx": 169,
+    "current_minute_sample": {
+      "stocks": 101,
+      "trade_days": 1,
+      "rows": 24341,
+      "rows_per_full_stock_day": 241
+    },
+    "current_daily_sample": {
+      "stocks": 5526,
+      "trade_days": 1,
+      "rows": 5526
+    },
+    "raw_minute_storage": {
+      "sample_rows": 24341,
+      "table_bytes": 7979008,
+      "index_bytes": 4259840,
+      "total_bytes": 12271616,
+      "total_bytes_per_row": 504.1541432151514
+    },
+    "timescale": {
+      "hypertable": "clean.stock_minute",
+      "chunk_interval": "7 days",
+      "compression_enabled": false,
+      "sample_chunks": 1
+    },
+    "server_free_space": {
+      "root_gib": 266,
+      "mnt_2t_ssd_tib": 1.1,
+      "mnt_1t_back_gib": 768
+    },
+    "measured_table_rows": {
+      "raw.tushare_stk_mins": {
+        "rows": 24341,
+        "table_bytes": 7979008,
+        "index_bytes": 4259840,
+        "total_bytes": 12271616,
+        "total_bytes_per_row": 504.1541432151514
+      },
+      "clean.stock_daily": {
+        "rows": 5526,
+        "total_bytes": 1720320,
+        "total_bytes_per_row": 311.313789359392
+      },
+      "raw.tushare_adj_factor": {
+        "rows": 5546,
+        "total_bytes": 2490368,
+        "total_bytes_per_row": 449.0385863685539
+      },
+      "clean.stock_adj_factor": {
+        "rows": 5546,
+        "total_bytes": 1400832,
+        "total_bytes_per_row": 252.58420483231157
+      },
+      "raw.tushare_daily_basic": {
+        "rows": 5523,
+        "total_bytes": 3186688,
+        "total_bytes_per_row": 576.9849719355423
+      },
+      "clean.stock_daily_basic": {
+        "rows": 5523,
+        "total_bytes": 2088960,
+        "total_bytes_per_row": 378.22922324823463
+      },
+      "raw.tushare_stk_limit": {
+        "rows": 7709,
+        "total_bytes": 3588096,
+        "total_bytes_per_row": 465.4424698404462
+      },
+      "clean.stock_limit_price": {
+        "rows": 5533,
+        "total_bytes": 1351680,
+        "total_bytes_per_row": 244.29423459244532
+      }
+    }
+  },
+  "planning_assumptions": {
+    "active_stocks": 5526,
+    "minute_bars_per_stock_day": 241,
+    "trading_days_per_year": 242,
+    "history_start": "2009-01-05",
+    "history_end": "2026-07-24",
+    "history_years": 17.549983914796332,
+    "clean_minute_bytes_per_row_range": [
+      250,
+      400
+    ],
+    "planning_multiplier": 2.3,
+    "planning_multiplier_meaning": "主数据1份+完整备份1份+30%运行余量",
+    "safe_minute_api_rate_calls_per_minute": 400,
+    "history_window_trading_days": 30
+  },
+  "calculated_results": {
+    "minute_rows_per_day_current_scale": 1331766,
+    "minute_rows_per_year_current_scale": 322287372,
+    "minute_rows_2009_to_2026_current_scale_upper": 5656138195,
+    "raw_minute_gib_per_day_current_scale": 0.6253042693185334,
+    "raw_minute_gib_per_year_current_scale": 151.3236331750851,
+    "raw_minute_tib_2009_to_2026_current_scale_upper": 2.593483719107751,
+    "raw_clean_gib_per_year_range": [
+      226.3620094393592,
+      271.3850351979237
+    ],
+    "raw_clean_tib_2009_to_2026_range": [
+      3.8795406493197495,
+      4.6511748074469486
+    ],
+    "raw_clean_backup_headroom_tib_range": [
+      8.922943493435422,
+      10.69770205712798
+    ],
+    "one_double_precision_minute_feature_gib_per_year": 2.401228040456772,
+    "daily_minute_calls": 5526,
+    "single_thread_current_day_collection_minutes_at_measured_latency": 96.24449999999999,
+    "rate_floor_current_day_collection_minutes_at_400_per_minute": 13.815,
+    "history_requests_current_scale_upper": 782315,
+    "history_request_rate_floor_hours_at_400_per_minute": 32.59645833333333
+  },
+  "limitations": [
+    "历史期间早期上市股票数量低于当前值，因此历史行数是当前规模上界，不是实际预测值。",
+    "clean.stock_minute真实chunk物理大小未在现有证据中单独取得，因此clean行宽使用相邻clean表的实测区间作初步规划。",
+    "TimescaleDB压缩比与字段、排序、segmentby、chunk和查询模式有关，不能直接采用官方示例比例。",
+    "当前没有全市场、全历史的真实导入耗时和查询基准。",
+    "集合竞价、指数、板块和扩展数据域未纳入本次确定性容量。"
+  ]
+}
