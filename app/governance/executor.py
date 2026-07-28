@@ -933,7 +933,35 @@ class QualityExecutor:
                 daily_ohlc = {"open": daily_row.open, "high": daily_row.high, "low": daily_row.low, "close": daily_row.close}
                 mismatched = [name for name in minute_ohlc if daily_ohlc[name] is not None and not math.isclose(float(minute_ohlc[name]), float(daily_ohlc[name]), rel_tol=1e-10, abs_tol=1e-10)]
                 if mismatched:
-                    issues.append(self._issue("QB-MIN-009", "CONSISTENCY", "BLOCK", "DAILY_OHLC_MISMATCH", batch.scope_key, "complete minute OHLC conflicts with published stock_daily", observed={"fields": mismatched, "minute": minute_ohlc, "daily": daily_ohlc}, expected={"fields": "equal"}))
+                    bse_cross_source = master is not None and master.exchange_code == "BSE"
+                    severity = "WARN" if bse_cross_source else "BLOCK"
+                    message = (
+                        "BSE minute OHLC differs from published stock_daily; retained as cross-source "
+                        "observation because validated stk_mins coverage does not losslessly reconstruct "
+                        "BSE daily bars"
+                        if bse_cross_source
+                        else "complete minute OHLC conflicts with published stock_daily"
+                    )
+                    issues.append(
+                        self._issue(
+                            "QB-MIN-009",
+                            "CONSISTENCY",
+                            severity,
+                            "DAILY_OHLC_MISMATCH",
+                            batch.scope_key,
+                            message,
+                            observed={
+                                "fields": mismatched,
+                                "minute": minute_ohlc,
+                                "daily": daily_ohlc,
+                                "exchange_code": master.exchange_code if master is not None else None,
+                            },
+                            expected={
+                                "fields": "equal",
+                                "policy": "BSE_WARN" if bse_cross_source else "STRICT_BLOCK",
+                            },
+                        )
+                    )
                 minute_volume = sum(int(p["volume_share"] or 0) for p in payloads)
                 minute_amount = sum(float(p["amount_cny"] or 0.0) for p in payloads)
                 if (daily_row.volume_share is not None and minute_volume != daily_row.volume_share) or (daily_row.amount_cny is not None and not math.isclose(minute_amount, float(daily_row.amount_cny), rel_tol=1e-9, abs_tol=0.01)):
