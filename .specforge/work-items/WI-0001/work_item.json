@@ -1,0 +1,2724 @@
+{
+  "schema_version": "1.1",
+  "work_item_id": "WI-0001",
+  "workflow_type": "feature_spec",
+  "workflow_path": "requirement_change_path",
+  "title": "Work Item WI-0001",
+  "description": "Auto-created by sf_state_transition during Work Item creation.",
+  "created_at": "2026-07-29T03:30:41.199Z",
+  "updated_at": "2026-07-29T04:11:37.834Z",
+  "code_change_allowed": true,
+  "code_permission_revoked": false,
+  "governance_scope": "governance_scope.json",
+  "affected_modules": [],
+  "architecture_refs": [],
+  "data_model_refs": [],
+  "design_refs": [],
+  "project_contract_refs": [],
+  "module_contract_refs": [],
+  "project_spec_version_at_permission": "PSV-0002",
+  "impact_scope_hash": "2a601e47f0de98cc34a812ed131682cc669ff5c71b15b75016df20d20066b1d3",
+  "allowed_write_files": [
+    {
+      "path": "migrations/versions/0013_lineage_and_snapshot.py",
+      "operation": "create"
+    },
+    {
+      "path": "migrations/versions/0013_lineage_and_snapshot.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/migrations/versions/0013_lineage_and_snapshot.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/migrations/versions/0013_lineage_and_snapshot.py",
+      "operation": "modify"
+    },
+    {
+      "path": "migrations/versions/0014_clean_published_at_financial_dataitem.py",
+      "operation": "create"
+    },
+    {
+      "path": "migrations/versions/0014_clean_published_at_financial_dataitem.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/migrations/versions/0014_clean_published_at_financial_dataitem.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/migrations/versions/0014_clean_published_at_financial_dataitem.py",
+      "operation": "modify"
+    },
+    {
+      "path": "migrations/versions/0015_audit_runcheck_datagap_rawevidence.py",
+      "operation": "create"
+    },
+    {
+      "path": "migrations/versions/0015_audit_runcheck_datagap_rawevidence.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/migrations/versions/0015_audit_runcheck_datagap_rawevidence.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/migrations/versions/0015_audit_runcheck_datagap_rawevidence.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/storage/models/lineage.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/storage/models/lineage.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/storage/models/lineage.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/storage/models/lineage.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/storage/models/snapshot.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/storage/models/snapshot.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/storage/models/snapshot.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/storage/models/snapshot.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/storage/models/__init__.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/storage/models/__init__.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/storage/models/__init__.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/storage/models/__init__.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/lineage/service.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/lineage/service.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/lineage/service.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/lineage/service.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/core/config.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/core/config.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/core/config.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/core/config.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/collect/scheduler.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/collect/scheduler.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/collect/scheduler.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/collect/scheduler.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/catalog/bootstrap.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/catalog/bootstrap.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/catalog/bootstrap.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/catalog/bootstrap.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/collect/idempotency.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/collect/idempotency.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/collect/idempotency.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/collect/idempotency.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/collect/state_machine.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/collect/state_machine.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/collect/state_machine.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/collect/state_machine.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/__init__.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/__init__.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/__init__.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/__init__.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/context.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/context.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/context.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/context.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/query.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/query.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/query.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/query.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/time_semantics.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/time_semantics.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/time_semantics.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/time_semantics.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/adjustment.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/adjustment.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/adjustment.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/adjustment.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/alignment.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/alignment.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/alignment.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/alignment.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/readers/__init__.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/readers/__init__.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/readers/__init__.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/readers/__init__.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/readers/daily.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/readers/daily.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/readers/daily.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/readers/daily.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/readers/minute.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/readers/minute.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/readers/minute.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/readers/minute.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/readers/financial.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/readers/financial.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/readers/financial.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/readers/financial.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/readers/event.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/readers/event.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/readers/event.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/readers/event.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/snapshot_builder.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/snapshot_builder.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/snapshot_builder.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/snapshot_builder.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/api/routes/data.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/api/routes/data.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/api/routes/data.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/api/routes/data.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/api/routes/__init__.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/api/routes/__init__.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/api/routes/__init__.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/api/routes/__init__.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/api/schemas/data.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/api/schemas/data.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/api/schemas/data.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/api/schemas/data.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/main.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/main.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/main.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/main.py",
+      "operation": "modify"
+    },
+    {
+      "path": ".importlinter",
+      "operation": "create"
+    },
+    {
+      "path": ".importlinter",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/.importlinter",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/.importlinter",
+      "operation": "modify"
+    },
+    {
+      "path": "pyproject.toml",
+      "operation": "create"
+    },
+    {
+      "path": "pyproject.toml",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/pyproject.toml",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/pyproject.toml",
+      "operation": "modify"
+    },
+    {
+      "path": "compose.test.yml",
+      "operation": "create"
+    },
+    {
+      "path": "compose.test.yml",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/compose.test.yml",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/compose.test.yml",
+      "operation": "modify"
+    },
+    {
+      "path": ".env.test.example",
+      "operation": "create"
+    },
+    {
+      "path": ".env.test.example",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/.env.test.example",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/.env.test.example",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/conftest.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/conftest.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/conftest.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/conftest.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/integration/test_state_machine.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/integration/test_state_machine.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_state_machine.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_state_machine.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/integration/test_idempotency.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/integration/test_idempotency.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_idempotency.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_idempotency.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/integration/test_raw_evidence.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/integration/test_raw_evidence.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_raw_evidence.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_raw_evidence.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/integration/test_clean_version.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/integration/test_clean_version.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_clean_version.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_clean_version.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/integration/test_quality_gate.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/integration/test_quality_gate.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_quality_gate.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_quality_gate.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/integration/test_datagap_verified.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/integration/test_datagap_verified.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_datagap_verified.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_datagap_verified.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/lineage/test_lineage_edge.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/lineage/test_lineage_edge.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/lineage/test_lineage_edge.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/lineage/test_lineage_edge.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/idempotency/test_force_rerun.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/idempotency/test_force_rerun.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/idempotency/test_force_rerun.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/idempotency/test_force_rerun.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/anti_lookahead/test_backtest_mode.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/anti_lookahead/test_backtest_mode.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_backtest_mode.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_backtest_mode.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/anti_lookahead/test_available_at_injection.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/anti_lookahead/test_available_at_injection.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_available_at_injection.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_available_at_injection.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/anti_lookahead/test_published_available_separation.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/anti_lookahead/test_published_available_separation.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_published_available_separation.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_published_available_separation.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/anti_lookahead/test_historical_pool.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/anti_lookahead/test_historical_pool.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_historical_pool.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_historical_pool.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/anti_lookahead/test_historical_status.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/anti_lookahead/test_historical_status.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_historical_status.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_historical_status.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/anti_lookahead/test_adjustment_factor_timepoint.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/anti_lookahead/test_adjustment_factor_timepoint.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_adjustment_factor_timepoint.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_adjustment_factor_timepoint.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/contract/test_data_api.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/contract/test_data_api.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/contract/test_data_api.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/contract/test_data_api.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/integration/test_api_timeout.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/integration/test_api_timeout.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_api_timeout.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_api_timeout.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/integration/test_ops_query_no_seqscan.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/integration/test_ops_query_no_seqscan.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_ops_query_no_seqscan.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_ops_query_no_seqscan.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/integration/test_datacontext_queries.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/integration/test_datacontext_queries.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_datacontext_queries.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_datacontext_queries.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/integration/test_snapshot_immutability.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/integration/test_snapshot_immutability.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_snapshot_immutability.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_snapshot_immutability.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/integration/test_perf_queries.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/integration/test_perf_queries.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_perf_queries.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_perf_queries.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/backup_restore/test_backup_checksum.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/backup_restore/test_backup_checksum.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/backup_restore/test_backup_checksum.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/backup_restore/test_backup_checksum.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/backup_restore/test_restore_verify.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/backup_restore/test_restore_verify.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/backup_restore/test_restore_verify.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/backup_restore/test_restore_verify.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/fault_recovery/test_server_test_isolation.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/fault_recovery/test_server_test_isolation.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/fault_recovery/test_server_test_isolation.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/fault_recovery/test_server_test_isolation.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/fault_recovery/test_migrate_precheck.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/fault_recovery/test_migrate_precheck.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/fault_recovery/test_migrate_precheck.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/fault_recovery/test_migrate_precheck.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/alembic/test_empty_upgrade.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/alembic/test_empty_upgrade.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/alembic/test_empty_upgrade.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/alembic/test_empty_upgrade.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/alembic/test_existing_upgrade.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/alembic/test_existing_upgrade.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/alembic/test_existing_upgrade.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/alembic/test_existing_upgrade.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/e2e/test_dataitem_matrix.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/e2e/test_dataitem_matrix.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/e2e/test_dataitem_matrix.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/e2e/test_dataitem_matrix.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/e2e/conftest.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/e2e/conftest.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/e2e/conftest.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/e2e/conftest.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/e2e/evidence_template.json",
+      "operation": "create"
+    },
+    {
+      "path": "tests/e2e/evidence_template.json",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/e2e/evidence_template.json",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/e2e/evidence_template.json",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/db_migrate_disk/precheck.sh",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/db_migrate_disk/precheck.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_migrate_disk/precheck.sh",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_migrate_disk/precheck.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/db_migrate_disk/migrate.sh",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/db_migrate_disk/migrate.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_migrate_disk/migrate.sh",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_migrate_disk/migrate.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/db_migrate_disk/rollback.sh",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/db_migrate_disk/rollback.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_migrate_disk/rollback.sh",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_migrate_disk/rollback.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/db_migrate_disk/README.md",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/db_migrate_disk/README.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_migrate_disk/README.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_migrate_disk/README.md",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/db_backup/full_backup.sh",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/db_backup/full_backup.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_backup/full_backup.sh",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_backup/full_backup.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/db_backup/manifest.json",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/db_backup/manifest.json",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_backup/manifest.json",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_backup/manifest.json",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/db_backup/README.md",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/db_backup/README.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_backup/README.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_backup/README.md",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/db_restore/restore.sh",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/db_restore/restore.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_restore/restore.sh",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_restore/restore.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/db_restore/verify.sh",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/db_restore/verify.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_restore/verify.sh",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_restore/verify.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/db_restore/README.md",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/db_restore/README.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_restore/README.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_restore/README.md",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/minute_archive/compress_policy.sql",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/minute_archive/compress_policy.sql",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/minute_archive/compress_policy.sql",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/minute_archive/compress_policy.sql",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/minute_archive/archive.sh",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/minute_archive/archive.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/minute_archive/archive.sh",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/minute_archive/archive.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/minute_archive/README.md",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/minute_archive/README.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/minute_archive/README.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/minute_archive/README.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/05_开发实施/20_第2步实施检查点与证据清单.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/05_开发实施/20_第2步实施检查点与证据清单.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/05_开发实施/20_第2步实施检查点与证据清单.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/05_开发实施/20_第2步实施检查点与证据清单.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/05_开发实施/21_第2步数据底座实施记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/05_开发实施/21_第2步数据底座实施记录.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/05_开发实施/21_第2步数据底座实施记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/05_开发实施/21_第2步数据底座实施记录.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/06_测试验证/10_第2步数据底座验收计划.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/06_测试验证/10_第2步数据底座验收计划.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/06_测试验证/10_第2步数据底座验收计划.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/06_测试验证/10_第2步数据底座验收计划.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/06_测试验证/11_第2步数据底座验收记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/06_测试验证/11_第2步数据底座验收记录.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/06_测试验证/11_第2步数据底座验收记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/06_测试验证/11_第2步数据底座验收记录.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/07_部署上线/01_第2步部署迁盘备份恢复说明.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/07_部署上线/01_第2步部署迁盘备份恢复说明.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/07_部署上线/01_第2步部署迁盘备份恢复说明.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/07_部署上线/01_第2步部署迁盘备份恢复说明.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/00_项目管理/07_统一开发任务总表.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/00_项目管理/07_统一开发任务总表.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/07_统一开发任务总表.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/07_统一开发任务总表.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/00_项目管理/00_A股量化分析平台建设路线图.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/00_项目管理/00_A股量化分析平台建设路线图.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/00_A股量化分析平台建设路线图.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/00_A股量化分析平台建设路线图.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/00_项目管理/02_项目决策记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/00_项目管理/02_项目决策记录.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/02_项目决策记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/02_项目决策记录.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/00_项目管理/03_项目变更记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/00_项目管理/03_项目变更记录.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/03_项目变更记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/03_项目变更记录.md",
+      "operation": "modify"
+    }
+  ],
+  "allowed_write_files_snapshot": [
+    {
+      "path": "migrations/versions/0013_lineage_and_snapshot.py",
+      "operation": "create"
+    },
+    {
+      "path": "migrations/versions/0013_lineage_and_snapshot.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/migrations/versions/0013_lineage_and_snapshot.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/migrations/versions/0013_lineage_and_snapshot.py",
+      "operation": "modify"
+    },
+    {
+      "path": "migrations/versions/0014_clean_published_at_financial_dataitem.py",
+      "operation": "create"
+    },
+    {
+      "path": "migrations/versions/0014_clean_published_at_financial_dataitem.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/migrations/versions/0014_clean_published_at_financial_dataitem.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/migrations/versions/0014_clean_published_at_financial_dataitem.py",
+      "operation": "modify"
+    },
+    {
+      "path": "migrations/versions/0015_audit_runcheck_datagap_rawevidence.py",
+      "operation": "create"
+    },
+    {
+      "path": "migrations/versions/0015_audit_runcheck_datagap_rawevidence.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/migrations/versions/0015_audit_runcheck_datagap_rawevidence.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/migrations/versions/0015_audit_runcheck_datagap_rawevidence.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/storage/models/lineage.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/storage/models/lineage.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/storage/models/lineage.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/storage/models/lineage.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/storage/models/snapshot.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/storage/models/snapshot.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/storage/models/snapshot.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/storage/models/snapshot.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/storage/models/__init__.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/storage/models/__init__.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/storage/models/__init__.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/storage/models/__init__.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/lineage/service.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/lineage/service.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/lineage/service.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/lineage/service.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/core/config.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/core/config.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/core/config.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/core/config.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/collect/scheduler.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/collect/scheduler.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/collect/scheduler.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/collect/scheduler.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/catalog/bootstrap.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/catalog/bootstrap.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/catalog/bootstrap.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/catalog/bootstrap.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/collect/idempotency.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/collect/idempotency.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/collect/idempotency.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/collect/idempotency.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/collect/state_machine.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/collect/state_machine.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/collect/state_machine.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/collect/state_machine.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/__init__.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/__init__.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/__init__.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/__init__.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/context.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/context.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/context.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/context.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/query.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/query.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/query.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/query.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/time_semantics.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/time_semantics.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/time_semantics.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/time_semantics.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/adjustment.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/adjustment.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/adjustment.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/adjustment.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/alignment.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/alignment.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/alignment.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/alignment.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/readers/__init__.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/readers/__init__.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/readers/__init__.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/readers/__init__.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/readers/daily.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/readers/daily.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/readers/daily.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/readers/daily.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/readers/minute.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/readers/minute.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/readers/minute.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/readers/minute.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/readers/financial.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/readers/financial.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/readers/financial.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/readers/financial.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/readers/event.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/readers/event.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/readers/event.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/readers/event.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/datacontext/snapshot_builder.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/datacontext/snapshot_builder.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/snapshot_builder.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/datacontext/snapshot_builder.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/api/routes/data.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/api/routes/data.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/api/routes/data.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/api/routes/data.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/api/routes/__init__.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/api/routes/__init__.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/api/routes/__init__.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/api/routes/__init__.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/api/schemas/data.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/api/schemas/data.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/api/schemas/data.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/api/schemas/data.py",
+      "operation": "modify"
+    },
+    {
+      "path": "app/main.py",
+      "operation": "create"
+    },
+    {
+      "path": "app/main.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/main.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/app/main.py",
+      "operation": "modify"
+    },
+    {
+      "path": ".importlinter",
+      "operation": "create"
+    },
+    {
+      "path": ".importlinter",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/.importlinter",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/.importlinter",
+      "operation": "modify"
+    },
+    {
+      "path": "pyproject.toml",
+      "operation": "create"
+    },
+    {
+      "path": "pyproject.toml",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/pyproject.toml",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/pyproject.toml",
+      "operation": "modify"
+    },
+    {
+      "path": "compose.test.yml",
+      "operation": "create"
+    },
+    {
+      "path": "compose.test.yml",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/compose.test.yml",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/compose.test.yml",
+      "operation": "modify"
+    },
+    {
+      "path": ".env.test.example",
+      "operation": "create"
+    },
+    {
+      "path": ".env.test.example",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/.env.test.example",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/.env.test.example",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/conftest.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/conftest.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/conftest.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/conftest.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/integration/test_state_machine.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/integration/test_state_machine.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_state_machine.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_state_machine.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/integration/test_idempotency.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/integration/test_idempotency.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_idempotency.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_idempotency.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/integration/test_raw_evidence.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/integration/test_raw_evidence.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_raw_evidence.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_raw_evidence.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/integration/test_clean_version.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/integration/test_clean_version.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_clean_version.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_clean_version.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/integration/test_quality_gate.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/integration/test_quality_gate.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_quality_gate.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_quality_gate.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/integration/test_datagap_verified.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/integration/test_datagap_verified.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_datagap_verified.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_datagap_verified.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/lineage/test_lineage_edge.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/lineage/test_lineage_edge.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/lineage/test_lineage_edge.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/lineage/test_lineage_edge.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/idempotency/test_force_rerun.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/idempotency/test_force_rerun.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/idempotency/test_force_rerun.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/idempotency/test_force_rerun.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/anti_lookahead/test_backtest_mode.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/anti_lookahead/test_backtest_mode.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_backtest_mode.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_backtest_mode.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/anti_lookahead/test_available_at_injection.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/anti_lookahead/test_available_at_injection.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_available_at_injection.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_available_at_injection.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/anti_lookahead/test_published_available_separation.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/anti_lookahead/test_published_available_separation.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_published_available_separation.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_published_available_separation.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/anti_lookahead/test_historical_pool.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/anti_lookahead/test_historical_pool.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_historical_pool.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_historical_pool.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/anti_lookahead/test_historical_status.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/anti_lookahead/test_historical_status.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_historical_status.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_historical_status.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/anti_lookahead/test_adjustment_factor_timepoint.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/anti_lookahead/test_adjustment_factor_timepoint.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_adjustment_factor_timepoint.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/anti_lookahead/test_adjustment_factor_timepoint.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/contract/test_data_api.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/contract/test_data_api.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/contract/test_data_api.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/contract/test_data_api.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/integration/test_api_timeout.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/integration/test_api_timeout.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_api_timeout.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_api_timeout.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/integration/test_ops_query_no_seqscan.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/integration/test_ops_query_no_seqscan.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_ops_query_no_seqscan.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_ops_query_no_seqscan.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/integration/test_datacontext_queries.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/integration/test_datacontext_queries.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_datacontext_queries.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_datacontext_queries.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/integration/test_snapshot_immutability.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/integration/test_snapshot_immutability.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_snapshot_immutability.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_snapshot_immutability.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/integration/test_perf_queries.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/integration/test_perf_queries.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_perf_queries.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/integration/test_perf_queries.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/backup_restore/test_backup_checksum.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/backup_restore/test_backup_checksum.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/backup_restore/test_backup_checksum.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/backup_restore/test_backup_checksum.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/backup_restore/test_restore_verify.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/backup_restore/test_restore_verify.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/backup_restore/test_restore_verify.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/backup_restore/test_restore_verify.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/fault_recovery/test_server_test_isolation.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/fault_recovery/test_server_test_isolation.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/fault_recovery/test_server_test_isolation.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/fault_recovery/test_server_test_isolation.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/fault_recovery/test_migrate_precheck.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/fault_recovery/test_migrate_precheck.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/fault_recovery/test_migrate_precheck.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/fault_recovery/test_migrate_precheck.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/alembic/test_empty_upgrade.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/alembic/test_empty_upgrade.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/alembic/test_empty_upgrade.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/alembic/test_empty_upgrade.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/alembic/test_existing_upgrade.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/alembic/test_existing_upgrade.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/alembic/test_existing_upgrade.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/alembic/test_existing_upgrade.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/e2e/test_dataitem_matrix.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/e2e/test_dataitem_matrix.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/e2e/test_dataitem_matrix.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/e2e/test_dataitem_matrix.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/e2e/conftest.py",
+      "operation": "create"
+    },
+    {
+      "path": "tests/e2e/conftest.py",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/e2e/conftest.py",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/e2e/conftest.py",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/e2e/evidence_template.json",
+      "operation": "create"
+    },
+    {
+      "path": "tests/e2e/evidence_template.json",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/e2e/evidence_template.json",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/tests/e2e/evidence_template.json",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/db_migrate_disk/precheck.sh",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/db_migrate_disk/precheck.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_migrate_disk/precheck.sh",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_migrate_disk/precheck.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/db_migrate_disk/migrate.sh",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/db_migrate_disk/migrate.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_migrate_disk/migrate.sh",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_migrate_disk/migrate.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/db_migrate_disk/rollback.sh",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/db_migrate_disk/rollback.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_migrate_disk/rollback.sh",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_migrate_disk/rollback.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/db_migrate_disk/README.md",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/db_migrate_disk/README.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_migrate_disk/README.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_migrate_disk/README.md",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/db_backup/full_backup.sh",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/db_backup/full_backup.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_backup/full_backup.sh",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_backup/full_backup.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/db_backup/manifest.json",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/db_backup/manifest.json",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_backup/manifest.json",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_backup/manifest.json",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/db_backup/README.md",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/db_backup/README.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_backup/README.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_backup/README.md",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/db_restore/restore.sh",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/db_restore/restore.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_restore/restore.sh",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_restore/restore.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/db_restore/verify.sh",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/db_restore/verify.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_restore/verify.sh",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_restore/verify.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/db_restore/README.md",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/db_restore/README.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_restore/README.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/db_restore/README.md",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/minute_archive/compress_policy.sql",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/minute_archive/compress_policy.sql",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/minute_archive/compress_policy.sql",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/minute_archive/compress_policy.sql",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/minute_archive/archive.sh",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/minute_archive/archive.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/minute_archive/archive.sh",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/minute_archive/archive.sh",
+      "operation": "modify"
+    },
+    {
+      "path": "scripts/minute_archive/README.md",
+      "operation": "create"
+    },
+    {
+      "path": "scripts/minute_archive/README.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/minute_archive/README.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/scripts/minute_archive/README.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/05_开发实施/20_第2步实施检查点与证据清单.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/05_开发实施/20_第2步实施检查点与证据清单.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/05_开发实施/20_第2步实施检查点与证据清单.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/05_开发实施/20_第2步实施检查点与证据清单.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/05_开发实施/21_第2步数据底座实施记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/05_开发实施/21_第2步数据底座实施记录.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/05_开发实施/21_第2步数据底座实施记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/05_开发实施/21_第2步数据底座实施记录.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/06_测试验证/10_第2步数据底座验收计划.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/06_测试验证/10_第2步数据底座验收计划.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/06_测试验证/10_第2步数据底座验收计划.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/06_测试验证/10_第2步数据底座验收计划.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/06_测试验证/11_第2步数据底座验收记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/06_测试验证/11_第2步数据底座验收记录.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/06_测试验证/11_第2步数据底座验收记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/06_测试验证/11_第2步数据底座验收记录.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/07_部署上线/01_第2步部署迁盘备份恢复说明.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/07_部署上线/01_第2步部署迁盘备份恢复说明.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/07_部署上线/01_第2步部署迁盘备份恢复说明.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/07_部署上线/01_第2步部署迁盘备份恢复说明.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/00_项目管理/07_统一开发任务总表.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/00_项目管理/07_统一开发任务总表.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/07_统一开发任务总表.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/07_统一开发任务总表.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/00_项目管理/00_A股量化分析平台建设路线图.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/00_项目管理/00_A股量化分析平台建设路线图.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/00_A股量化分析平台建设路线图.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/00_A股量化分析平台建设路线图.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/00_项目管理/02_项目决策记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/00_项目管理/02_项目决策记录.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/02_项目决策记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/02_项目决策记录.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/00_项目管理/03_项目变更记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/00_项目管理/03_项目变更记录.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/03_项目变更记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/03_项目变更记录.md",
+      "operation": "modify"
+    }
+  ],
+  "code_permission_last_release_mode": "release",
+  "code_permission_release_count": 1,
+  "allowed_write_files_history": [
+    {
+      "timestamp": "2026-07-29T04:11:37.834Z",
+      "mode": "release",
+      "incoming_count": 336,
+      "previous_count": 0,
+      "total_count": 336
+    }
+  ]
+}

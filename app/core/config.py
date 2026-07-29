@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     worker_poll_seconds: float = 2.0
     worker_lease_seconds: int = 60
     scheduler_scan_seconds: float = 60.0
+    worker_lost_threshold_seconds: int = 600
+    recovery_sla_seconds: int = 900
+    query_timeout_seconds: int = 30
 
 
 @lru_cache(maxsize=1)

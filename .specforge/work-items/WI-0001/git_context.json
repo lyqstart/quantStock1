@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0001",
+  "git_enabled": true,
+  "branch_name": "feature/2-s2-001-s2-025-wi-0001",
+  "base_branch": "main",
+  "base_commit": "c93cf6ebeeb26692c7cd83899fc1ab6e9a5a8a50",
+  "branch_relationship": "primary",
+  "remote_name": null,
+  "push_policy": "not_configured",
+  "merge_policy": "requires_user_confirmation",
+  "created_at": "2026-07-29T04:11:12.729Z"
+}

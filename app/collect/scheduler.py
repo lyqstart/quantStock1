@@ -18,7 +18,7 @@ from app.core.logging import configure_logging
 from app.core.version import APP_VERSION
 from app.storage.db import get_session_factory
 from app.storage.models.meta import DataItem
-from app.storage.models.ops import DataWatermark, SchedulerState, TaskDefinition
+from app.storage.models.ops import DataWatermark, SchedulerState, TaskDefinition, WorkerRegistry
 from app.storage.models.raw import TushareTradeCal
 
 logger = logging.getLogger(__name__)
@@ -214,6 +214,40 @@ def main() -> None:
     parser.add_argument("--once", action="store_true")
     args = parser.parse_args()
     raise SystemExit(run_scheduler(once=args.once))
+
+
+def recover_lost_workers(session, *, threshold_seconds: int | None = None) -> dict[str, object]:
+    """Find workers whose heartbeat is stale and mark them LOST (DD-CORE-002).
+
+    A worker is considered LOST when ``now - heartbeat_at > worker_lost_threshold_seconds``.
+    Marked-LOST workers become eligible for task reassignment (RECOVERABLE).
+    Returns a summary dict with count and affected worker_ids.
+    """
+    settings = get_settings()
+    threshold = threshold_seconds or settings.worker_lost_threshold_seconds
+    cutoff = datetime.now(UTC) - timedelta(seconds=threshold)
+
+    stale = list(
+        session.scalars(
+            select(WorkerRegistry)
+            .where(
+                WorkerRegistry.status == "RUNNING",
+                WorkerRegistry.heartbeat_at < cutoff,
+            )
+        )
+    )
+
+    recovered_ids: list[str] = []
+    for worker in stale:
+        worker.status = "LOST"
+        worker.metadata_json = {**(worker.metadata_json or {}), "lost_at": datetime.now(UTC).isoformat(), "lost_reason": "heartbeat_timeout"}
+        recovered_ids.append(str(worker.worker_id))
+
+    return {
+        "recovered_count": len(recovered_ids),
+        "worker_ids": recovered_ids,
+        "threshold_seconds": threshold,
+    }
 
 
 if __name__ == "__main__":

@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0001",
+  "gate_id": "post_merge_gate",
+  "gate_type": "hard_gate",
+  "required": true,
+  "status": "passed",
+  "input_files": [
+    "D:\\code\\temp\\quantStock1\\.specforge\\work-items\\WI-0001\\merge_report.md"
+  ],
+  "checks": [
+    {
+      "check_id": "post_merge_report_exists",
+      "description": "merge_report.md exists",
+      "passed": true
+    },
+    {
+      "check_id": "post_merge_project_dir",
+      "description": ".specforge/project/ directory exists",
+      "passed": true
+    }
+  ],
+  "blocking_issues": [],
+  "warnings": [],
+  "waiver_allowed": false,
+  "waiver_required": false,
+  "waiver_ids": [],
+  "started_at": "2026-07-29T04:09:40.968Z",
+  "finished_at": "2026-07-29T04:09:40.968Z",
+  "runner": "gate_runner"
+}

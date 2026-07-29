@@ -48,3 +48,5 @@ from app.storage.models.clean import (
     SecurityMasterHistory,
 )
 from app.storage.models.quality import DataGap, IssueTaskLink, QualityIssue, QualityRun
+from app.storage.models.snapshot import DataSnapshot, DataSnapshotInput
+from app.storage.models.lineage import LineageEdge

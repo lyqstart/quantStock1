@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0001",
+  "gate_id": "schema_gate",
+  "gate_type": "hard_gate",
+  "required": true,
+  "status": "passed",
+  "input_files": [],
+  "checks": [
+    {
+      "check_id": "schema_work_item_json",
+      "description": "work_item.json satisfies the canonical artifact schema",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check_id": "schema_trigger_result_json",
+      "description": "trigger_result.json satisfies the canonical artifact schema",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check_id": "schema_candidate_manifest_json",
+      "description": "candidate_manifest.json satisfies the canonical artifact schema",
+      "passed": true,
+      "details": ""
+    }
+  ],
+  "blocking_issues": [],
+  "warnings": [],
+  "waiver_allowed": false,
+  "waiver_required": false,
+  "waiver_ids": [],
+  "started_at": "2026-07-29T03:51:44.503Z",
+  "finished_at": "2026-07-29T03:51:44.503Z",
+  "runner": "gate_runner"
+}

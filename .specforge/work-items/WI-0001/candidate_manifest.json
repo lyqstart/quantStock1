@@ -1,0 +1,71 @@
+{
+  "work_item_id": "WI-0001",
+  "workflow_path": "requirement_change_path",
+  "candidate_phase": "full",
+  "candidates": [
+    {
+      "type": "requirements",
+      "lint_passed": true,
+      "candidate_path": "candidates/project/modules/CORE/requirements.candidate.md",
+      "operation": "replace",
+      "target_path": ".specforge/project/modules/CORE/requirements.md",
+      "module_id": "CORE"
+    },
+    {
+      "type": "design",
+      "lint_passed": true,
+      "candidate_path": "candidates/project/modules/CORE/design.candidate.md",
+      "operation": "replace",
+      "target_path": ".specforge/project/modules/CORE/design.md",
+      "module_id": "CORE"
+    },
+    {
+      "type": "tasks",
+      "lint_passed": true,
+      "candidate_path": "candidates/tasks.md",
+      "operation": "replace"
+    },
+    {
+      "type": "trace_delta",
+      "lint_passed": true,
+      "candidate_path": "candidates/trace_delta.md",
+      "operation": "replace"
+    }
+  ],
+  "candidate_completeness": {
+    "requirements": true,
+    "design": true,
+    "tasks": true,
+    "trace_delta": true
+  },
+  "prepared_at": "2026-07-29T03:35:00Z",
+  "schema_version": "1.1",
+  "entries": [
+    {
+      "candidate_path": "candidates/project/modules/CORE/requirements.candidate.md",
+      "target_path": ".specforge/project/modules/CORE/requirements.md",
+      "operation": "replace",
+      "type": "requirements",
+      "inferred": false,
+      "normalized": true,
+      "module_id": "CORE"
+    },
+    {
+      "candidate_path": "candidates/project/modules/CORE/design.candidate.md",
+      "target_path": ".specforge/project/modules/CORE/design.md",
+      "operation": "replace",
+      "type": "design",
+      "inferred": false,
+      "normalized": true,
+      "module_id": "CORE"
+    },
+    {
+      "candidate_path": "candidates/trace_delta.md",
+      "target_path": ".specforge/project/trace_matrix.md",
+      "operation": "replace",
+      "type": "trace_delta",
+      "inferred": false,
+      "normalized": true
+    }
+  ]
+}

@@ -51,3 +51,34 @@ def build_request_hash(*, source_binding_code: str, api_name: str, request_param
         "request_params": request_params,
         "mapping_version": mapping_version,
     }))
+
+
+class ForceRerunRequired(Exception):
+    """Raised when a completed idempotency key is re-submitted without force_rerun=True (DD-CORE-004)."""
+
+
+def check_idempotency_or_force(
+    *,
+    existing_completed: bool,
+    force_rerun: bool = False,
+    idempotency_key: str | None = None,
+) -> dict[str, object]:
+    """Decide whether a task may proceed or must generate a new Run (REQ-CORE-004).
+
+    - If no prior completed run exists → proceed normally (``{"action": "proceed"}``).
+    - If a prior completed run exists and ``force_rerun=True`` → caller must create
+      a **new** CollectRun with a new idempotency key suffix
+      (``{"action": "new_run", "reason": "force_rerun"}``).
+    - If a prior completed run exists and ``force_rerun=False`` → reject
+      (raise :class:`ForceRerunRequired`).
+    """
+    if not existing_completed:
+        return {"action": "proceed"}
+
+    if force_rerun:
+        return {"action": "new_run", "reason": "force_rerun", "original_key": idempotency_key}
+
+    raise ForceRerunRequired(
+        f"idempotency key '{idempotency_key}' already completed; "
+        "pass force_rerun=True to generate a new Run"
+    )

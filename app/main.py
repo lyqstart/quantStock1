@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+from app.api.routes.data import router as data_router
 from app.api.routes.lineage import router as lineage_router
 from app.api.routes.ops import router as ops_router
 from app.api.routes.system import router as system_router
@@ -12,3 +13,4 @@ app = FastAPI(title="quantStock1", version=APP_VERSION)
 app.include_router(system_router)
 app.include_router(ops_router)
 app.include_router(lineage_router)
+app.include_router(data_router)

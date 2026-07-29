@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0001",
+  "gate_id": "trace_gate",
+  "gate_type": "soft_gate",
+  "required": true,
+  "status": "passed",
+  "input_files": [
+    "D:\\code\\temp\\quantStock1\\.specforge\\work-items\\WI-0001\\candidates\\trace_delta.md",
+    "D:\\code\\temp\\quantStock1\\.specforge\\project\\architecture.md",
+    "D:\\code\\temp\\quantStock1\\.specforge\\project\\data_model.md",
+    "D:\\code\\temp\\quantStock1\\.specforge\\project\\extension_registry.json",
+    "D:\\code\\temp\\quantStock1\\.specforge\\project\\modules\\CORE\\contracts.json",
+    "D:\\code\\temp\\quantStock1\\.specforge\\project\\modules\\CORE\\design.md",
+    "D:\\code\\temp\\quantStock1\\.specforge\\project\\modules\\CORE\\module.json",
+    "D:\\code\\temp\\quantStock1\\.specforge\\project\\modules\\CORE\\trace.md",
+    "D:\\code\\temp\\quantStock1\\.specforge\\project\\spec_manifest.json",
+    "D:\\code\\temp\\quantStock1\\.specforge\\project\\trace_matrix.md",
+    "D:\\code\\temp\\quantStock1\\.specforge\\work-items\\WI-0001\\trace_delta.md"
+  ],
+  "checks": [
+    {
+      "check_id": "governance_trace_compatibility_mode",
+      "description": "Governance Trace semantics wait for formal Project Spec migration",
+      "passed": true,
+      "severity": "info"
+    }
+  ],
+  "blocking_issues": [],
+  "warnings": [],
+  "waiver_allowed": true,
+  "waiver_required": false,
+  "waiver_ids": [],
+  "started_at": "2026-07-29T03:51:44.728Z",
+  "finished_at": "2026-07-29T03:51:44.729Z",
+  "runner": "gate_runner"
+}

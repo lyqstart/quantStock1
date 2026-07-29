@@ -1,0 +1,11 @@
+[importlinter]
+root_package = app
+verbose = 0
+
+[importlinter:contract:no-raw-in-datacontext]
+name = DataContext must not import raw models
+type = forbidden
+source_modules =
+    app.datacontext
+forbidden_modules =
+    app.storage.models.raw

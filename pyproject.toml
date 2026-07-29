@@ -23,6 +23,7 @@ dev = [
   "pytest>=8,<9",
   "httpx>=0.28,<1",
   "ruff>=0.11,<1",
+  "import-linter>=2,<3",
 ]
 
 [tool.setuptools.packages.find]
@@ -39,3 +40,20 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
+
+[tool.coverage.run]
+source = ["app"]
+omit = ["*/tests/*", "*/__pycache__/*"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+
+[tool.importlinter]
+root_packages = ["app"]
+
+[[tool.importlinter.contracts]]
+name = "DataContext must not import raw models"
+type = "forbidden"
+source_modules = ["app.datacontext"]
+forbidden_modules = ["app.storage.models.raw"]

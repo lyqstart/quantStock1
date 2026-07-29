@@ -1,0 +1,6 @@
+{
+  "backup_format": "pg_dump custom",
+  "retention_count": 7,
+  "checksum_algorithm": "sha256",
+  "include_timescaledb": true
+}

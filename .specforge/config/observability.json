@@ -1,0 +1,35 @@
+{
+  "enabled": true,
+  "level": "replay",
+  "capture_plugin_events": true,
+  "capture_tool_calls": true,
+  "capture_tool_context": true,
+  "capture_raw_context": true,
+  "capture_daemon_rpc": true,
+  "capture_handler_io": true,
+  "capture_state_snapshots": true,
+  "capture_artifact_io": true,
+  "capture_gate_inputs": true,
+  "capture_hardstop": true,
+  "capture_payload": true,
+  "redact_secrets": true,
+  "max_inline_payload_bytes": 0,
+  "payload_storage": "file",
+  "capture_raw_context_full": false,
+  "capture_raw_context_summary": true,
+  "record_event_payload": false,
+  "ignored_events": [
+    "message.part.updated",
+    "message.updated",
+    "session.updated",
+    "session.status",
+    "session.diff"
+  ],
+  "summary_events": [
+    "message.part.delta",
+    "experimental.chat.messages.transform",
+    "experimental.chat.system.transform",
+    "chat.params",
+    "chat.headers"
+  ]
+}

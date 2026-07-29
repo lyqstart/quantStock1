@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0001",
+  "gate_id": "contract_integrity_gate",
+  "gate_type": "hard_gate",
+  "required": true,
+  "status": "passed",
+  "input_files": [
+    "D:\\code\\temp\\quantStock1\\.specforge\\work-items\\WI-0001\\candidate_manifest.json"
+  ],
+  "checks": [
+    {
+      "check_id": "contract_registry_not_targeted",
+      "description": "No extension_registry candidate; Project Contract delta check is not applicable",
+      "passed": true
+    }
+  ],
+  "blocking_issues": [],
+  "warnings": [],
+  "waiver_allowed": false,
+  "waiver_required": false,
+  "waiver_ids": [],
+  "started_at": "2026-07-29T03:51:44.546Z",
+  "finished_at": "2026-07-29T03:51:44.546Z",
+  "runner": "gate_runner"
+}

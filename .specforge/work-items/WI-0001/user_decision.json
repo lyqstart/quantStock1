@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "decision_id": "UD-WI-0001-1785298172978",
+  "work_item_id": "WI-0001",
+  "workflow_path": "requirement_change_path",
+  "base_spec_version": "PSV-0001",
+  "candidate_manifest_path": "candidate_manifest.json",
+  "manifest_hash": "sha256:6295ea33ad4b303523e796e6e60649dd33b9d89f74bbd21f153256da7a5d66ce",
+  "candidate_hash": "sha256:b857bab204a122736ec72f00e8273ae66b12d96f9d59aece3841c1b15f8dfe13",
+  "gate_summary_path": "gate_summary.md",
+  "gate_summary_hash": "sha256:71a14e3c7dea637df7dcc48e2ab3918ed7c693e43ae3ef7248b7b18d8055b6ca",
+  "decision_status": "approved",
+  "decision_type": "user_approved",
+  "decided_by": "user",
+  "decided_at": "2026-07-29T04:09:32.978Z",
+  "decision_scope": "full",
+  "waivers": [],
+  "recorded_by": "sf-orchestrator",
+  "recorder_role": "user_decision_recorder",
+  "recorded_at": "2026-07-29T04:09:32.980Z",
+  "user_response_quote": "批准。立即合并候选并进入实现阶段，连续完成 C2、C3、C4、C5，不要在各检查点之间再次等待确认。"
+}

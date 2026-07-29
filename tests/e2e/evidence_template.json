@@ -1,0 +1,14 @@
+{
+  "test_case_id": "",
+  "linked_s2_task": "",
+  "environment": "server-test",
+  "git_commit": "",
+  "image_digest": "",
+  "migration_version": "0015",
+  "data_range": "",
+  "command": "",
+  "expected": "",
+  "actual": "",
+  "log_path": "",
+  "conclusion": "BLOCKED"
+}

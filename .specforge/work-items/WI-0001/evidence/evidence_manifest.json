@@ -1,0 +1,402 @@
+{
+  "schema_version": "1.1",
+  "work_item_id": "WI-0001",
+  "entries": [
+    {
+      "id": "EV-001",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "file_snapshot",
+      "supports": [
+        "REQ-CORE-013",
+        "REQ-CORE-019",
+        "REQ-CORE-020",
+        "TASK-WI-0001-001",
+        "TASK-WI-0001-002",
+        "TASK-WI-0001-003"
+      ],
+      "artifact_type": "file_snapshot",
+      "description": "Migration chain structural integrity: revision/down_revision verified via grep on migrations/versions/001[2345]_*.py. Chain: 0012_p4_minute_governance -> 0013_lineage_and_snapshot -> 0014_clean_published_at_financial_dataitem -> 0015_audit_runcheck_datagap_rawevidence. All 4 files exist with correct down_revision and upgrade/downgrade functions.",
+      "collected_by": "sf-verifier",
+      "timestamp": "2026-07-29T05:05:00Z",
+      "location": "migrations/versions/0013_lineage_and_snapshot.py, 0014_*.py, 0015_*.py",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-013",
+          "REQ-CORE-019",
+          "REQ-CORE-020"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-001",
+          "TASK-WI-0001-002",
+          "TASK-WI-0001-003"
+        ]
+      }
+    },
+    {
+      "id": "EV-002",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "file_snapshot",
+      "supports": [
+        "REQ-CORE-013",
+        "REQ-CORE-019",
+        "REQ-CORE-020",
+        "DD-CORE-011",
+        "DD-CORE-015"
+      ],
+      "artifact_type": "command_output",
+      "description": "Migration 0013 DDL pattern verification (grep): lineage schema + lineage.lineage_edge table (source/target/type indexes), clean.data_snapshot (status CHECK BUILDING/READY/INVALIDATED, content_fingerprint, supersedes_snapshot_id self-FK), clean.data_snapshot_input (UNIQUE snapshot_id+clean_batch_id), READY-immutability trigger trg_data_snapshot_no_modify_ready via prevent_snapshot_modification().",
+      "collected_by": "sf-verifier",
+      "timestamp": "2026-07-29T05:06:00Z",
+      "location": "migrations/versions/0013_lineage_and_snapshot.py (lines 19-128)",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-013",
+          "REQ-CORE-019",
+          "REQ-CORE-020"
+        ]
+      }
+    },
+    {
+      "id": "EV-003",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "file_snapshot",
+      "supports": [
+        "REQ-CORE-001",
+        "REQ-CORE-006",
+        "REQ-CORE-008",
+        "REQ-CORE-022",
+        "DD-CORE-001",
+        "DD-CORE-006",
+        "DD-CORE-008"
+      ],
+      "artifact_type": "command_output",
+      "description": "Migration 0014 DDL pattern verification (grep): _published_at TIMESTAMPTZ NOT NULL DEFAULT now() on CLEAN typed tables; clean.financial_income + clean.financial_indicator multi-version tables with partial unique index WHERE is_current=true; meta.data_item.quality_policy_ref VARCHAR(64) + 10 DataItem seed UPDATEs.",
+      "collected_by": "sf-verifier",
+      "timestamp": "2026-07-29T05:06:00Z",
+      "location": "migrations/versions/0014_clean_published_at_financial_dataitem.py (lines 45-210)",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-001",
+          "REQ-CORE-006",
+          "REQ-CORE-008",
+          "REQ-CORE-022"
+        ]
+      }
+    },
+    {
+      "id": "EV-004",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "file_snapshot",
+      "supports": [
+        "REQ-CORE-003",
+        "REQ-CORE-005",
+        "REQ-CORE-012",
+        "REQ-CORE-014",
+        "REQ-CORE-015",
+        "DD-CORE-003",
+        "DD-CORE-005",
+        "DD-CORE-010",
+        "DD-CORE-012",
+        "DD-CORE-013"
+      ],
+      "artifact_type": "command_output",
+      "description": "Migration 0015 DDL pattern verification (grep): ck_collect_task_run_type CHECK(run_type IN INITIALIZE/INCREMENTAL/BACKFILL/REPAIR/RETRY) with historical fix-up; audit.prevent_audit_event_modification() append-only trigger trg_audit_event_append_only; quality.data_gap pre_backfill_count/post_backfill_count/checksum_verified; raw.raw_batch content_hash/fetched_at/schema_fingerprint.",
+      "collected_by": "sf-verifier",
+      "timestamp": "2026-07-29T05:06:00Z",
+      "location": "migrations/versions/0015_audit_runcheck_datagap_rawevidence.py (lines 47-175)",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-003",
+          "REQ-CORE-005",
+          "REQ-CORE-012",
+          "REQ-CORE-014",
+          "REQ-CORE-015"
+        ]
+      }
+    },
+    {
+      "id": "EV-005",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "behavioral",
+      "supports": [
+        "REQ-CORE-016",
+        "DD-CORE-014",
+        "TASK-WI-0001-007"
+      ],
+      "artifact_type": "command_output",
+      "description": "DataContext RAW-isolation boundary: grep for raw model imports across app/datacontext/** returned 0 matches. DataContext does not import raw schema. 12 module files confirmed present.",
+      "collected_by": "sf-verifier",
+      "timestamp": "2026-07-29T05:07:00Z",
+      "location": "app/datacontext/ (12 .py files)",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-016"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-007"
+        ]
+      }
+    },
+    {
+      "id": "EV-006",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "file_snapshot",
+      "supports": [
+        "REQ-CORE-029",
+        "REQ-CORE-030",
+        "REQ-CORE-031",
+        "REQ-CORE-032",
+        "REQ-CORE-033",
+        "DD-CORE-018",
+        "DD-CORE-019",
+        "DD-CORE-020"
+      ],
+      "artifact_type": "file_snapshot",
+      "description": "All C4/C5 deliverable files confirmed via glob: compose.test.yml; scripts/db_migrate_disk/{precheck,migrate,rollback}.sh + README; scripts/db_backup/{full_backup.sh,manifest.json,README}; scripts/db_restore/{restore.sh,verify.sh,README}; scripts/minute_archive/{compress_policy.sql,archive.sh,README}. WAITING_USER_EXECUTION artifacts.",
+      "collected_by": "sf-verifier",
+      "timestamp": "2026-07-29T05:07:00Z",
+      "location": "compose.test.yml, scripts/db_migrate_disk/, scripts/db_backup/, scripts/db_restore/, scripts/minute_archive/",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-029",
+          "REQ-CORE-030",
+          "REQ-CORE-031",
+          "REQ-CORE-032",
+          "REQ-CORE-033"
+        ]
+      }
+    },
+    {
+      "id": "EV-007",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "file_snapshot",
+      "supports": [
+        "REQ-CORE-034",
+        "REQ-CORE-035",
+        "DD-CORE-021"
+      ],
+      "artifact_type": "file_snapshot",
+      "description": "Test suite structure verified: 10 test categories present via glob - tests/integration (10), lineage (1), idempotency (1), anti_lookahead (6), contract (1), backup_restore (2), fault_recovery (2), alembic (2), e2e (matrix+conftest), conftest. NOTE: REQ-CORE-034 hard constraint #2 requires real PG - structure exists but 12 DB cases skipped.",
+      "collected_by": "sf-verifier",
+      "timestamp": "2026-07-29T05:08:00Z",
+      "location": "tests/ (29 new WI-0001 files + P4 tests)",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-034",
+          "REQ-CORE-035"
+        ]
+      }
+    },
+    {
+      "id": "EV-008",
+      "status": "passed",
+      "level": "L3",
+      "evidence_type": "test_output",
+      "supports": [
+        "REQ-CORE-002",
+        "REQ-CORE-004",
+        "REQ-CORE-007",
+        "REQ-CORE-009",
+        "REQ-CORE-010",
+        "REQ-CORE-011",
+        "REQ-CORE-014",
+        "REQ-CORE-016",
+        "REQ-CORE-017",
+        "REQ-CORE-018",
+        "REQ-CORE-021",
+        "REQ-CORE-022",
+        "REQ-CORE-023",
+        "REQ-CORE-024",
+        "REQ-CORE-025",
+        "REQ-CORE-026"
+      ],
+      "artifact_type": "test_output",
+      "description": "Executor-reported pytest: WI-0001 suites 186 passed, 12 skipped (@skip_no_pg), 0 failed, exit 0. Non-PG tests cover state machine(12), idempotency(10), quality gate(3), DataGap partial(5), lineage partial(5), anti-lookahead 6 scenarios(16), API contract(8), DataContext partial(2), snapshot partial(5), backup checksum(5), restore verify(5), server-test isolation(4), migrate precheck(5), alembic empty(9), E2E 10x8(80). P4 regression: 12 passed 0 failed.",
+      "collected_by": "sf-executor (prior run, attributed)",
+      "timestamp": "2026-07-29T04:30:00Z",
+      "location": "executor run output (pytest --tb=short -q)",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-002",
+          "REQ-CORE-004",
+          "REQ-CORE-007",
+          "REQ-CORE-009",
+          "REQ-CORE-010",
+          "REQ-CORE-011",
+          "REQ-CORE-014",
+          "REQ-CORE-016",
+          "REQ-CORE-017",
+          "REQ-CORE-018",
+          "REQ-CORE-021",
+          "REQ-CORE-022",
+          "REQ-CORE-023",
+          "REQ-CORE-024",
+          "REQ-CORE-025",
+          "REQ-CORE-026"
+        ]
+      }
+    },
+    {
+      "id": "EV-009",
+      "status": "passed",
+      "level": "L3",
+      "evidence_type": "test_output",
+      "supports": [
+        "REQ-CORE-002",
+        "REQ-CORE-004"
+      ],
+      "artifact_type": "test_output",
+      "description": "Executor-reported P4 regression: 7 pre-existing test files = 12 passed, 0 failed, exit 0. No regression in pre-existing functionality.",
+      "collected_by": "sf-executor (prior run, attributed)",
+      "timestamp": "2026-07-29T04:32:00Z",
+      "location": "executor run output",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-002",
+          "REQ-CORE-004"
+        ]
+      }
+    },
+    {
+      "id": "EV-010",
+      "status": "passed",
+      "level": "L2",
+      "evidence_type": "test_output",
+      "supports": [
+        "TASK-WI-0001-001",
+        "TASK-WI-0001-002",
+        "TASK-WI-0001-003",
+        "TASK-WI-0001-004",
+        "TASK-WI-0001-005",
+        "TASK-WI-0001-007",
+        "TASK-WI-0001-008",
+        "TASK-WI-0001-009",
+        "TASK-WI-0001-010"
+      ],
+      "artifact_type": "command_output",
+      "description": "Executor-reported py_compile: 26 implementation + 29 test .py files (55 total) all pass, exit 0. No syntax errors in deliverables.",
+      "collected_by": "sf-executor (prior run, attributed)",
+      "timestamp": "2026-07-29T04:33:00Z",
+      "location": "executor run output (py_compile x55)",
+      "related_refs": {
+        "task_ids": [
+          "TASK-WI-0001-001",
+          "TASK-WI-0001-002",
+          "TASK-WI-0001-003",
+          "TASK-WI-0001-004",
+          "TASK-WI-0001-005",
+          "TASK-WI-0001-007",
+          "TASK-WI-0001-008",
+          "TASK-WI-0001-009",
+          "TASK-WI-0001-010"
+        ]
+      }
+    },
+    {
+      "id": "EV-011",
+      "status": "passed",
+      "level": "L2",
+      "evidence_type": "command_output",
+      "supports": [
+        "TASK-WI-0001-001",
+        "TASK-WI-0001-019"
+      ],
+      "artifact_type": "log",
+      "description": "Changed files audit (sf_changed_files_audit): PASS. 0 unresolved violations. 1 historical blocked write resolved via hard_stop_resolution (prohibited_action_replaced). All changed files within allowed_write_files scope.",
+      "collected_by": "sf-verifier",
+      "timestamp": "2026-07-29T05:09:00Z",
+      "location": ".specforge/work-items/WI-0001/changed_files_audit.md",
+      "related_refs": {
+        "task_ids": [
+          "TASK-WI-0001-001",
+          "TASK-WI-0001-019"
+        ]
+      }
+    },
+    {
+      "id": "EV-012",
+      "status": "blocked",
+      "level": "L4",
+      "evidence_type": "integration",
+      "supports": [
+        "REQ-CORE-003",
+        "REQ-CORE-005",
+        "REQ-CORE-006",
+        "REQ-CORE-008",
+        "REQ-CORE-012",
+        "REQ-CORE-013",
+        "REQ-CORE-015",
+        "REQ-CORE-019",
+        "REQ-CORE-020",
+        "REQ-CORE-028",
+        "REQ-CORE-034"
+      ],
+      "artifact_type": "command_output",
+      "description": "BLOCKED: alembic upgrade head (0012->0015) on real PostgreSQL 16 + TimescaleDB 2.28.3. Status WAITING_USER_EXECUTION. Requires server-test (compose.test.yml, port 15432). Without this, trigger behavior, CHECK enforcement, financial multi-version insert, DataGap VERIFIED, lineage recursive query, EXPLAIN no-seqscan cannot be runtime-verified.",
+      "collected_by": "sf-verifier",
+      "timestamp": "2026-07-29T05:09:00Z",
+      "location": "N/A (not executed)",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-003",
+          "REQ-CORE-005",
+          "REQ-CORE-006",
+          "REQ-CORE-008",
+          "REQ-CORE-012",
+          "REQ-CORE-013",
+          "REQ-CORE-015",
+          "REQ-CORE-019",
+          "REQ-CORE-020",
+          "REQ-CORE-028",
+          "REQ-CORE-034"
+        ]
+      }
+    },
+    {
+      "id": "EV-013",
+      "status": "blocked",
+      "level": "L4",
+      "evidence_type": "integration",
+      "supports": [
+        "REQ-CORE-005",
+        "REQ-CORE-006",
+        "REQ-CORE-012",
+        "REQ-CORE-013",
+        "REQ-CORE-017",
+        "REQ-CORE-019",
+        "REQ-CORE-020",
+        "REQ-CORE-027",
+        "REQ-CORE-028",
+        "REQ-CORE-034",
+        "REQ-CORE-035"
+      ],
+      "artifact_type": "test_output",
+      "description": "BLOCKED: 12 DB-dependent pytest cases skipped via @skip_no_pg. Cover RAW evidence(5), CLEAN versioning(4), DataGap VERIFIED(1), lineage perf(1), API 504(1), ops EXPLAIN(3), DataContext full-market(1), snapshot immutability(3), perf(2), alembic existing-upgrade(1). REQ-CORE-034 hard constraint #2 mandates real PG. Must run in server-test before pass.",
+      "collected_by": "sf-verifier",
+      "timestamp": "2026-07-29T05:09:00Z",
+      "location": "N/A (12 tests skipped)",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-005",
+          "REQ-CORE-006",
+          "REQ-CORE-012",
+          "REQ-CORE-013",
+          "REQ-CORE-017",
+          "REQ-CORE-019",
+          "REQ-CORE-020",
+          "REQ-CORE-027",
+          "REQ-CORE-028",
+          "REQ-CORE-034",
+          "REQ-CORE-035"
+        ]
+      }
+    }
+  ]
+}

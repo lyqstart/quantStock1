@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0001",
+  "triggered_at": "2026-07-29T03:31:33Z",
+  "classification": {
+    "requirement_changed": true,
+    "acceptance_criteria_changed": true,
+    "business_rule_changed": true,
+    "data_semantics_changed": true,
+    "user_visible_behavior_changed": true,
+    "api_contract_changed": true,
+    "design_changed": true,
+    "module_boundary_changed": false,
+    "architecture_changed": false,
+    "contract_registry_only": false,
+    "data_migration_needed": true,
+    "code_change_needed": true,
+    "unknowns": []
+  },
+  "selected_workflow": {
+    "workflow_type": "feature_spec",
+    "workflow_path": "requirement_change_path",
+    "selection_reason": "需求、设计、数据语义和 API 契约均发生变化",
+    "workflow_skill": "sf-workflow-feature-spec"
+  },
+  "impact_scope": {
+    "modules_affected": [
+      "CORE"
+    ],
+    "new_submodules": [
+      "app/datacontext",
+      "app/api/routes/data"
+    ],
+    "new_database_objects": [
+      "lineage.lineage_edge",
+      "clean.data_snapshot"
+    ],
+    "new_migrations_needed": 2,
+    "new_tests_needed": 8,
+    "new_scripts_needed": 4
+  },
+  "data_item_scope": [
+    "trade_calendar",
+    "stock_basic",
+    "stock_daily",
+    "stock_adj_factor",
+    "stock_daily_basic",
+    "stock_suspend",
+    "stock_limit_price",
+    "stock_minute",
+    "financial_income",
+    "financial_indicator"
+  ],
+  "constraints": {
+    "no_celery_redis_kafka_k8s": true,
+    "api_no_long_tasks": true,
+    "datacontext_no_raw": true,
+    "no_legacy_online_dependency": true,
+    "no_modify_history_migrations": true,
+    "no_commit_push": true,
+    "no_auto_stable_ops": true,
+    "no_expand_full_market_minute": true,
+    "real_db_verification_required": true
+  },
+  "workflow_path": "requirement_change_path",
+  "workflow_type": "feature_spec",
+  "status": "triggered"
+}
