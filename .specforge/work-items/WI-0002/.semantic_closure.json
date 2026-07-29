@@ -1,0 +1,158 @@
+{
+  "closure_profile": "quick_change",
+  "design_decisions": [
+    {
+      "description": "采用 quick_change / code_only_fast_path 工作流承载文档收尾：candidate_manifest.entries=[]，merge_report.status=not_applicable；写入范围限定8个docs文件；业务代码基线固化为d40ca76；stable部署命令保持WAITING_USER_EXECUTION；不改业务代码绕过SpecForge工具缺陷。这是处理方式决策，非新增系统设计。",
+      "id": "DD-WI-0002-1",
+      "requirement_refs": [
+        "REQ-WI-0002-1"
+      ],
+      "task_refs": [
+        "TASK-WI-0002-001",
+        "TASK-WI-0002-002"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "description": "8个docs文件已按真实验收事实更新：含d40ca76、DEC-031~034、290 passed、0015_audit_gap_rawev、SEMANTIC_CLOSURE_INPUT_STALE、CHG-015、第3步（P6—P8）待开始、C1-C5表内全PASS、三行验证状态PASS、server-test、S2-025 DONE、V2.2等关键事实点",
+      "evidence_type": "behavioral",
+      "id": "EV-1",
+      "level": "L3",
+      "outcome_refs": [
+        "OUT-1"
+      ],
+      "requirement_refs": [
+        "REQ-WI-0002-1"
+      ],
+      "status": "passed",
+      "supports": [
+        "OUT-1",
+        "REQ-WI-0002-1"
+      ],
+      "task_refs": [
+        "TASK-WI-0002-001",
+        "TASK-WI-0002-002"
+      ]
+    },
+    {
+      "description": "sf_changed_files_audit无越界写入：out_of_scope=0, blocked_write_attempts=0, violations=[], side_effects=0；纯文档登记未触碰业务代码/迁移/测试/脚本/配置/.specforge/main",
+      "evidence_type": "behavioral",
+      "id": "EV-2",
+      "level": "L3",
+      "outcome_refs": [
+        "OUT-1"
+      ],
+      "requirement_refs": [
+        "REQ-WI-0002-1"
+      ],
+      "status": "passed",
+      "supports": [
+        "OUT-1",
+        "REQ-WI-0002-1"
+      ],
+      "task_refs": [
+        "TASK-WI-0002-001",
+        "TASK-WI-0002-002"
+      ]
+    }
+  ],
+  "outcomes": [
+    {
+      "description": "第2步数据底座文档收尾完成：8 个 docs 文件按真实验收事实更新，登记决策/变更记录，S2-001—S2-025标记完成，路线图推进至第3步，且不触碰业务代码/stable/server-test/main，WI-0001保持verification_done",
+      "id": "OUT-1",
+      "requirement_refs": [
+        "REQ-WI-0002-1"
+      ],
+      "required_evidence_refs": [
+        "EV-1",
+        "EV-2"
+      ]
+    }
+  ],
+  "project_integration": {
+    "refs": [],
+    "required": true,
+    "status": "not_applicable"
+  },
+  "requirements": [
+    {
+      "description": "把第2步P3—P5数据底座在server-test的真实验收结论（290 passed/0 failed/0 skipped；PostgreSQL 16.14 + TimescaleDB 2.28.3；Alembic head=0015_audit_gap_rawev；迁移升降级、备份SHA256、独立库恢复全部通过）登记到项目决策记录、变更记录、实施记录、验收记录、部署说明、任务总表和路线图，使文档与真实结论一致；同时登记WI-0001因SpecForge close_gate工具缺陷停在verification_done的决策（不视为quantStock1未通过，SpecForge缺陷单独修复）；只修改8个docs文件，不修改任何业务代码、迁移、测试、脚本、配置，不修改stable/server-test/main。",
+      "design_refs": [
+        "DD-WI-0002-1"
+      ],
+      "id": "REQ-WI-0002-1",
+      "outcome_refs": [
+        "OUT-1"
+      ],
+      "requirement_type": "documentation_registration",
+      "required_evidence_refs": [
+        "EV-1"
+      ],
+      "task_refs": [
+        "TASK-WI-0002-001",
+        "TASK-WI-0002-002"
+      ],
+      "type": "MUST"
+    }
+  ],
+  "schema_version": "1.0",
+  "tasks": [
+    {
+      "description": "登记决策与变更记录（DEC-031~034、CHG-015、基线d40ca76、第3步待开始）",
+      "design_refs": [
+        "DD-WI-0002-1"
+      ],
+      "evidence_refs": [
+        "EV-1"
+      ],
+      "id": "TASK-WI-0002-001",
+      "requirement_refs": [
+        "REQ-WI-0002-1"
+      ]
+    },
+    {
+      "description": "更新文档状态与路线图收尾（C1-C5 PASS、三行验证PASS、server-test、S2-025 DONE、V2.2、第3步待开始）",
+      "design_refs": [
+        "DD-WI-0002-1"
+      ],
+      "evidence_refs": [
+        "EV-1"
+      ],
+      "id": "TASK-WI-0002-002",
+      "requirement_refs": [
+        "REQ-WI-0002-1"
+      ]
+    }
+  ],
+  "work_item_id": "WI-0002",
+  "workflow_type": "quick_change",
+  "provenance": {
+    "contract_id": "semantic-closure/v1",
+    "generated_at": "2026-07-29T13:02:55.500Z",
+    "source": "tool_argument",
+    "semantic_payload_sha256": "sha256:7768d6ed705b729b0b87599a3b0ae5f818d522dcbc6750289f1bff03b2c4fb1e",
+    "inputs": [
+      {
+        "path": "trace_delta.md",
+        "sha256": "sha256:5783471a33cfac1aed1f198daad248d0cb5880c1493ec92779d41c0875234036"
+      },
+      {
+        "path": "verification_report.md",
+        "sha256": "sha256:b5104cd792f4eae3b81499deb1abbdc281e7d68dda1574e8b7cf30fdb0a35e57"
+      },
+      {
+        "path": "evidence/evidence_manifest.json",
+        "sha256": "sha256:c703b622b9eb114ca915c8af44fa31acac2a7544f1907d928cdfc3212af10ed5"
+      },
+      {
+        "path": "merge_report.md",
+        "sha256": "sha256:bab0cb43254833682f3c42f2a13ec2bc7bd374aa42618a40fd65211ffe50e5ef"
+      },
+      {
+        "path": "changed_files_audit.md",
+        "sha256": "sha256:8504b2e60f666d20041a57aeef3920db017e223a138e8ecb5812e8637e81189e"
+      }
+    ]
+  }
+}

@@ -1,44 +1,26 @@
 # Changed Files Audit
 
-Work Item: WI-0001
-Command: N/A
-Timestamp: 2026-07-29T04:36:36.330Z
-Data Source: none
-Policy Source: hard_stop_resolution.jsonl (1) + write_guard_authorizations.jsonl (0)
+- Work Item: WI-0001
+- Timestamp: 2026-07-29T10:24:23.838Z
+- Status: PASSED
+- Data Source: write_guard_log.jsonl (26 entries, 8 allowed writes, refreshed after operation normalization, allowed_write_files_snapshot + factual allowed writes)
+- Ignored Runtime Files: 0
 
-## Result: PASS
+## Summary
 
-- Total files: 0
-- In scope: 0
+- Total files: 8
+- In scope: 8
 - Out of scope: 0
-- Violations: 0
-- Remote ops entries: 0
-- Blocked write attempts: 1
-- Historical/resolved blocked write attempts: 1
-- Authorization-resolved blocked write attempts: 0
-- Unresolved blocked write attempts: 0
-
-## Remote Ops Entries
-
-None.
-
-## Blocked Write Attempts
-
-- Total blocked write attempts: 1
-- Historical/resolved: 1
-- Authorization-resolved: 0
-- Unresolved: 0
-- Hard stop resolutions: 1
-- Project-level write_guard authorizations: 0
-
-### Historical / Resolved Blocked Writes
-
-- [modify] .specforge/work-items/WI-0001/ → hard_stop_resolution_resolved (Blocked attempt has a structured hard_stop_resolution.jsonl entry with resolution_type=prohibited_action_replaced. The blocked attempt remains visible, but is not an unresolved audit violation.)
-
-### Unresolved Blocked Writes
-
-None.
+- Spec writes: 0
+- Side effects: 0
 
 ## Entries
 
-No project file changes detected.
+- [modify] D:/code/temp/quantStock1/tests/anti_lookahead/test_backtest_mode.py -> in_scope
+- [modify] D:/code/temp/quantStock1/tests/anti_lookahead/test_available_at_injection.py -> in_scope
+- [modify] D:/code/temp/quantStock1/tests/anti_lookahead/test_published_available_separation.py -> in_scope
+- [modify] D:/code/temp/quantStock1/app/lineage/service.py -> in_scope
+- [modify] D:/code/temp/quantStock1/tests/anti_lookahead/test_historical_status.py -> in_scope
+- [modify] D:/code/temp/quantStock1/tests/e2e/test_dataitem_matrix.py -> in_scope
+- [modify] D:/code/temp/quantStock1/tests/anti_lookahead/test_adjustment_factor_timepoint.py -> in_scope
+- [modify] D:/code/temp/quantStock1/tests/fault_recovery/test_migrate_precheck.py -> in_scope

@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-29T04:11:37.846Z",
+  "timestamp": "2026-07-29T09:41:25.289Z",
   "root": "D:\\code\\temp\\quantStock1",
   "files": [
     {
@@ -13,14 +13,49 @@
       "mtimeMs": 1785125930000
     },
     {
+      "path": ".env.test.example",
+      "size": 191,
+      "mtimeMs": 1785298689986.9624
+    },
+    {
       "path": ".gitignore",
       "size": 173,
       "mtimeMs": 1785118874000
     },
     {
+      "path": ".importlinter",
+      "size": 240,
+      "mtimeMs": 1785298923528.7888
+    },
+    {
+      "path": ".pytest_cache/.gitignore",
+      "size": 39,
+      "mtimeMs": 1785299842728.291
+    },
+    {
+      "path": ".pytest_cache/CACHEDIR.TAG",
+      "size": 191,
+      "mtimeMs": 1785299842728.291
+    },
+    {
+      "path": ".pytest_cache/README.md",
+      "size": 310,
+      "mtimeMs": 1785299842728.291
+    },
+    {
+      "path": ".pytest_cache/v/cache/lastfailed",
+      "size": 236,
+      "mtimeMs": 1785317821494.1658
+    },
+    {
+      "path": ".pytest_cache/v/cache/nodeids",
+      "size": 28657,
+      "mtimeMs": 1785317911556.106
+    },
+    {
       "path": ".specforge/.gitignore",
       "size": 39,
-      "mtimeMs": 1785295997146.286
+      "mtimeMs": 1785315158424.4558
     },
     {
       "path": ".specforge/config/observability.json",
@@ -128,6 +163,11 @@
       "mtimeMs": 1785118874000
     },
     {
+      "path": "app/api/routes/data.py",
+      "size": 12296,
+      "mtimeMs": 1785316899883.391
+    },
+    {
       "path": "app/api/routes/lineage.py",
       "size": 1844,
       "mtimeMs": 1785174490000
@@ -148,9 +188,49 @@
       "mtimeMs": 1785118874000
     },
     {
+      "path": "app/api/routes/__pycache__/data.cpython-313.pyc",
+      "size": 13851,
+      "mtimeMs": 1785316992919.3518
+    },
+    {
+      "path": "app/api/routes/__pycache__/lineage.cpython-313.pyc",
+      "size": 2263,
+      "mtimeMs": 1785299906569.8877
+    },
+    {
+      "path": "app/api/routes/__pycache__/ops.cpython-313.pyc",
+      "size": 9664,
+      "mtimeMs": 1785299996800.6543
+    },
+    {
+      "path": "app/api/routes/__pycache__/system.cpython-313.pyc",
+      "size": 1624,
+      "mtimeMs": 1785299996825.1296
+    },
+    {
+      "path": "app/api/routes/__pycache__/__init__.cpython-313.pyc",
+      "size": 148,
+      "mtimeMs": 1785299639300.3582
+    },
+    {
+      "path": "app/api/schemas/data.py",
+      "size": 2223,
+      "mtimeMs": 1785299012184.3877
+    },
+    {
+      "path": "app/api/schemas/__pycache__/data.cpython-313.pyc",
+      "size": 3973,
+      "mtimeMs": 1785299776681.9941
+    },
+    {
       "path": "app/api/__init__.py",
       "size": 0,
       "mtimeMs": 1785118874000
+    },
+    {
+      "path": "app/api/__pycache__/__init__.cpython-313.pyc",
+      "size": 141,
+      "mtimeMs": 1785299639299.3462
     },
     {
       "path": "app/audit/__init__.py",
@@ -159,13 +239,23 @@
     },
     {
       "path": "app/catalog/bootstrap.py",
-      "size": 1603,
-      "mtimeMs": 1785118874000
+      "size": 2769,
+      "mtimeMs": 1785299217133.392
     },
     {
       "path": "app/catalog/__init__.py",
       "size": 0,
       "mtimeMs": 1785118874000
+    },
+    {
+      "path": "app/catalog/__pycache__/bootstrap.cpython-313.pyc",
+      "size": 3700,
+      "mtimeMs": 1785299776661.0862
+    },
+    {
+      "path": "app/catalog/__pycache__/__init__.cpython-313.pyc",
+      "size": 145,
+      "mtimeMs": 1785299248135.4954
     },
     {
       "path": "app/cli.py",
@@ -179,8 +269,8 @@
     },
     {
       "path": "app/collect/idempotency.py",
-      "size": 1597,
-      "mtimeMs": 1785118874000
+      "size": 2757,
+      "mtimeMs": 1785299219765.3943
     },
     {
       "path": "app/collect/market_data_service.py",
@@ -223,6 +313,41 @@
       "mtimeMs": 1785120282000
     },
     {
+      "path": "app/collect/planners/__pycache__/financial.cpython-313.pyc",
+      "size": 1576,
+      "mtimeMs": 1785299247553.9885
+    },
+    {
+      "path": "app/collect/planners/__pycache__/stock_basic.cpython-313.pyc",
+      "size": 1432,
+      "mtimeMs": 1785299247549.9773
+    },
+    {
+      "path": "app/collect/planners/__pycache__/stock_daily.cpython-313.pyc",
+      "size": 1345,
+      "mtimeMs": 1785299906812.0842
+    },
+    {
+      "path": "app/collect/planners/__pycache__/stock_minute.cpython-313.pyc",
+      "size": 1818,
+      "mtimeMs": 1785299247551.9868
+    },
+    {
+      "path": "app/collect/planners/__pycache__/trade_calendar.cpython-313.pyc",
+      "size": 2274,
+      "mtimeMs": 1785299906833.9512
+    },
+    {
+      "path": "app/collect/planners/__pycache__/trade_date_item.cpython-313.pyc",
+      "size": 1720,
+      "mtimeMs": 1785299247555.998
+    },
+    {
+      "path": "app/collect/planners/__pycache__/__init__.cpython-313.pyc",
+      "size": 154,
+      "mtimeMs": 1785299247548.3015
+    },
+    {
       "path": "app/collect/rate_limit.py",
       "size": 1315,
       "mtimeMs": 1785120282000
@@ -234,8 +359,8 @@
     },
     {
       "path": "app/collect/scheduler.py",
-      "size": 7815,
-      "mtimeMs": 1785132422000
+      "size": 9083,
+      "mtimeMs": 1785299229979.162
     },
     {
       "path": "app/collect/scheduler_lock.py",
@@ -263,9 +388,59 @@
       "mtimeMs": 1785118874000
     },
     {
+      "path": "app/collect/__pycache__/executor.cpython-313.pyc",
+      "size": 24100,
+      "mtimeMs": 1785299906613.3103
+    },
+    {
+      "path": "app/collect/__pycache__/idempotency.cpython-313.pyc",
+      "size": 4007,
+      "mtimeMs": 1785299776662.5059
+    },
+    {
+      "path": "app/collect/__pycache__/market_data_service.cpython-313.pyc",
+      "size": 12015,
+      "mtimeMs": 1785299247461.6516
+    },
+    {
+      "path": "app/collect/__pycache__/rate_limit.cpython-313.pyc",
+      "size": 2260,
+      "mtimeMs": 1785299906614.3955
+    },
+    {
+      "path": "app/collect/__pycache__/repository.cpython-313.pyc",
+      "size": 17074,
+      "mtimeMs": 1785299247559.998
+    },
+    {
+      "path": "app/collect/__pycache__/scheduler.cpython-313.pyc",
+      "size": 13253,
+      "mtimeMs": 1785299776660.0876
+    },
+    {
+      "path": "app/collect/__pycache__/scheduler_lock.cpython-313.pyc",
+      "size": 1520,
+      "mtimeMs": 1785299247757.4548
+    },
+    {
+      "path": "app/collect/__pycache__/state_machine.cpython-313.pyc",
+      "size": 1318,
+      "mtimeMs": 1785299842429.3425
+    },
+    {
+      "path": "app/collect/__pycache__/trade_calendar_service.cpython-313.pyc",
+      "size": 4146,
+      "mtimeMs": 1785299996812.6594
+    },
+    {
+      "path": "app/collect/__pycache__/__init__.cpython-313.pyc",
+      "size": 145,
+      "mtimeMs": 1785299247018.1914
+    },
+    {
       "path": "app/core/config.py",
-      "size": 816,
-      "mtimeMs": 1785125930000
+      "size": 933,
+      "mtimeMs": 1785299214263.1921
     },
     {
       "path": "app/core/logging.py",
@@ -281,6 +456,146 @@
       "path": "app/core/__init__.py",
       "size": 0,
       "mtimeMs": 1785118874000
+    },
+    {
+      "path": "app/core/__pycache__/config.cpython-313.pyc",
+      "size": 1688,
+      "mtimeMs": 1785299776657.7607
+    },
+    {
+      "path": "app/core/__pycache__/logging.cpython-313.pyc",
+      "size": 689,
+      "mtimeMs": 1785299247922.9004
+    },
+    {
+      "path": "app/core/__pycache__/version.cpython-313.pyc",
+      "size": 167,
+      "mtimeMs": 1785299247922.9004
+    },
+    {
+      "path": "app/core/__pycache__/__init__.cpython-313.pyc",
+      "size": 142,
+      "mtimeMs": 1785299245378.4165
+    },
+    {
+      "path": "app/datacontext/adjustment.py",
+      "size": 3899,
+      "mtimeMs": 1785298765492.2986
+    },
+    {
+      "path": "app/datacontext/alignment.py",
+      "size": 5673,
+      "mtimeMs": 1785298784680.5574
+    },
+    {
+      "path": "app/datacontext/context.py",
+      "size": 7890,
+      "mtimeMs": 1785298910974.8171
+    },
+    {
+      "path": "app/datacontext/query.py",
+      "size": 5268,
+      "mtimeMs": 1785298740251.7705
+    },
+    {
+      "path": "app/datacontext/readers/daily.py",
+      "size": 1862,
+      "mtimeMs": 1785298811325.6572
+    },
+    {
+      "path": "app/datacontext/readers/event.py",
+      "size": 3389,
+      "mtimeMs": 1785298882503.143
+    },
+    {
+      "path": "app/datacontext/readers/financial.py",
+      "size": 3173,
+      "mtimeMs": 1785298872603.9973
+    },
+    {
+      "path": "app/datacontext/readers/minute.py",
+      "size": 2144,
+      "mtimeMs": 1785298821191.8542
+    },
+    {
+      "path": "app/datacontext/readers/__init__.py",
+      "size": 2191,
+      "mtimeMs": 1785299730276.1372
+    },
+    {
+      "path": "app/datacontext/readers/__pycache__/daily.cpython-313.pyc",
+      "size": 2720,
+      "mtimeMs": 1785299776675.52
+    },
+    {
+      "path": "app/datacontext/readers/__pycache__/event.cpython-313.pyc",
+      "size": 4662,
+      "mtimeMs": 1785299776678.542
+    },
+    {
+      "path": "app/datacontext/readers/__pycache__/financial.cpython-313.pyc",
+      "size": 4138,
+      "mtimeMs": 1785299776677.5422
+    },
+    {
+      "path": "app/datacontext/readers/__pycache__/minute.cpython-313.pyc",
+      "size": 3150,
+      "mtimeMs": 1785299776676.5303
+    },
+    {
+      "path": "app/datacontext/readers/__pycache__/__init__.cpython-313.pyc",
+      "size": 2686,
+      "mtimeMs": 1785299776674.431
+    },
+    {
+      "path": "app/datacontext/snapshot_builder.py",
+      "size": 5320,
+      "mtimeMs": 1785298983047.331
+    },
+    {
+      "path": "app/datacontext/time_semantics.py",
+      "size": 3025,
+      "mtimeMs": 1785298750387.526
+    },
+    {
+      "path": "app/datacontext/__init__.py",
+      "size": 958,
+      "mtimeMs": 1785298918446.8064
+    },
+    {
+      "path": "app/datacontext/__pycache__/adjustment.cpython-313.pyc",
+      "size": 4285,
+      "mtimeMs": 1785299776671.1777
+    },
+    {
+      "path": "app/datacontext/__pycache__/alignment.cpython-313.pyc",
+      "size": 7326,
+      "mtimeMs": 1785299776672.256
+    },
+    {
+      "path": "app/datacontext/__pycache__/context.cpython-313.pyc",
+      "size": 9499,
+      "mtimeMs": 1785299776666.714
+    },
+    {
+      "path": "app/datacontext/__pycache__/query.cpython-313.pyc",
+      "size": 6564,
+      "mtimeMs": 1785299776668.392
+    },
+    {
+      "path": "app/datacontext/__pycache__/snapshot_builder.cpython-313.pyc",
+      "size": 6993,
+      "mtimeMs": 1785299776673.8816
+    },
+    {
+      "path": "app/datacontext/__pycache__/time_semantics.cpython-313.pyc",
+      "size": 3488,
+      "mtimeMs": 1785299776669.5208
+    },
+    {
+      "path": "app/datacontext/__pycache__/__init__.cpython-313.pyc",
+      "size": 1038,
+      "mtimeMs": 1785299776663.6267
     },
     {
       "path": "app/datasource/capability.py",
@@ -303,6 +618,26 @@
       "mtimeMs": 1785118874000
     },
     {
+      "path": "app/datasource/__pycache__/capability.cpython-313.pyc",
+      "size": 8429,
+      "mtimeMs": 1785299906593.309
+    },
+    {
+      "path": "app/datasource/__pycache__/errors.cpython-313.pyc",
+      "size": 3930,
+      "mtimeMs": 1785299906594.3167
+    },
+    {
+      "path": "app/datasource/__pycache__/tushare.cpython-313.pyc",
+      "size": 5685,
+      "mtimeMs": 1785299906596.7097
+    },
+    {
+      "path": "app/datasource/__pycache__/__init__.cpython-313.pyc",
+      "size": 148,
+      "mtimeMs": 1785299906591.3105
+    },
+    {
       "path": "app/governance/executor.py",
       "size": 78564,
       "mtimeMs": 1785214129635.194
@@ -323,9 +658,29 @@
       "mtimeMs": 1785140970000
     },
     {
+      "path": "app/governance/__pycache__/executor.cpython-313.pyc",
+      "size": 96154,
+      "mtimeMs": 1785299906673.7864
+    },
+    {
+      "path": "app/governance/__pycache__/minute_rules.cpython-313.pyc",
+      "size": 3033,
+      "mtimeMs": 1785299906675.8313
+    },
+    {
+      "path": "app/governance/__pycache__/tasks.cpython-313.pyc",
+      "size": 14619,
+      "mtimeMs": 1785299906678.697
+    },
+    {
+      "path": "app/governance/__pycache__/__init__.cpython-313.pyc",
+      "size": 209,
+      "mtimeMs": 1785299906661.1438
+    },
+    {
       "path": "app/lineage/service.py",
-      "size": 8202,
-      "mtimeMs": 1785174490000
+      "size": 13414,
+      "mtimeMs": 1785299940645.4053
     },
     {
       "path": "app/lineage/__init__.py",
@@ -333,9 +688,19 @@
       "mtimeMs": 1785141148000
     },
     {
+      "path": "app/lineage/__pycache__/service.cpython-313.pyc",
+      "size": 13651,
+      "mtimeMs": 1785299947781.386
+    },
+    {
+      "path": "app/lineage/__pycache__/__init__.cpython-313.pyc",
+      "size": 183,
+      "mtimeMs": 1785299906538.637
+    },
+    {
       "path": "app/main.py",
-      "size": 465,
-      "mtimeMs": 1785141150000
+      "size": 551,
+      "mtimeMs": 1785299629388.1533
     },
     {
       "path": "app/ops/service.py",
@@ -346,6 +711,16 @@
       "path": "app/ops/__init__.py",
       "size": 0,
       "mtimeMs": 1785118874000
+    },
+    {
+      "path": "app/ops/__pycache__/service.cpython-313.pyc",
+      "size": 16168,
+      "mtimeMs": 1785299996817.456
+    },
+    {
+      "path": "app/ops/__pycache__/__init__.cpython-313.pyc",
+      "size": 141,
+      "mtimeMs": 1785299996815.0686
     },
     {
       "path": "app/storage/db.py",
@@ -374,8 +749,13 @@
     },
     {
       "path": "app/storage/models/clean.py",
-      "size": 21697,
-      "mtimeMs": 1785174210000
+      "size": 29424,
+      "mtimeMs": 1785317080157.651
+    },
+    {
+      "path": "app/storage/models/lineage.py",
+      "size": 2100,
+      "mtimeMs": 1785298717430.8904
     },
     {
       "path": "app/storage/models/meta.py",
@@ -389,18 +769,73 @@
     },
     {
       "path": "app/storage/models/quality.py",
-      "size": 6598,
-      "mtimeMs": 1785140848000
+      "size": 6894,
+      "mtimeMs": 1785316903112.084
     },
     {
       "path": "app/storage/models/raw.py",
-      "size": 37899,
-      "mtimeMs": 1785118874000
+      "size": 38118,
+      "mtimeMs": 1785317120860.4211
+    },
+    {
+      "path": "app/storage/models/snapshot.py",
+      "size": 3384,
+      "mtimeMs": 1785298939818.5227
     },
     {
       "path": "app/storage/models/__init__.py",
-      "size": 1191,
-      "mtimeMs": 1785174210000
+      "size": 1314,
+      "mtimeMs": 1785299213901.413
+    },
+    {
+      "path": "app/storage/models/__pycache__/audit.cpython-313.pyc",
+      "size": 2208,
+      "mtimeMs": 1785299244477.5762
+    },
+    {
+      "path": "app/storage/models/__pycache__/base.cpython-313.pyc",
+      "size": 816,
+      "mtimeMs": 1785299245018.5598
+    },
+    {
+      "path": "app/storage/models/__pycache__/clean.cpython-313.pyc",
+      "size": 36848,
+      "mtimeMs": 1785317091366.3154
+    },
+    {
+      "path": "app/storage/models/__pycache__/lineage.cpython-313.pyc",
+      "size": 2720,
+      "mtimeMs": 1785299776648.877
+    },
+    {
+      "path": "app/storage/models/__pycache__/meta.cpython-313.pyc",
+      "size": 10649,
+      "mtimeMs": 1785299245025.6064
+    },
+    {
+      "path": "app/storage/models/__pycache__/ops.cpython-313.pyc",
+      "size": 23820,
+      "mtimeMs": 1785299245040.3796
+    },
+    {
+      "path": "app/storage/models/__pycache__/quality.cpython-313.pyc",
+      "size": 9206,
+      "mtimeMs": 1785316992927.3906
+    },
+    {
+      "path": "app/storage/models/__pycache__/raw.cpython-313.pyc",
+      "size": 43460,
+      "mtimeMs": 1785317129072.0173
+    },
+    {
+      "path": "app/storage/models/__pycache__/snapshot.cpython-313.pyc",
+      "size": 4049,
+      "mtimeMs": 1785299776650.8818
+    },
+    {
+      "path": "app/storage/models/__pycache__/__init__.cpython-313.pyc",
+      "size": 1825,
+      "mtimeMs": 1785299776651.8826
     },
     {
       "path": "app/storage/__init__.py",
@@ -408,14 +843,49 @@
       "mtimeMs": 1785118874000
     },
     {
+      "path": "app/storage/__pycache__/db.cpython-313.pyc",
+      "size": 1926,
+      "mtimeMs": 1785299247923.9119
+    },
+    {
+      "path": "app/storage/__pycache__/minute_benchmark.cpython-313.pyc",
+      "size": 14592,
+      "mtimeMs": 1785299906703.364
+    },
+    {
+      "path": "app/storage/__pycache__/minute_metrics.cpython-313.pyc",
+      "size": 5826,
+      "mtimeMs": 1785299906706.3625
+    },
+    {
+      "path": "app/storage/__pycache__/__init__.cpython-313.pyc",
+      "size": 145,
+      "mtimeMs": 1785299244475.3875
+    },
+    {
       "path": "app/__init__.py",
       "size": 0,
       "mtimeMs": 1785118874000
     },
     {
+      "path": "app/__pycache__/main.cpython-313.pyc",
+      "size": 771,
+      "mtimeMs": 1785299776683.0034
+    },
+    {
+      "path": "app/__pycache__/__init__.cpython-313.pyc",
+      "size": 137,
+      "mtimeMs": 1785299244473.771
+    },
+    {
       "path": "compose.dev.yml",
       "size": 1545,
       "mtimeMs": 1785126056000
+    },
+    {
+      "path": "compose.test.yml",
+      "size": 860,
+      "mtimeMs": 1785298689865.8467
     },
     {
       "path": "Dockerfile",
@@ -459,8 +929,8 @@
     },
     {
       "path": "docs/00_项目管理/07_统一开发任务总表.md",
-      "size": 9170,
-      "mtimeMs": 1785259838000
+      "size": 10186,
+      "mtimeMs": 1785299461029.183
     },
     {
       "path": "docs/00_项目管理/08_第2步数据底座统一实施任务书.md",
@@ -1234,8 +1704,13 @@
     },
     {
       "path": "docs/05_开发实施/20_第2步实施检查点与证据清单.md",
-      "size": 1264,
-      "mtimeMs": 1785259838000
+      "size": 3743,
+      "mtimeMs": 1785299450196.0168
+    },
+    {
+      "path": "docs/05_开发实施/21_第2步数据底座实施记录.md",
+      "size": 4552,
+      "mtimeMs": 1785299443116.3887
     },
     {
       "path": "docs/06_测试验证/01_P3交易日历真实采集验证记录.md",
@@ -1256,6 +1731,16 @@
       "path": "docs/06_测试验证/10_第2步数据底座验收计划.md",
       "size": 2929,
       "mtimeMs": 1785259838000
+    },
+    {
+      "path": "docs/06_测试验证/11_第2步数据底座验收记录.md",
+      "size": 2146,
+      "mtimeMs": 1785299454547.6184
+    },
+    {
+      "path": "docs/07_部署上线/01_第2步部署迁盘备份恢复说明.md",
+      "size": 2143,
+      "mtimeMs": 1785299458674.9646
     },
     {
       "path": "migrations/env.py",
@@ -1328,9 +1813,534 @@
       "mtimeMs": 1785174252000
     },
     {
+      "path": "migrations/versions/0013_lineage_and_snapshot.py",
+      "size": 5496,
+      "mtimeMs": 1785298647989.6252
+    },
+    {
+      "path": "migrations/versions/0014_clean_published_at_financial_dataitem.py",
+      "size": 8847,
+      "mtimeMs": 1785315745488.4148
+    },
+    {
+      "path": "migrations/versions/0015_audit_runcheck_datagap_rawevidence.py",
+      "size": 6704,
+      "mtimeMs": 1785315747442.1133
+    },
+    {
+      "path": "migrations/versions/__pycache__/0013_lineage_and_snapshot.cpython-313.pyc",
+      "size": 5889,
+      "mtimeMs": 1785299776644.8777
+    },
+    {
+      "path": "migrations/versions/__pycache__/0014_clean_published_at_financial_dataitem.cpython-313.pyc",
+      "size": 8639,
+      "mtimeMs": 1785315770249.6787
+    },
+    {
+      "path": "migrations/versions/__pycache__/0015_audit_runcheck_datagap_rawevidence.cpython-313.pyc",
+      "size": 7447,
+      "mtimeMs": 1785315770251.5117
+    },
+    {
       "path": "pyproject.toml",
-      "size": 859,
-      "mtimeMs": 1785221955339.5242
+      "size": 1210,
+      "mtimeMs": 1785299399275.5889
+    },
+    {
+      "path": "scripts/db_backup/full_backup.sh",
+      "size": 4579,
+      "mtimeMs": 1785298737552.881
+    },
+    {
+      "path": "scripts/db_backup/manifest.json",
+      "size": 129,
+      "mtimeMs": 1785298737734.7168
+    },
+    {
+      "path": "scripts/db_backup/README.md",
+      "size": 2507,
+      "mtimeMs": 1785298743851.053
+    },
+    {
+      "path": "scripts/db_migrate_disk/migrate.sh",
+      "size": 5155,
+      "mtimeMs": 1785298708320.9978
+    },
+    {
+      "path": "scripts/db_migrate_disk/precheck.sh",
+      "size": 4483,
+      "mtimeMs": 1785298698751.109
+    },
+    {
+      "path": "scripts/db_migrate_disk/README.md",
+      "size": 3038,
+      "mtimeMs": 1785298723768.3447
+    },
+    {
+      "path": "scripts/db_migrate_disk/rollback.sh",
+      "size": 3608,
+      "mtimeMs": 1785298715684.317
+    },
+    {
+      "path": "scripts/db_restore/README.md",
+      "size": 2829,
+      "mtimeMs": 1785298765408.6343
+    },
+    {
+      "path": "scripts/db_restore/restore.sh",
+      "size": 4144,
+      "mtimeMs": 1785298752644.4187
+    },
+    {
+      "path": "scripts/db_restore/verify.sh",
+      "size": 3425,
+      "mtimeMs": 1785298759135.4614
+    },
+    {
+      "path": "scripts/minute_archive/archive.sh",
+      "size": 4687,
+      "mtimeMs": 1785298795834.2695
+    },
+    {
+      "path": "scripts/minute_archive/compress_policy.sql",
+      "size": 614,
+      "mtimeMs": 1785298786376.8857
+    },
+    {
+      "path": "scripts/minute_archive/README.md",
+      "size": 3103,
+      "mtimeMs": 1785298803302.7742
+    },
+    {
+      "path": "tests/alembic/test_empty_upgrade.py",
+      "size": 2141,
+      "mtimeMs": 1785299403525.353
+    },
+    {
+      "path": "tests/alembic/test_existing_upgrade.py",
+      "size": 1048,
+      "mtimeMs": 1785299405009.8474
+    },
+    {
+      "path": "tests/alembic/__pycache__/test_empty_upgrade.cpython-313-pytest-8.4.2.pyc",
+      "size": 9981,
+      "mtimeMs": 1785299905862.3694
+    },
+    {
+      "path": "tests/alembic/__pycache__/test_empty_upgrade.cpython-313.pyc",
+      "size": 4409,
+      "mtimeMs": 1785299782254.9026
+    },
+    {
+      "path": "tests/alembic/__pycache__/test_existing_upgrade.cpython-313-pytest-8.4.2.pyc",
+      "size": 3641,
+      "mtimeMs": 1785299905868.2844
+    },
+    {
+      "path": "tests/alembic/__pycache__/test_existing_upgrade.cpython-313.pyc",
+      "size": 1755,
+      "mtimeMs": 1785299782256.0327
+    },
+    {
+      "path": "tests/anti_lookahead/test_adjustment_factor_timepoint.py",
+      "size": 1295,
+      "mtimeMs": 1785300051262.9763
+    },
+    {
+      "path": "tests/anti_lookahead/test_available_at_injection.py",
+      "size": 918,
+      "mtimeMs": 1785299874949.2483
+    },
+    {
+      "path": "tests/anti_lookahead/test_backtest_mode.py",
+      "size": 982,
+      "mtimeMs": 1785299873725.7551
+    },
+    {
+      "path": "tests/anti_lookahead/test_historical_pool.py",
+      "size": 825,
+      "mtimeMs": 1785299376238.3052
+    },
+    {
+      "path": "tests/anti_lookahead/test_historical_status.py",
+      "size": 764,
+      "mtimeMs": 1785299942574.467
+    },
+    {
+      "path": "tests/anti_lookahead/test_published_available_separation.py",
+      "size": 1250,
+      "mtimeMs": 1785299875649.8193
+    },
+    {
+      "path": "tests/anti_lookahead/__pycache__/test_adjustment_factor_timepoint.cpython-313-pytest-8.4.2.pyc",
+      "size": 5545,
+      "mtimeMs": 1785300069312.7383
+    },
+    {
+      "path": "tests/anti_lookahead/__pycache__/test_adjustment_factor_timepoint.cpython-313.pyc",
+      "size": 2078,
+      "mtimeMs": 1785300064743.7542
+    },
+    {
+      "path": "tests/anti_lookahead/__pycache__/test_available_at_injection.cpython-313-pytest-8.4.2.pyc",
+      "size": 3388,
+      "mtimeMs": 1785299885766.3171
+    },
+    {
+      "path": "tests/anti_lookahead/__pycache__/test_available_at_injection.cpython-313.pyc",
+      "size": 1789,
+      "mtimeMs": 1785299782244.5518
+    },
+    {
+      "path": "tests/anti_lookahead/__pycache__/test_backtest_mode.cpython-313-pytest-8.4.2.pyc",
+      "size": 4010,
+      "mtimeMs": 1785299885651.7056
+    },
+    {
+      "path": "tests/anti_lookahead/__pycache__/test_backtest_mode.cpython-313.pyc",
+      "size": 1930,
+      "mtimeMs": 1785299782243.5483
+    },
+    {
+      "path": "tests/anti_lookahead/__pycache__/test_historical_pool.cpython-313-pytest-8.4.2.pyc",
+      "size": 1721,
+      "mtimeMs": 1785299905995.9734
+    },
+    {
+      "path": "tests/anti_lookahead/__pycache__/test_historical_pool.cpython-313.pyc",
+      "size": 1150,
+      "mtimeMs": 1785299782246.5493
+    },
+    {
+      "path": "tests/anti_lookahead/__pycache__/test_historical_status.cpython-313-pytest-8.4.2.pyc",
+      "size": 3714,
+      "mtimeMs": 1785299953780.98
+    },
+    {
+      "path": "tests/anti_lookahead/__pycache__/test_historical_status.cpython-313.pyc",
+      "size": 1526,
+      "mtimeMs": 1785299947783.3213
+    },
+    {
+      "path": "tests/anti_lookahead/__pycache__/test_published_available_separation.cpython-313-pytest-8.4.2.pyc",
+      "size": 3392,
+      "mtimeMs": 1785299885769.4412
+    },
+    {
+      "path": "tests/anti_lookahead/__pycache__/test_published_available_separation.cpython-313.pyc",
+      "size": 1822,
+      "mtimeMs": 1785299782245.5493
+    },
+    {
+      "path": "tests/backup_restore/test_backup_checksum.py",
+      "size": 774,
+      "mtimeMs": 1785299393003.1946
+    },
+    {
+      "path": "tests/backup_restore/test_restore_verify.py",
+      "size": 623,
+      "mtimeMs": 1785299397429.1357
+    },
+    {
+      "path": "tests/backup_restore/__pycache__/test_backup_checksum.cpython-313-pytest-8.4.2.pyc",
+      "size": 5965,
+      "mtimeMs": 1785299906159.0085
+    },
+    {
+      "path": "tests/backup_restore/__pycache__/test_backup_checksum.cpython-313.pyc",
+      "size": 2134,
+      "mtimeMs": 1785299782250.5876
+    },
+    {
+      "path": "tests/backup_restore/__pycache__/test_restore_verify.cpython-313-pytest-8.4.2.pyc",
+      "size": 5156,
+      "mtimeMs": 1785299906164.6702
+    },
+    {
+      "path": "tests/backup_restore/__pycache__/test_restore_verify.cpython-313.pyc",
+      "size": 1949,
+      "mtimeMs": 1785299782251.112
+    },
+    {
+      "path": "tests/conftest.py",
+      "size": 1919,
+      "mtimeMs": 1785299343994.7383
+    },
+    {
+      "path": "tests/contract/test_data_api.py",
+      "size": 1973,
+      "mtimeMs": 1785317839043.2595
+    },
+    {
+      "path": "tests/contract/__pycache__/test_data_api.cpython-313-pytest-8.4.2.pyc",
+      "size": 8518,
+      "mtimeMs": 1785317910675.094
+    },
+    {
+      "path": "tests/contract/__pycache__/test_data_api.cpython-313.pyc",
+      "size": 3906,
+      "mtimeMs": 1785316992936.26
+    },
+    {
+      "path": "tests/e2e/conftest.py",
+      "size": 748,
+      "mtimeMs": 1785299345267.891
+    },
+    {
+      "path": "tests/e2e/evidence_template.json",
+      "size": 270,
+      "mtimeMs": 1785299345890.4236
+    },
+    {
+      "path": "tests/e2e/test_dataitem_matrix.py",
+      "size": 1931,
+      "mtimeMs": 1785299943133.891
+    },
+    {
+      "path": "tests/e2e/__pycache__/conftest.cpython-313-pytest-8.4.2.pyc",
+      "size": 1116,
+      "mtimeMs": 1785299906339.2961
+    },
+    {
+      "path": "tests/e2e/__pycache__/conftest.cpython-313.pyc",
+      "size": 978,
+      "mtimeMs": 1785299782256.577
+    },
+    {
+      "path": "tests/e2e/__pycache__/test_dataitem_matrix.cpython-313-pytest-8.4.2.pyc",
+      "size": 3624,
+      "mtimeMs": 1785299953901.5945
+    },
+    {
+      "path": "tests/e2e/__pycache__/test_dataitem_matrix.cpython-313.pyc",
+      "size": 2110,
+      "mtimeMs": 1785299947784.423
+    },
+    {
+      "path": "tests/fault_recovery/test_migrate_precheck.py",
+      "size": 1000,
+      "mtimeMs": 1785300052294.2534
+    },
+    {
+      "path": "tests/fault_recovery/test_server_test_isolation.py",
+      "size": 1178,
+      "mtimeMs": 1785299399130.7993
+    },
+    {
+      "path": "tests/fault_recovery/__pycache__/test_migrate_precheck.cpython-313-pytest-8.4.2.pyc",
+      "size": 6806,
+      "mtimeMs": 1785300069428.205
+    },
+    {
+      "path": "tests/fault_recovery/__pycache__/test_migrate_precheck.cpython-313.pyc",
+      "size": 2351,
+      "mtimeMs": 1785300064744.8162
+    },
+    {
+      "path": "tests/fault_recovery/__pycache__/test_server_test_isolation.cpython-313-pytest-8.4.2.pyc",
+      "size": 6130,
+      "mtimeMs": 1785299906354.3174
+    },
+    {
+      "path": "tests/fault_recovery/__pycache__/test_server_test_isolation.cpython-313.pyc",
+      "size": 2876,
+      "mtimeMs": 1785299782252.434
+    },
+    {
+      "path": "tests/idempotency/test_force_rerun.py",
+      "size": 915,
+      "mtimeMs": 1785299370218.6501
+    },
+    {
+      "path": "tests/idempotency/__pycache__/test_force_rerun.cpython-313-pytest-8.4.2.pyc",
+      "size": 3249,
+      "mtimeMs": 1785299842437.2947
+    },
+    {
+      "path": "tests/idempotency/__pycache__/test_force_rerun.cpython-313.pyc",
+      "size": 1658,
+      "mtimeMs": 1785299782242.5488
+    },
+    {
+      "path": "tests/integration/test_api_timeout.py",
+      "size": 676,
+      "mtimeMs": 1785299385073.2239
+    },
+    {
+      "path": "tests/integration/test_clean_version.py",
+      "size": 1320,
+      "mtimeMs": 1785299355194.0796
+    },
+    {
+      "path": "tests/integration/test_datacontext_queries.py",
+      "size": 688,
+      "mtimeMs": 1785299387405.6165
+    },
+    {
+      "path": "tests/integration/test_datagap_verified.py",
+      "size": 1536,
+      "mtimeMs": 1785299366899.4524
+    },
+    {
+      "path": "tests/integration/test_idempotency.py",
+      "size": 2317,
+      "mtimeMs": 1785299351641.0977
+    },
+    {
+      "path": "tests/integration/test_ops_query_no_seqscan.py",
+      "size": 764,
+      "mtimeMs": 1785299386199.0747
+    },
+    {
+      "path": "tests/integration/test_perf_queries.py",
+      "size": 1060,
+      "mtimeMs": 1785299391271.98
+    },
+    {
+      "path": "tests/integration/test_quality_gate.py",
+      "size": 716,
+      "mtimeMs": 1785299357835.142
+    },
+    {
+      "path": "tests/integration/test_raw_evidence.py",
+      "size": 1318,
+      "mtimeMs": 1785299353629.9612
+    },
+    {
+      "path": "tests/integration/test_snapshot_immutability.py",
+      "size": 1872,
+      "mtimeMs": 1785299389913.3804
+    },
+    {
+      "path": "tests/integration/test_state_machine.py",
+      "size": 1754,
+      "mtimeMs": 1785299348486.9832
+    },
+    {
+      "path": "tests/integration/__pycache__/test_api_timeout.cpython-313-pytest-8.4.2.pyc",
+      "size": 3868,
+      "mtimeMs": 1785299906363.1714
+    },
+    {
+      "path": "tests/integration/__pycache__/test_api_timeout.cpython-313.pyc",
+      "size": 1372,
+      "mtimeMs": 1785299782237.0251
+    },
+    {
+      "path": "tests/integration/__pycache__/test_clean_version.cpython-313-pytest-8.4.2.pyc",
+      "size": 10057,
+      "mtimeMs": 1785299906411.0496
+    },
+    {
+      "path": "tests/integration/__pycache__/test_clean_version.cpython-313.pyc",
+      "size": 2405,
+      "mtimeMs": 1785299782233.857
+    },
+    {
+      "path": "tests/integration/__pycache__/test_datacontext_queries.cpython-313-pytest-8.4.2.pyc",
+      "size": 4603,
+      "mtimeMs": 1785299906415.0498
+    },
+    {
+      "path": "tests/integration/__pycache__/test_datacontext_queries.cpython-313.pyc",
+      "size": 1626,
+      "mtimeMs": 1785299782238.5505
+    },
+    {
+      "path": "tests/integration/__pycache__/test_datagap_verified.cpython-313-pytest-8.4.2.pyc",
+      "size": 6181,
+      "mtimeMs": 1785299906420.0483
+    },
+    {
+      "path": "tests/integration/__pycache__/test_datagap_verified.cpython-313.pyc",
+      "size": 2867,
+      "mtimeMs": 1785299782235.8555
+    },
+    {
+      "path": "tests/integration/__pycache__/test_idempotency.cpython-313-pytest-8.4.2.pyc",
+      "size": 7389,
+      "mtimeMs": 1785299842441.9983
+    },
+    {
+      "path": "tests/integration/__pycache__/test_idempotency.cpython-313.pyc",
+      "size": 3191,
+      "mtimeMs": 1785299782231.8438
+    },
+    {
+      "path": "tests/integration/__pycache__/test_ops_query_no_seqscan.cpython-313-pytest-8.4.2.pyc",
+      "size": 3599,
+      "mtimeMs": 1785299906427.3132
+    },
+    {
+      "path": "tests/integration/__pycache__/test_ops_query_no_seqscan.cpython-313.pyc",
+      "size": 1536,
+      "mtimeMs": 1785299782237.537
+    },
+    {
+      "path": "tests/integration/__pycache__/test_perf_queries.cpython-313-pytest-8.4.2.pyc",
+      "size": 3124,
+      "mtimeMs": 1785299906430.2446
+    },
+    {
+      "path": "tests/integration/__pycache__/test_perf_queries.cpython-313.pyc",
+      "size": 1785,
+      "mtimeMs": 1785299782240.5498
+    },
+    {
+      "path": "tests/integration/__pycache__/test_quality_gate.cpython-313-pytest-8.4.2.pyc",
+      "size": 4680,
+      "mtimeMs": 1785299906434.0754
+    },
+    {
+      "path": "tests/integration/__pycache__/test_quality_gate.cpython-313.pyc",
+      "size": 1673,
+      "mtimeMs": 1785299782234.8545
+    },
+    {
+      "path": "tests/integration/__pycache__/test_raw_evidence.cpython-313-pytest-8.4.2.pyc",
+      "size": 5991,
+      "mtimeMs": 1785299906438.1245
+    },
+    {
+      "path": "tests/integration/__pycache__/test_raw_evidence.cpython-313.pyc",
+      "size": 2370,
+      "mtimeMs": 1785299782232.859
+    },
+    {
+      "path": "tests/integration/__pycache__/test_snapshot_immutability.cpython-313-pytest-8.4.2.pyc",
+      "size": 8773,
+      "mtimeMs": 1785299906449.2454
+    },
+    {
+      "path": "tests/integration/__pycache__/test_snapshot_immutability.cpython-313.pyc",
+      "size": 3462,
+      "mtimeMs": 1785299782239.5503
+    },
+    {
+      "path": "tests/integration/__pycache__/test_state_machine.cpython-313-pytest-8.4.2.pyc",
+      "size": 3844,
+      "mtimeMs": 1785299842427.715
+    },
+    {
+      "path": "tests/integration/__pycache__/test_state_machine.cpython-313.pyc",
+      "size": 3706,
+      "mtimeMs": 1785299782230.723
+    },
+    {
+      "path": "tests/lineage/test_lineage_edge.py",
+      "size": 1545,
+      "mtimeMs": 1785299368831.7866
+    },
+    {
+      "path": "tests/lineage/__pycache__/test_lineage_edge.cpython-313-pytest-8.4.2.pyc",
+      "size": 7725,
+      "mtimeMs": 1785299906537.635
+    },
+    {
+      "path": "tests/lineage/__pycache__/test_lineage_edge.cpython-313.pyc",
+      "size": 3249,
+      "mtimeMs": 1785299782241.5486
     },
     {
       "path": "tests/test_api.py",
@@ -1374,8 +2384,8 @@
     },
     {
       "path": "tests/test_ops_api.py",
-      "size": 594,
-      "mtimeMs": 1785132544000
+      "size": 836,
+      "mtimeMs": 1785317845308.0552
     },
     {
       "path": "tests/test_ops_audit_model.py",
@@ -1526,6 +2536,216 @@
       "path": "tests/test_worker_registration.py",
       "size": 778,
       "mtimeMs": 1785125378000
+    },
+    {
+      "path": "tests/__pycache__/conftest.cpython-313-pytest-8.4.2.pyc",
+      "size": 3439,
+      "mtimeMs": 1785299835404.5767
+    },
+    {
+      "path": "tests/__pycache__/conftest.cpython-313.pyc",
+      "size": 3301,
+      "mtimeMs": 1785299782229.535
+    },
+    {
+      "path": "tests/__pycache__/test_api.cpython-313-pytest-8.4.2.pyc",
+      "size": 3597,
+      "mtimeMs": 1785299906567.154
+    },
+    {
+      "path": "tests/__pycache__/test_capability.cpython-313-pytest-8.4.2.pyc",
+      "size": 11443,
+      "mtimeMs": 1785299906590.3115
+    },
+    {
+      "path": "tests/__pycache__/test_core_daily_executor.cpython-313-pytest-8.4.2.pyc",
+      "size": 8288,
+      "mtimeMs": 1785299906608.76
+    },
+    {
+      "path": "tests/__pycache__/test_engine_parameter_hiding.cpython-313-pytest-8.4.2.pyc",
+      "size": 1283,
+      "mtimeMs": 1785299906619.0056
+    },
+    {
+      "path": "tests/__pycache__/test_financial_planner.cpython-313-pytest-8.4.2.pyc",
+      "size": 3276,
+      "mtimeMs": 1785299906621.8245
+    },
+    {
+      "path": "tests/__pycache__/test_idempotency.cpython-313-pytest-8.4.2.pyc",
+      "size": 2732,
+      "mtimeMs": 1785300103248.5366
+    },
+    {
+      "path": "tests/__pycache__/test_metadata.cpython-313-pytest-8.4.2.pyc",
+      "size": 2632,
+      "mtimeMs": 1785299906625.4663
+    },
+    {
+      "path": "tests/__pycache__/test_migration_revision_ids.cpython-313-pytest-8.4.2.pyc",
+      "size": 3575,
+      "mtimeMs": 1785299906628.6794
+    },
+    {
+      "path": "tests/__pycache__/test_ops_api.cpython-313-pytest-8.4.2.pyc",
+      "size": 2173,
+      "mtimeMs": 1785317910998.659
+    },
+    {
+      "path": "tests/__pycache__/test_ops_api.cpython-313.pyc",
+      "size": 941,
+      "mtimeMs": 1785316992937.2678
+    },
+    {
+      "path": "tests/__pycache__/test_ops_audit_model.cpython-313-pytest-8.4.2.pyc",
+      "size": 1481,
+      "mtimeMs": 1785299906644.8818
+    },
+    {
+      "path": "tests/__pycache__/test_p4_batch2_lineage.cpython-313-pytest-8.4.2.pyc",
+      "size": 2851,
+      "mtimeMs": 1785299906647.8916
+    },
+    {
+      "path": "tests/__pycache__/test_p4_batch2_rules.cpython-313-pytest-8.4.2.pyc",
+      "size": 13352,
+      "mtimeMs": 1785299906660.007
+    },
+    {
+      "path": "tests/__pycache__/test_p4_clean_rules.cpython-313-pytest-8.4.2.pyc",
+      "size": 10508,
+      "mtimeMs": 1785299906685.8423
+    },
+    {
+      "path": "tests/__pycache__/test_p4_failure_state.cpython-313-pytest-8.4.2.pyc",
+      "size": 10731,
+      "mtimeMs": 1785299906691.8513
+    },
+    {
+      "path": "tests/__pycache__/test_p4_metadata.cpython-313-pytest-8.4.2.pyc",
+      "size": 2501,
+      "mtimeMs": 1785299906695.3647
+    },
+    {
+      "path": "tests/__pycache__/test_p4_minute_benchmark.cpython-313-pytest-8.4.2.pyc",
+      "size": 5450,
+      "mtimeMs": 1785299906700.3713
+    },
+    {
+      "path": "tests/__pycache__/test_p4_minute_lineage.cpython-313-pytest-8.4.2.pyc",
+      "size": 2811,
+      "mtimeMs": 1785299906709.434
+    },
+    {
+      "path": "tests/__pycache__/test_p4_minute_metrics.cpython-313-pytest-8.4.2.pyc",
+      "size": 12109,
+      "mtimeMs": 1785299906725.4363
+    },
+    {
+      "path": "tests/__pycache__/test_p4_minute_quality.cpython-313-pytest-8.4.2.pyc",
+      "size": 10290,
+      "mtimeMs": 1785299906731.44
+    },
+    {
+      "path": "tests/__pycache__/test_p4_minute_rules.cpython-313-pytest-8.4.2.pyc",
+      "size": 20837,
+      "mtimeMs": 1785299906741.9624
+    },
+    {
+      "path": "tests/__pycache__/test_p4_quality_rerun.cpython-313-pytest-8.4.2.pyc",
+      "size": 7623,
+      "mtimeMs": 1785299906747.3857
+    },
+    {
+      "path": "tests/__pycache__/test_p4_routes.cpython-313-pytest-8.4.2.pyc",
+      "size": 1771,
+      "mtimeMs": 1785299906750.9517
+    },
+    {
+      "path": "tests/__pycache__/test_p4_task_versions.cpython-313-pytest-8.4.2.pyc",
+      "size": 4090,
+      "mtimeMs": 1785299906765.9812
+    },
+    {
+      "path": "tests/__pycache__/test_p4_write_batching.cpython-313-pytest-8.4.2.pyc",
+      "size": 10988,
+      "mtimeMs": 1785299906773.233
+    },
+    {
+      "path": "tests/__pycache__/test_provider_errors.cpython-313-pytest-8.4.2.pyc",
+      "size": 3448,
+      "mtimeMs": 1785299906777.0752
+    },
+    {
+      "path": "tests/__pycache__/test_rate_limit.cpython-313-pytest-8.4.2.pyc",
+      "size": 4232,
+      "mtimeMs": 1785299906782.3557
+    },
+    {
+      "path": "tests/__pycache__/test_raw_insert_batching.cpython-313-pytest-8.4.2.pyc",
+      "size": 4870,
+      "mtimeMs": 1785299906786.9792
+    },
+    {
+      "path": "tests/__pycache__/test_runtime_heartbeat.cpython-313-pytest-8.4.2.pyc",
+      "size": 3440,
+      "mtimeMs": 1785299906790.3523
+    },
+    {
+      "path": "tests/__pycache__/test_sample_executor.cpython-313-pytest-8.4.2.pyc",
+      "size": 5266,
+      "mtimeMs": 1785299906794.9805
+    },
+    {
+      "path": "tests/__pycache__/test_scheduler_policy.cpython-313-pytest-8.4.2.pyc",
+      "size": 3431,
+      "mtimeMs": 1785299906799.1968
+    },
+    {
+      "path": "tests/__pycache__/test_state_machine.cpython-313-pytest-8.4.2.pyc",
+      "size": 952,
+      "mtimeMs": 1785300103245.534
+    },
+    {
+      "path": "tests/__pycache__/test_stock_basic_planner.cpython-313-pytest-8.4.2.pyc",
+      "size": 3373,
+      "mtimeMs": 1785299906809.085
+    },
+    {
+      "path": "tests/__pycache__/test_stock_daily_planner.cpython-313-pytest-8.4.2.pyc",
+      "size": 2232,
+      "mtimeMs": 1785299906812.0842
+    },
+    {
+      "path": "tests/__pycache__/test_stock_minute_planner.cpython-313-pytest-8.4.2.pyc",
+      "size": 3481,
+      "mtimeMs": 1785299906818.0957
+    },
+    {
+      "path": "tests/__pycache__/test_task_repository_idempotency.cpython-313-pytest-8.4.2.pyc",
+      "size": 12916,
+      "mtimeMs": 1785299906826.7703
+    },
+    {
+      "path": "tests/__pycache__/test_trade_calendar_planner.cpython-313-pytest-8.4.2.pyc",
+      "size": 3766,
+      "mtimeMs": 1785299906831.403
+    },
+    {
+      "path": "tests/__pycache__/test_trade_date_item_planner.cpython-313-pytest-8.4.2.pyc",
+      "size": 4978,
+      "mtimeMs": 1785299906840.2888
+    },
+    {
+      "path": "tests/__pycache__/test_tushare_adapter.cpython-313-pytest-8.4.2.pyc",
+      "size": 9189,
+      "mtimeMs": 1785299906846.4353
+    },
+    {
+      "path": "tests/__pycache__/test_worker_registration.cpython-313-pytest-8.4.2.pyc",
+      "size": 2536,
+      "mtimeMs": 1785299906850.8994
     }
   ]
 }

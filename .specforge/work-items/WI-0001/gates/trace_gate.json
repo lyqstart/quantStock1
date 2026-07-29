@@ -31,7 +31,7 @@
   "waiver_allowed": true,
   "waiver_required": false,
   "waiver_ids": [],
-  "started_at": "2026-07-29T03:51:44.728Z",
-  "finished_at": "2026-07-29T03:51:44.729Z",
+  "started_at": "2026-07-29T10:17:07.713Z",
+  "finished_at": "2026-07-29T10:17:07.713Z",
   "runner": "gate_runner"
 }

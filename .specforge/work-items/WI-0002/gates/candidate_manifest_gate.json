@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0002",
+  "gate_id": "candidate_manifest_gate",
+  "gate_type": "hard_gate",
+  "required": true,
+  "status": "passed",
+  "input_files": [
+    "D:\\code\\temp\\quantStock1\\.specforge\\work-items\\WI-0002\\candidate_manifest.json"
+  ],
+  "checks": [
+    {
+      "check_id": "manifest_parse",
+      "description": "candidate_manifest.json is valid JSON",
+      "passed": true
+    },
+    {
+      "check_id": "manifest_entries_array",
+      "description": "entries is an array",
+      "passed": true
+    },
+    {
+      "check_id": "manifest_evidence_only_canonical",
+      "description": "evidence_only manifests declare no project spec change, disable merge, and keep entries empty",
+      "passed": true
+    },
+    {
+      "check_id": "manifest_entries_nonempty_for_spec_merge",
+      "description": "entries is non-empty only when Project Spec merge is required",
+      "passed": true
+    },
+    {
+      "check_id": "manifest_entries_match_governance_inference",
+      "description": "entries match the merge applicability decision and inferManifestEntries() for spec-changing workflows",
+      "passed": true
+    },
+    {
+      "check_id": "manifest_inferred_entries_count",
+      "description": "effective inferred entries count: 0",
+      "passed": true
+    },
+    {
+      "check_id": "module_registry_valid",
+      "description": "spec_manifest.json module identity fields are valid and non-conflicting",
+      "passed": true,
+      "details": ""
+    }
+  ],
+  "blocking_issues": [],
+  "warnings": [],
+  "waiver_allowed": false,
+  "waiver_required": false,
+  "waiver_ids": [],
+  "started_at": "2026-07-29T12:36:25.065Z",
+  "finished_at": "2026-07-29T12:36:25.065Z",
+  "runner": "gate_runner"
+}

@@ -2,11 +2,11 @@
 
 Work Item: WI-0001
 Overall Status: passed
-Generated: 2026-07-29T04:09:40.969Z
+Generated: 2026-07-29T10:24:07.740Z
 
 ## Gate Reports
 
-### post_merge_gate
+### close_gate
 - Type: hard_gate
 - Status: passed
 - Required: true

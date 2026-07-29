@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.1",
+  "work_item_id": "WI-0002",
+  "entries": [
+    {
+      "id": "EV-1",
+      "status": "passed",
+      "level": "L3",
+      "evidence_type": "behavioral",
+      "supports": [
+        "OUT-1",
+        "REQ-WI-0002-1",
+        "AC-1",
+        "AC-2",
+        "AC-3",
+        "AC-4",
+        "AC-5",
+        "AC-6",
+        "AC-7",
+        "AC-8",
+        "AC-9",
+        "TASK-WI-0002-001",
+        "TASK-WI-0002-002"
+      ],
+      "artifact_type": "command_output",
+      "description": "8 个 docs 文件已按 FACTS 基准更新并通过 sf_batch_verify 逐条核对：含 d40ca76(8文件均含)、DEC-031~034、290 passed、0015_audit_gap_rawev、SEMANTIC_CLOSURE_INPUT_STALE、CHG-015、第3步（P6—P8）待开始、C1-C5 检查点表内全 PASS、三行验证状态(真实PG迁移/集成测试/端到端矩阵)全 PASS、验收记录无旧文本且含 server-test、部署说明保留 stable WAITING_USER_EXECUTION 并新增第0节 server-test 真实执行结果、任务总表 S2-025 DONE + 第3步待开始、路线图 V2.2 + 第3步 + P6—P8。文件20 残留的 3 处 WAITING_USER_EXECUTION 经 grep+read 人工核实位于状态枚举代码块/证据等级术语定义/说明文字，非检查点状态值。文件21 '真实 PG'含空格致精确匹配miss，读文件确认 L82-84 三行均 PASS。",
+      "collected_by": "sf-verifier",
+      "timestamp": "2026-07-29T00:00:00Z",
+      "location": "docs/00_项目管理/{00,02,03,07}_*.md; docs/05_开发实施/{20,21}_*.md; docs/06_测试验证/11_*.md; docs/07_部署上线/01_*.md",
+      "related_refs": {
+        "req_ids": [
+          "REQ-WI-0002-1"
+        ],
+        "task_ids": [
+          "TASK-WI-0002-001",
+          "TASK-WI-0002-002"
+        ]
+      }
+    },
+    {
+      "id": "EV-2",
+      "status": "passed",
+      "level": "L3",
+      "evidence_type": "behavioral",
+      "supports": [
+        "OUT-1",
+        "REQ-WI-0002-1",
+        "AC-10",
+        "TASK-WI-0002-001",
+        "TASK-WI-0002-002"
+      ],
+      "artifact_type": "command_output",
+      "description": "sf_changed_files_audit(WI-0002, 普通实现型)结论 passed=true：total_files=0(Write Guard未捕获业务代码写入), in_scope=0, out_of_scope=0, blocked_write_attempts=0, resolved/unresolved_blocked_write_attempts=0, violations=[], side_effects=0, remote_ops_entries=0。data_source=none 符合纯文档登记预期（文档写入未触发 Write Guard 业务代码快照）。确认本 WI 未触碰业务代码、迁移、测试、脚本、配置、.specforge/、main 分支；stable/server-test 命令保持原状。",
+      "collected_by": "sf-verifier",
+      "timestamp": "2026-07-29T00:00:00Z",
+      "location": ".specforge/work-items/WI-0002/changed_files_audit.md",
+      "related_refs": {
+        "req_ids": [
+          "REQ-WI-0002-1"
+        ],
+        "task_ids": [
+          "TASK-WI-0002-001",
+          "TASK-WI-0002-002"
+        ]
+      }
+    }
+  ]
+}

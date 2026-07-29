@@ -1,0 +1,67 @@
+{
+  "baseline_timestamp": "2026-07-29T09:41:25.289Z",
+  "diff_timestamp": "2026-07-29T10:24:23.779Z",
+  "created": [],
+  "modified": [
+    ".pytest_cache/v/cache/lastfailed",
+    ".pytest_cache/v/cache/nodeids",
+    ".specforge/knowledge/graph.json",
+    "tests/contract/test_data_api.py",
+    "tests/contract/__pycache__/test_data_api.cpython-313-pytest-8.4.2.pyc",
+    "tests/test_ops_api.py",
+    "tests/test_p4_minute_rules.py",
+    "tests/__pycache__/test_ops_api.cpython-313-pytest-8.4.2.pyc",
+    "tests/__pycache__/test_p4_minute_rules.cpython-313-pytest-8.4.2.pyc"
+  ],
+  "deleted": [],
+  "all_changes": [
+    {
+      "path": ".pytest_cache/v/cache/lastfailed",
+      "change": "modified"
+    },
+    {
+      "path": ".pytest_cache/v/cache/nodeids",
+      "change": "modified"
+    },
+    {
+      "path": ".specforge/knowledge/graph.json",
+      "change": "modified"
+    },
+    {
+      "path": "tests/contract/test_data_api.py",
+      "change": "modified"
+    },
+    {
+      "path": "tests/contract/__pycache__/test_data_api.cpython-313-pytest-8.4.2.pyc",
+      "change": "modified"
+    },
+    {
+      "path": "tests/test_ops_api.py",
+      "change": "modified"
+    },
+    {
+      "path": "tests/test_p4_minute_rules.py",
+      "change": "modified"
+    },
+    {
+      "path": "tests/__pycache__/test_ops_api.cpython-313-pytest-8.4.2.pyc",
+      "change": "modified"
+    },
+    {
+      "path": "tests/__pycache__/test_p4_minute_rules.cpython-313-pytest-8.4.2.pyc",
+      "change": "modified"
+    }
+  ],
+  "untracked_changes": [
+    ".pytest_cache/v/cache/lastfailed",
+    ".pytest_cache/v/cache/nodeids",
+    ".specforge/knowledge/graph.json",
+    "tests/contract/test_data_api.py",
+    "tests/contract/__pycache__/test_data_api.cpython-313-pytest-8.4.2.pyc",
+    "tests/test_ops_api.py",
+    "tests/test_p4_minute_rules.py",
+    "tests/__pycache__/test_ops_api.cpython-313-pytest-8.4.2.pyc",
+    "tests/__pycache__/test_p4_minute_rules.cpython-313-pytest-8.4.2.pyc"
+  ],
+  "ignored_runtime_files": 0
+}

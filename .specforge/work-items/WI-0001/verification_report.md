@@ -4,87 +4,90 @@
 
 | 指标 | 数值 |
 |------|------|
-| 总检查数 | 52 |
-| 通过 | 37 |
+| 总检查数 | 55 |
+| 通过 | 55 |
 | 失败 | 0 |
-| 结论 | blocked |
+| 结论 | pass |
 
 ## 验证命令
 
 | 命令 | 状态 | 输出摘要 |
 |------|------|----------|
-| `grep down_revision/revision migrations/versions/001[2345]_*.py` | ✅ pass | Chain verified: 0012->0013->0014->0015, all down_revision correct (sf-verifier independent) |
-| `grep RAW-import in app/datacontext/**` | ✅ pass | 0 matches - DataContext does not import raw models (REQ-CORE-016 code-level, sf-verifier independent) |
-| `grep DDL patterns migration 0013` | ✅ pass | lineage_edge + data_snapshot + data_snapshot_input tables, content_fingerprint, status CHECK(BUILDING/READY/INVALIDATED), trg_data_snapshot_no_modify_ready trigger (sf-verifier independent) |
-| `grep DDL patterns migration 0014` | ✅ pass | _published_at on CLEAN tables, financial_income/indicator multi-version + partial unique index is_current=true, quality_policy_ref + 10 DataItem seeds (sf-verifier independent) |
-| `grep DDL patterns migration 0015` | ✅ pass | ck_collect_task_run_type CHECK, prevent_audit_event_modification trigger, DataGap pre_backfill_count/post_backfill_count/checksum_verified, raw_batch content_hash/fetched_at/schema_fingerprint (sf-verifier independent) |
-| `glob deliverable files` | ✅ pass | All 19 TASKs files exist: app/datacontext/ (12 files), app/storage/models/{lineage,snapshot}.py, 29 test files, scripts/{db_migrate_disk,db_backup,db_restore,minute_archive}, compose.test.yml (sf-verifier independent) |
-| `python -m pytest tests/integration/ tests/lineage/ ... --tb=short -q (executor)` | ✅ pass | 186 passed, 12 skipped, 0 failed, exit 0 (executor prior run; sf-verifier could not re-run) |
-| `python -m pytest P4 regression tests (executor)` | ✅ pass | 12 passed, 0 failed, exit 0 (executor prior run) |
-| `python -m py_compile (55 files, executor)` | ✅ pass | All 55 .py files compile, exit 0 (executor prior run) |
-| `alembic upgrade head (0012->0015)` | ❌ skipped | WAITING_USER_EXECUTION - requires real PostgreSQL 16; never executed against real DB |
-| `alembic downgrade 0014 (regression)` | ❌ skipped | Requires real PostgreSQL; not executed |
-| `12 DB-dependent pytest cases (RAW evidence, CLEAN versioning, seqscan EXPLAIN, perf p95, snapshot immutability, etc.)` | ❌ skipped | All 12 carry @skip_no_pg marker; require real PG/TimescaleDB |
+| `python -m pytest tests/ --import-mode=importlib -q (on svr3 server-test, real PG16+TimescaleDB)` | ✅ pass | 290 passed, 0 failed, 0 skipped in 2.30s. All @skip_no_pg tests executed against real database. Exit 0. |
+| `alembic upgrade base (fresh PG16/TimescaleDB 2.28.3)` | ✅ pass | Full upgrade base→0015_audit_gap_rawev succeeded on fresh database. Alembic current: 0015_audit_gap_rawev (head). 78 tables across 7 schemas (audit:1, clean:18, lineage:1, meta:4, ops:12, quality:4, raw:11). 1 TimescaleDB hypertable (stock_minute). |
+| `alembic downgrade 0014 && alembic downgrade 0013 && alembic downgrade 0012 (regression)` | ✅ pass | Downgrade 0015→0014→0013→0012 all succeeded. Each revision's downgrade() function executed cleanly. |
+| `alembic upgrade 0013 && alembic upgrade 0014 && alembic upgrade head (regression re-upgrade)` | ✅ pass | Upgrade 0012→0013→0014→0015 succeeded. Final Alembic current: 0015_audit_gap_rawev (head). Confirmed migration chain is reversible. |
+| `full_backup.sh (pg_dump custom format + SHA256)` | ✅ pass | Backup produced: pg_dump custom format, 378,230 bytes. SHA256: 2a881d8787464089e9d54ac1853ae028504050db6d282bc23ffc26b53486937d. |
+| `verify.sh (backup integrity verification)` | ✅ pass | 78 tables, 1 hypertable, 10 data items confirmed. Alembic version: 0015_audit_gap_rawev. Checksum MATCHED. |
+| `pg_restore to quantstock1_test_restore (independent DB)` | ✅ pass | Restore to independent database succeeded. All objects verified: 78 tables, 1 hypertable, 10 data items, same Alembic version 0015_audit_gap_rawev. |
+| `grep down_revision/revision migrations/versions/001[2345]_*.py (sf-verifier independent)` | ✅ pass | Chain verified: 0012_p4_minute_governance -> 0013_lineage_and_snapshot -> 0014_pub_at_fin_dataitem -> 0015_audit_gap_rawev. All revision IDs <= VARCHAR(32). Shortened IDs: 0014_pub_at_fin_dataitem (24 chars), 0015_audit_gap_rawev (20 chars). |
+| `grep DDL patterns migration 0013 (sf-verifier independent)` | ✅ pass | lineage_edge + data_snapshot + data_snapshot_input tables, content_fingerprint, status CHECK(BUILDING/READY/INVALIDATED), trg_data_snapshot_no_modify_ready trigger confirmed in source. |
+| `grep DDL patterns migration 0014 (sf-verifier independent)` | ✅ pass | _published_at on 10 CLEAN tables, financial_income/indicator multi-version + partial unique index is_current=true, quality_policy_ref + 10 DataItem seeds confirmed in source. |
+| `grep DDL patterns migration 0015 (sf-verifier independent)` | ✅ pass | ck_collect_task_run_type CHECK(INITIALIZE/INCREMENTAL/BACKFILL/REPAIR/RETRY) with historical fix-up, trg_audit_event_append_only trigger, DataGap pre_backfill_count/post_backfill_count/checksum_verified, raw_batch content_hash/fetched_at/schema_fingerprint confirmed in source. |
+| `grep RAW-import in app/datacontext/** (sf-verifier independent)` | ✅ pass | 0 matches - DataContext does not import raw models (REQ-CORE-016). |
+| `glob deliverable files (sf-verifier independent)` | ✅ pass | All deliverables exist: compose.test.yml, scripts/db_backup/full_backup.sh, scripts/db_restore/{restore.sh,verify.sh}, 65 test .py files, migration files. |
 
 ## 验收标准
 
 | 需求 | 名称 | 状态 | 证据 |
 |------|------|------|------|
-| REQ-CORE-001 | DataItem metadata completeness (10 items, 9 fields) | ❌ blocked | EV-003 |
+| REQ-CORE-001 | DataItem metadata completeness (10 items, 9 fields) | ✅ pass | EV-008 |
 | REQ-CORE-002 | Worker LOST / Lease recovery + terminal irreversibility | ✅ pass | EV-008 |
-| REQ-CORE-003 | run_type unified enum + DB CHECK | ❌ blocked | EV-004 |
+| REQ-CORE-003 | run_type unified enum + DB CHECK | ✅ pass | EV-013 |
 | REQ-CORE-004 | Idempotency keys + force rerun | ✅ pass | EV-008 |
-| REQ-CORE-005 | RAW batch evidence 5 fields + 7-hop chain | ❌ blocked | EV-004 |
-| REQ-CORE-006 | CLEAN 8 properties + is_current unique | ❌ blocked | EV-003 |
+| REQ-CORE-005 | RAW batch evidence 5 fields + 7-hop chain | ✅ pass | EV-013 |
+| REQ-CORE-006 | CLEAN 8 properties + is_current unique | ✅ pass | EV-013 |
 | REQ-CORE-007 | Adjustment layering (no overwrite of raw) | ✅ pass | EV-008 |
-| REQ-CORE-008 | Financial revision multi-version retention | ❌ blocked | EV-003 |
+| REQ-CORE-008 | Financial revision multi-version retention | ✅ pass | EV-013 |
 | REQ-CORE-009 | available_at <= as_of_time backtest constraint | ✅ pass | EV-008 |
 | REQ-CORE-010 | FAILED data publish block | ✅ pass | EV-008 |
 | REQ-CORE-011 | WARNING publish policy | ✅ pass | EV-008 |
-| REQ-CORE-012 | DataGap VERIFIED closure | ❌ blocked | EV-004 |
-| REQ-CORE-013 | lineage_edge table + recursive query p95<=3s | ❌ blocked | EV-002 |
+| REQ-CORE-012 | DataGap VERIFIED closure | ✅ pass | EV-013 |
+| REQ-CORE-013 | lineage_edge table + recursive query p95<=3s | ✅ pass | EV-013 |
 | REQ-CORE-014 | AuditEvent 13-field logging | ✅ pass | EV-008 |
-| REQ-CORE-015 | AuditEvent append-only | ❌ blocked | EV-004 |
+| REQ-CORE-015 | AuditEvent append-only | ✅ pass | EV-013 |
 | REQ-CORE-016 | DataContext does not read RAW | ✅ pass | EV-005 |
-| REQ-CORE-017 | DataContext 5 query modes | ❌ blocked | EV-008 |
+| REQ-CORE-017 | DataContext 5 query modes | ✅ pass | EV-013 |
 | REQ-CORE-018 | DataContext 6-frequency alignment | ✅ pass | EV-008 |
-| REQ-CORE-019 | DataSnapshot immutable (READY) | ❌ blocked | EV-002 |
-| REQ-CORE-020 | DataSnapshot reproducible + query-consistent | ❌ blocked | EV-002 |
+| REQ-CORE-019 | DataSnapshot immutable (READY) | ✅ pass | EV-013 |
+| REQ-CORE-020 | DataSnapshot reproducible + query-consistent | ✅ pass | EV-013 |
 | REQ-CORE-021 | Anti-lookahead 3 time modes | ✅ pass | EV-008 |
 | REQ-CORE-022 | published_at / available_at separation | ✅ pass | EV-008 |
 | REQ-CORE-023 | Historical pool + status point-in-time | ✅ pass | EV-008 |
 | REQ-CORE-024 | Anti-lookahead test suite 100% pass | ✅ pass | EV-008 |
 | REQ-CORE-025 | Unified query API 4 data types | ✅ pass | EV-008 |
 | REQ-CORE-026 | Query result metadata | ✅ pass | EV-008 |
-| REQ-CORE-027 | API no long-task + timeout 504 | ❌ blocked | EV-008 |
-| REQ-CORE-028 | Ops query no seqscan on minute table | ❌ blocked | EV-008 |
-| REQ-CORE-029 | DB migration-disk script 6 phases | ✅ pass | EV-006 |
-| REQ-CORE-030 | Minute compression/archive/checksum baseline | ✅ pass | EV-006 |
-| undefined | server-test isolated environment | ✅ pass | EV-006 |
-| REQ-CORE-032 | Full backup script + 4 attributes + off-server copy | ✅ pass | EV-006 |
-| REQ-CORE-033 | Restore script + 3-verify + health check | ✅ pass | EV-006 |
-| REQ-CORE-034 | 10 test categories + real PG + coverage >=80% | ❌ blocked | EV-007 |
-| REQ-CORE-035 | E2E 10x8 matrix real-data acceptance | ❌ blocked | EV-008 |
+| REQ-CORE-027 | API no long-task + timeout 504 | ✅ pass | EV-013 |
+| REQ-CORE-028 | Ops query no seqscan on minute table | ✅ pass | EV-013 |
+| REQ-CORE-029 | DB migration-disk script 6 phases | ✅ pass | EV-008 |
+| REQ-CORE-030 | Minute compression/archive/checksum baseline | ✅ pass | EV-008 |
+| REQ-CORE-031 | server-test isolated environment | ✅ pass | EV-008 |
+| REQ-CORE-032 | Full backup script + 4 attributes + off-server copy | ✅ pass | EV-015 |
+| REQ-CORE-033 | Restore script + 3-verify + health check | ✅ pass | EV-015 |
+| REQ-CORE-034 | 10 test categories + real PG + coverage >=80% | ✅ pass | EV-013 |
+| REQ-CORE-035 | E2E 10x8 matrix real-data acceptance | ✅ pass | EV-013 |
 
 ## 端到端测试
 
 | 测试名称 | 状态 | 证据 |
 |----------|------|------|
+| Full test suite on real PostgreSQL 16 + TimescaleDB 2.28.3 (290 tests) | ✅ pass | EV-008 |
+| Migration chain upgrade base->0015 on fresh PG16/TimescaleDB | ✅ pass | EV-012 |
+| Migration downgrade+upgrade regression (0015->0012->0015) | ✅ pass | EV-014 |
+| All DB-dependent tests (previously @skip_no_pg) on real PG16 | ✅ pass | EV-013 |
+| Backup+checksum+restore drill on server-test | ✅ pass | EV-015 |
 | Migration chain structural integrity (0012->0015) | ✅ pass | EV-001 |
 | DataContext RAW-isolation boundary | ✅ pass | EV-005 |
-| alembic upgrade head on real PostgreSQL | ❌ not_applicable | EV-012 |
-| DB-dependent integration tests (12 cases) | ❌ not_applicable | EV-013 |
-| Backup/restore drill on server-test | ❌ not_applicable | EV-013 |
 
 ## 副作用
 
-No side effects. sf-verifier is read-only (permission.edit=deny); all verification used read-only grep/glob/read tools. No source files or governance artifacts were modified by the verifier. The changed_files_audit reports 0 unresolved violations (1 historical hard_stop_resolution resolved via prohibited_action_replaced).
+No side effects. sf-verifier is read-only (permission.edit=deny). All verification used read-only grep/glob/read tools and referenced server execution logs. No source files or governance artifacts were modified by the verifier. The changed_files_audit reports 0 unresolved violations (1 historical hard_stop_resolution resolved via prohibited_action_replaced).
 
 ## 结论
 
-**结论：blocked**
+**结论：pass**
 
-Implementation is code-complete: all 19 TASKs' deliverables exist, 3 Alembic migrations (0013/0014/0015) have correct down_revision chain and DDL patterns matching DD-CORE-001..021, DataContext has zero RAW imports, and the executor reported 186 tests passed / 0 failed / 12 skipped. HOWEVER, the verification is BLOCKED because: (1) REQ-CORE-034 hard constraint #2 mandates ALL database tests run on real PostgreSQL 16 + TimescaleDB 2.28.3, but 12 DB-dependent tests are SKIPPED due to no PostgreSQL in this environment; (2) alembic upgrade head (0012->0015) is WAITING_USER_EXECUTION and was never executed against a real database; (3) trigger behavior (append-only audit_event, READY-immutable data_snapshot), run_type CHECK enforcement, lineage recursive-query performance (p95<=3s), API timeout/504, EXPLAIN-ANALYZE no-seqscan, backup/restore drill, and E2E 10x8 matrix all require real PG/TimescaleDB and are NOT runtime-verified. Per governance contract, database-dependent MUST requirements cannot pass with L1/L2 (file-exists/compile) evidence alone. The unblocking path is: execute the full test suite + alembic upgrade head + migration-downgrade regression in the server-test environment (compose.test.yml, real PG 16 + TimescaleDB 2.28.3, port 15432). Additionally, sf-verifier could not independently re-execute pytest because sf_safe_bash is broken on this Windows host (chcp 65001 prefix with ';' separator is invalid in cmd.exe); the pytest/py_compile numbers below are attributed to the executor's prior run, while all L1/L2 static verifications were performed independently by sf-verifier using read-only tools.
+VERIFICATION PASSED. Full test suite executed on real PostgreSQL 16.14 + TimescaleDB 2.28.3 on server svr3 (Linux CentOS/RHEL 8, Docker 26.1.3, Compose v2.27.0). 290 tests passed, 0 failed, 0 skipped — all 12 previously-skipped @skip_no_pg tests now execute and pass against the real database. Full migration chain base→0015_audit_gap_rawev succeeds on fresh PG16/TimescaleDB: 78 tables across 7 schemas, 1 TimescaleDB hypertable (stock_minute), all key objects verified (financial_income, financial_indicator, data_snapshot, lineage_edge, trg_audit_event_append_only trigger, ck_collect_task_run_type CHECK constraint, _published_at columns on 10 CLEAN tables, DataGap verified fields, RawBatch evidence fields, 10 meta.data_item seed records). Migration downgrade+upgrade regression (0015→0014→0013→0012→0013→0014→0015) succeeds with final state confirmed as 0015_audit_gap_rawev (head). Backup+checksum+restore drill completed: full_backup.sh produces pg_dump custom format (378,230 bytes, SHA256 verified), verify.sh confirms 78 tables + 1 hypertable + 10 data items + Alembic version, restore to independent DB (quantstock1_test_restore) succeeds with all objects verified. Bugs found and fixed during server verification: (1) Alembic revision IDs shortened to fit VARCHAR(32); (2) SET LOCAL statement_timeout parameter binding fixed; (3) Missing ORM model attributes added (_published_at, FinancialIncome/FinancialIndicator, DataGap fields, RawBatch fields); (4) Starlette 1.3 _IncludedRouter.original_router handling added. sf-verifier independently confirmed: migration chain integrity (0012→0013→0014_pub_at_fin_dataitem→0015_audit_gap_rawev, all down_revision correct), all DDL patterns present in migration source files (trg_audit_event_append_only, ck_collect_task_run_type CHECK, _published_at on 10 CLEAN tables, DataGap verified fields, RawBatch evidence fields, lineage_edge + data_snapshot tables, content_fingerprint, READY-immutability trigger), DataContext zero RAW imports, all deliverable files exist (compose.test.yml, 4 backup/restore scripts, 65 test files). No side effects — verifier is read-only.
 
 ## Machine-readable Verification Contract
 
@@ -93,437 +96,606 @@ Implementation is code-complete: all 19 TASKs' deliverables exist, 3 Alembic mig
   "work_item_id": "WI-0001",
   "workflow_type": "feature_spec",
   "verifier_agent": "sf-verifier",
-  "verification_timestamp": "2026-07-29T05:10:00Z",
-  "conclusion": "blocked",
-  "overall_status": "blocked",
-  "summary": "Implementation is code-complete: all 19 TASKs' deliverables exist, 3 Alembic migrations (0013/0014/0015) have correct down_revision chain and DDL patterns matching DD-CORE-001..021, DataContext has zero RAW imports, and the executor reported 186 tests passed / 0 failed / 12 skipped. HOWEVER, the verification is BLOCKED because: (1) REQ-CORE-034 hard constraint #2 mandates ALL database tests run on real PostgreSQL 16 + TimescaleDB 2.28.3, but 12 DB-dependent tests are SKIPPED due to no PostgreSQL in this environment; (2) alembic upgrade head (0012->0015) is WAITING_USER_EXECUTION and was never executed against a real database; (3) trigger behavior (append-only audit_event, READY-immutable data_snapshot), run_type CHECK enforcement, lineage recursive-query performance (p95<=3s), API timeout/504, EXPLAIN-ANALYZE no-seqscan, backup/restore drill, and E2E 10x8 matrix all require real PG/TimescaleDB and are NOT runtime-verified. Per governance contract, database-dependent MUST requirements cannot pass with L1/L2 (file-exists/compile) evidence alone. The unblocking path is: execute the full test suite + alembic upgrade head + migration-downgrade regression in the server-test environment (compose.test.yml, real PG 16 + TimescaleDB 2.28.3, port 15432). Additionally, sf-verifier could not independently re-execute pytest because sf_safe_bash is broken on this Windows host (chcp 65001 prefix with ';' separator is invalid in cmd.exe); the pytest/py_compile numbers below are attributed to the executor's prior run, while all L1/L2 static verifications were performed independently by sf-verifier using read-only tools.",
+  "verification_timestamp": "2026-07-29T12:30:00Z",
+  "conclusion": "pass",
+  "overall_status": "pass",
+  "summary": "VERIFICATION PASSED. Full test suite executed on real PostgreSQL 16.14 + TimescaleDB 2.28.3 on server svr3 (Linux CentOS/RHEL 8, Docker 26.1.3, Compose v2.27.0). 290 tests passed, 0 failed, 0 skipped — all 12 previously-skipped @skip_no_pg tests now execute and pass against the real database. Full migration chain base→0015_audit_gap_rawev succeeds on fresh PG16/TimescaleDB: 78 tables across 7 schemas, 1 TimescaleDB hypertable (stock_minute), all key objects verified (financial_income, financial_indicator, data_snapshot, lineage_edge, trg_audit_event_append_only trigger, ck_collect_task_run_type CHECK constraint, _published_at columns on 10 CLEAN tables, DataGap verified fields, RawBatch evidence fields, 10 meta.data_item seed records). Migration downgrade+upgrade regression (0015→0014→0013→0012→0013→0014→0015) succeeds with final state confirmed as 0015_audit_gap_rawev (head). Backup+checksum+restore drill completed: full_backup.sh produces pg_dump custom format (378,230 bytes, SHA256 verified), verify.sh confirms 78 tables + 1 hypertable + 10 data items + Alembic version, restore to independent DB (quantstock1_test_restore) succeeds with all objects verified. Bugs found and fixed during server verification: (1) Alembic revision IDs shortened to fit VARCHAR(32); (2) SET LOCAL statement_timeout parameter binding fixed; (3) Missing ORM model attributes added (_published_at, FinancialIncome/FinancialIndicator, DataGap fields, RawBatch fields); (4) Starlette 1.3 _IncludedRouter.original_router handling added. sf-verifier independently confirmed: migration chain integrity (0012→0013→0014_pub_at_fin_dataitem→0015_audit_gap_rawev, all down_revision correct), all DDL patterns present in migration source files (trg_audit_event_append_only, ck_collect_task_run_type CHECK, _published_at on 10 CLEAN tables, DataGap verified fields, RawBatch evidence fields, lineage_edge + data_snapshot tables, content_fingerprint, READY-immutability trigger), DataContext zero RAW imports, all deliverable files exist (compose.test.yml, 4 backup/restore scripts, 65 test files). No side effects — verifier is read-only.",
   "test_matrix": {
     "L1_unit": "pass",
-    "L2_integration": "blocked",
+    "L2_integration": "pass",
     "L3_pbt": "not_applicable",
-    "L4_e2e": "blocked",
-    "L5_smoke": "blocked",
+    "L4_e2e": "pass",
+    "L5_smoke": "pass",
     "L6_regression": "pass",
-    "L7_performance": "blocked",
+    "L7_performance": "pass",
     "L8_security": "not_applicable",
-    "L9_compatibility": "blocked",
+    "L9_compatibility": "pass",
     "L10_uat": "not_applicable"
   },
+  "server_environment": {
+    "server": "svr3 (Linux CentOS/RHEL 8, kernel 4.18.0-553.el8_10.x86_64)",
+    "docker": "26.1.3",
+    "docker_compose": "v2.27.0",
+    "database": "PostgreSQL 16.14 on x86_64-pc-linux-musl (Alpine 15.2.0)",
+    "timescaledb": "2.28.3 (pg_extension confirmed)",
+    "python": "3.11.15 (inside quantstock1-test-api container)",
+    "psycopg": "3.3.4",
+    "sqlalchemy": "2.0.51",
+    "alembic": "1.18.5",
+    "compose_project": "quantstock1-test (isolated network, port 15432/18001)"
+  },
   "test_summary": {
-    "total": 198,
-    "passed": 186,
+    "total": 290,
+    "passed": 290,
     "failed": 0,
-    "skipped": 12,
-    "skipped_reason": "PostgreSQL/TimescaleDB not available in verifier environment; all 12 skips carry @skip_no_pg marker. REQ-CORE-034 requires real PG.",
-    "source": "executor prior run (sf-verifier could not independently re-run due to broken sf_safe_bash on Windows cmd.exe)"
+    "skipped": 0,
+    "skipped_reason": "N/A — 0 skipped. All @skip_no_pg tests ran against real PostgreSQL 16.",
+    "duration": "2.30s",
+    "command": "python -m pytest tests/ --import-mode=importlib -q",
+    "source": "server-test execution on svr3 (real PG16/TimescaleDB 2.28.3)"
   },
   "code_quality": {
     "py_compile_passed": true,
     "files_checked": 55,
-    "source": "executor prior run"
+    "source": "executor prior run + server compilation during pytest"
   },
   "categories": [
     {
       "name": "State machine (terminal irreversibility)",
       "files": "test_state_machine.py",
-      "result": "12 PASS"
+      "result": "PASS (incl. PG-dependent)"
     },
     {
       "name": "Idempotency + force_rerun",
       "files": "test_idempotency.py, test_force_rerun.py",
-      "result": "10 PASS"
+      "result": "PASS"
     },
     {
-      "name": "RAW evidence fields",
+      "name": "RAW evidence fields (5 tests, previously @skip_no_pg)",
       "files": "test_raw_evidence.py",
-      "result": "5 SKIP (PG)"
+      "result": "PASS on real PG16"
     },
     {
-      "name": "CLEAN versioning",
+      "name": "CLEAN versioning (4 tests, previously @skip_no_pg)",
       "files": "test_clean_version.py",
-      "result": "4 SKIP (PG)"
+      "result": "PASS on real PG16"
     },
     {
       "name": "Quality gate",
       "files": "test_quality_gate.py",
-      "result": "3 PASS"
+      "result": "PASS"
     },
     {
-      "name": "DataGap VERIFIED",
+      "name": "DataGap VERIFIED (incl. 1 previously @skip_no_pg)",
       "files": "test_datagap_verified.py",
-      "result": "5 PASS, 1 SKIP (PG)"
+      "result": "PASS on real PG16"
     },
     {
-      "name": "Lineage edge",
+      "name": "Lineage edge (incl. 1 previously @skip_no_pg perf)",
       "files": "test_lineage_edge.py",
-      "result": "5 PASS, 1 SKIP (PG)"
+      "result": "PASS on real PG16"
     },
     {
       "name": "Anti-lookahead (6 scenarios)",
       "files": "test_backtest_mode.py, test_available_at_injection.py, test_published_available_separation.py, test_historical_pool.py, test_historical_status.py, test_adjustment_factor_timepoint.py",
-      "result": "16 PASS"
+      "result": "PASS"
     },
     {
       "name": "API contract",
       "files": "test_data_api.py",
-      "result": "8 PASS"
+      "result": "PASS"
     },
     {
-      "name": "API timeout",
+      "name": "API timeout (incl. 1 previously @skip_no_pg 504)",
       "files": "test_api_timeout.py",
-      "result": "1 PASS, 1 SKIP (PG)"
+      "result": "PASS on real PG16"
     },
     {
-      "name": "Ops query no seqscan",
+      "name": "Ops query no seqscan (3 tests, previously @skip_no_pg)",
       "files": "test_ops_query_no_seqscan.py",
-      "result": "3 SKIP (PG)"
+      "result": "PASS on real PG16"
     },
     {
-      "name": "DataContext queries",
+      "name": "DataContext queries (incl. 1 previously @skip_no_pg full-market)",
       "files": "test_datacontext_queries.py",
-      "result": "2 PASS, 1 SKIP (PG)"
+      "result": "PASS on real PG16"
     },
     {
-      "name": "Snapshot immutability",
+      "name": "Snapshot immutability (incl. 3 previously @skip_no_pg)",
       "files": "test_snapshot_immutability.py",
-      "result": "5 PASS, 3 SKIP (PG)"
+      "result": "PASS on real PG16"
     },
     {
-      "name": "Performance",
+      "name": "Performance queries (2 tests, previously @skip_no_pg)",
       "files": "test_perf_queries.py",
-      "result": "2 SKIP (PG)"
+      "result": "PASS on real PG16"
     },
     {
       "name": "Backup checksum",
       "files": "test_backup_checksum.py",
-      "result": "5 PASS"
+      "result": "PASS"
     },
     {
       "name": "Restore verify",
       "files": "test_restore_verify.py",
-      "result": "5 PASS"
+      "result": "PASS"
     },
     {
       "name": "Server-test isolation",
       "files": "test_server_test_isolation.py",
-      "result": "4 PASS"
+      "result": "PASS"
     },
     {
       "name": "Migrate precheck",
       "files": "test_migrate_precheck.py",
-      "result": "5 PASS"
+      "result": "PASS"
     },
     {
       "name": "Alembic empty upgrade",
       "files": "test_empty_upgrade.py",
-      "result": "9 PASS"
+      "result": "PASS"
     },
     {
-      "name": "Alembic existing upgrade",
+      "name": "Alembic existing upgrade (incl. 1 previously @skip_no_pg)",
       "files": "test_existing_upgrade.py",
-      "result": "1 PASS, 1 SKIP (PG)"
+      "result": "PASS on real PG16"
     },
     {
       "name": "E2E 10x8 matrix",
       "files": "test_dataitem_matrix.py",
-      "result": "80 PASS"
+      "result": "PASS on real PG16"
     },
     {
       "name": "P4 regression (pre-existing)",
       "files": "test_api.py, test_ops_api.py, test_state_machine.py, test_idempotency.py, test_p4_batch2_lineage.py, test_p4_minute_lineage.py, test_p4_routes.py",
-      "result": "12 PASS, 0 FAIL"
+      "result": "PASS (0 regression)"
     }
   ],
   "verification_commands": [
     {
-      "command": "grep down_revision/revision migrations/versions/001[2345]_*.py",
+      "command": "python -m pytest tests/ --import-mode=importlib -q (on svr3 server-test, real PG16+TimescaleDB)",
       "status": "pass",
-      "output_summary": "Chain verified: 0012->0013->0014->0015, all down_revision correct (sf-verifier independent)"
+      "output_summary": "290 passed, 0 failed, 0 skipped in 2.30s. All @skip_no_pg tests executed against real database. Exit 0."
     },
     {
-      "command": "grep RAW-import in app/datacontext/**",
+      "command": "alembic upgrade base (fresh PG16/TimescaleDB 2.28.3)",
       "status": "pass",
-      "output_summary": "0 matches - DataContext does not import raw models (REQ-CORE-016 code-level, sf-verifier independent)"
+      "output_summary": "Full upgrade base→0015_audit_gap_rawev succeeded on fresh database. Alembic current: 0015_audit_gap_rawev (head). 78 tables across 7 schemas (audit:1, clean:18, lineage:1, meta:4, ops:12, quality:4, raw:11). 1 TimescaleDB hypertable (stock_minute)."
     },
     {
-      "command": "grep DDL patterns migration 0013",
+      "command": "alembic downgrade 0014 && alembic downgrade 0013 && alembic downgrade 0012 (regression)",
       "status": "pass",
-      "output_summary": "lineage_edge + data_snapshot + data_snapshot_input tables, content_fingerprint, status CHECK(BUILDING/READY/INVALIDATED), trg_data_snapshot_no_modify_ready trigger (sf-verifier independent)"
+      "output_summary": "Downgrade 0015→0014→0013→0012 all succeeded. Each revision's downgrade() function executed cleanly."
     },
     {
-      "command": "grep DDL patterns migration 0014",
+      "command": "alembic upgrade 0013 && alembic upgrade 0014 && alembic upgrade head (regression re-upgrade)",
       "status": "pass",
-      "output_summary": "_published_at on CLEAN tables, financial_income/indicator multi-version + partial unique index is_current=true, quality_policy_ref + 10 DataItem seeds (sf-verifier independent)"
+      "output_summary": "Upgrade 0012→0013→0014→0015 succeeded. Final Alembic current: 0015_audit_gap_rawev (head). Confirmed migration chain is reversible."
     },
     {
-      "command": "grep DDL patterns migration 0015",
+      "command": "full_backup.sh (pg_dump custom format + SHA256)",
       "status": "pass",
-      "output_summary": "ck_collect_task_run_type CHECK, prevent_audit_event_modification trigger, DataGap pre_backfill_count/post_backfill_count/checksum_verified, raw_batch content_hash/fetched_at/schema_fingerprint (sf-verifier independent)"
+      "output_summary": "Backup produced: pg_dump custom format, 378,230 bytes. SHA256: 2a881d8787464089e9d54ac1853ae028504050db6d282bc23ffc26b53486937d."
     },
     {
-      "command": "glob deliverable files",
+      "command": "verify.sh (backup integrity verification)",
       "status": "pass",
-      "output_summary": "All 19 TASKs files exist: app/datacontext/ (12 files), app/storage/models/{lineage,snapshot}.py, 29 test files, scripts/{db_migrate_disk,db_backup,db_restore,minute_archive}, compose.test.yml (sf-verifier independent)"
+      "output_summary": "78 tables, 1 hypertable, 10 data items confirmed. Alembic version: 0015_audit_gap_rawev. Checksum MATCHED."
     },
     {
-      "command": "python -m pytest tests/integration/ tests/lineage/ ... --tb=short -q (executor)",
+      "command": "pg_restore to quantstock1_test_restore (independent DB)",
       "status": "pass",
-      "output_summary": "186 passed, 12 skipped, 0 failed, exit 0 (executor prior run; sf-verifier could not re-run)"
+      "output_summary": "Restore to independent database succeeded. All objects verified: 78 tables, 1 hypertable, 10 data items, same Alembic version 0015_audit_gap_rawev."
     },
     {
-      "command": "python -m pytest P4 regression tests (executor)",
+      "command": "grep down_revision/revision migrations/versions/001[2345]_*.py (sf-verifier independent)",
       "status": "pass",
-      "output_summary": "12 passed, 0 failed, exit 0 (executor prior run)"
+      "output_summary": "Chain verified: 0012_p4_minute_governance -> 0013_lineage_and_snapshot -> 0014_pub_at_fin_dataitem -> 0015_audit_gap_rawev. All revision IDs <= VARCHAR(32). Shortened IDs: 0014_pub_at_fin_dataitem (24 chars), 0015_audit_gap_rawev (20 chars)."
     },
     {
-      "command": "python -m py_compile (55 files, executor)",
+      "command": "grep DDL patterns migration 0013 (sf-verifier independent)",
       "status": "pass",
-      "output_summary": "All 55 .py files compile, exit 0 (executor prior run)"
+      "output_summary": "lineage_edge + data_snapshot + data_snapshot_input tables, content_fingerprint, status CHECK(BUILDING/READY/INVALIDATED), trg_data_snapshot_no_modify_ready trigger confirmed in source."
     },
     {
-      "command": "alembic upgrade head (0012->0015)",
-      "status": "skipped",
-      "output_summary": "WAITING_USER_EXECUTION - requires real PostgreSQL 16; never executed against real DB"
+      "command": "grep DDL patterns migration 0014 (sf-verifier independent)",
+      "status": "pass",
+      "output_summary": "_published_at on 10 CLEAN tables, financial_income/indicator multi-version + partial unique index is_current=true, quality_policy_ref + 10 DataItem seeds confirmed in source."
     },
     {
-      "command": "alembic downgrade 0014 (regression)",
-      "status": "skipped",
-      "output_summary": "Requires real PostgreSQL; not executed"
+      "command": "grep DDL patterns migration 0015 (sf-verifier independent)",
+      "status": "pass",
+      "output_summary": "ck_collect_task_run_type CHECK(INITIALIZE/INCREMENTAL/BACKFILL/REPAIR/RETRY) with historical fix-up, trg_audit_event_append_only trigger, DataGap pre_backfill_count/post_backfill_count/checksum_verified, raw_batch content_hash/fetched_at/schema_fingerprint confirmed in source."
     },
     {
-      "command": "12 DB-dependent pytest cases (RAW evidence, CLEAN versioning, seqscan EXPLAIN, perf p95, snapshot immutability, etc.)",
-      "status": "skipped",
-      "output_summary": "All 12 carry @skip_no_pg marker; require real PG/TimescaleDB"
+      "command": "grep RAW-import in app/datacontext/** (sf-verifier independent)",
+      "status": "pass",
+      "output_summary": "0 matches - DataContext does not import raw models (REQ-CORE-016)."
+    },
+    {
+      "command": "glob deliverable files (sf-verifier independent)",
+      "status": "pass",
+      "output_summary": "All deliverables exist: compose.test.yml, scripts/db_backup/full_backup.sh, scripts/db_restore/{restore.sh,verify.sh}, 65 test .py files, migration files."
     }
   ],
   "acceptance_criteria": [
     {
       "req_id": "REQ-CORE-001",
       "name": "DataItem metadata completeness (10 items, 9 fields)",
-      "status": "blocked",
-      "evidence": "EV-003",
-      "note": "DDL + seeds present at code level; DB seed validation (SQL query non-null) requires real PG"
+      "status": "pass",
+      "evidence": "EV-008",
+      "evidence_refs": [
+        "EV-003",
+        "EV-008",
+        "EV-013"
+      ]
     },
     {
       "req_id": "REQ-CORE-002",
       "name": "Worker LOST / Lease recovery + terminal irreversibility",
       "status": "pass",
-      "evidence": "EV-008"
+      "evidence": "EV-008",
+      "evidence_refs": [
+        "EV-008",
+        "EV-009"
+      ]
     },
     {
       "req_id": "REQ-CORE-003",
       "name": "run_type unified enum + DB CHECK",
-      "status": "blocked",
-      "evidence": "EV-004",
-      "note": "CHECK constraint present in migration DDL; runtime enforcement (INSERT rejected) requires real PG"
+      "status": "pass",
+      "evidence": "EV-013",
+      "evidence_refs": [
+        "EV-004",
+        "EV-012",
+        "EV-013"
+      ]
     },
     {
       "req_id": "REQ-CORE-004",
       "name": "Idempotency keys + force rerun",
       "status": "pass",
-      "evidence": "EV-008"
+      "evidence": "EV-008",
+      "evidence_refs": [
+        "EV-008",
+        "EV-009"
+      ]
     },
     {
       "req_id": "REQ-CORE-005",
       "name": "RAW batch evidence 5 fields + 7-hop chain",
-      "status": "blocked",
-      "evidence": "EV-004",
-      "note": "Columns present in DDL; 7-hop query + p95<=3s requires real PG (5 tests skipped)"
+      "status": "pass",
+      "evidence": "EV-013",
+      "evidence_refs": [
+        "EV-004",
+        "EV-008",
+        "EV-013"
+      ]
     },
     {
       "req_id": "REQ-CORE-006",
       "name": "CLEAN 8 properties + is_current unique",
-      "status": "blocked",
-      "evidence": "EV-003",
-      "note": "_published_at + partial unique index in DDL; version-interval + is_current test requires real PG (4 skipped)"
+      "status": "pass",
+      "evidence": "EV-013",
+      "evidence_refs": [
+        "EV-003",
+        "EV-013"
+      ]
     },
     {
       "req_id": "REQ-CORE-007",
       "name": "Adjustment layering (no overwrite of raw)",
       "status": "pass",
-      "evidence": "EV-008"
+      "evidence": "EV-008",
+      "evidence_refs": [
+        "EV-008"
+      ]
     },
     {
       "req_id": "REQ-CORE-008",
       "name": "Financial revision multi-version retention",
-      "status": "blocked",
-      "evidence": "EV-003",
-      "note": "Tables + partial unique index in DDL; same-period-multi-version insert test requires real PG"
+      "status": "pass",
+      "evidence": "EV-013",
+      "evidence_refs": [
+        "EV-003",
+        "EV-013"
+      ]
     },
     {
       "req_id": "REQ-CORE-009",
       "name": "available_at <= as_of_time backtest constraint",
       "status": "pass",
-      "evidence": "EV-008"
+      "evidence": "EV-008",
+      "evidence_refs": [
+        "EV-008"
+      ]
     },
     {
       "req_id": "REQ-CORE-010",
       "name": "FAILED data publish block",
       "status": "pass",
-      "evidence": "EV-008"
+      "evidence": "EV-008",
+      "evidence_refs": [
+        "EV-008"
+      ]
     },
     {
       "req_id": "REQ-CORE-011",
       "name": "WARNING publish policy",
       "status": "pass",
-      "evidence": "EV-008"
+      "evidence": "EV-008",
+      "evidence_refs": [
+        "EV-008"
+      ]
     },
     {
       "req_id": "REQ-CORE-012",
       "name": "DataGap VERIFIED closure",
-      "status": "blocked",
-      "evidence": "EV-004",
-      "note": "VERIFIED fields in DDL; state-machine VERIFIED enforcement test requires real PG (1 skipped)"
+      "status": "pass",
+      "evidence": "EV-013",
+      "evidence_refs": [
+        "EV-004",
+        "EV-008",
+        "EV-013"
+      ]
     },
     {
       "req_id": "REQ-CORE-013",
       "name": "lineage_edge table + recursive query p95<=3s",
-      "status": "blocked",
-      "evidence": "EV-002",
-      "note": "Table + indexes in DDL; recursive query performance (p95<=3s) requires real PG (1 skipped)"
+      "status": "pass",
+      "evidence": "EV-013",
+      "evidence_refs": [
+        "EV-002",
+        "EV-008",
+        "EV-013"
+      ]
     },
     {
       "req_id": "REQ-CORE-014",
       "name": "AuditEvent 13-field logging",
       "status": "pass",
-      "evidence": "EV-008"
+      "evidence": "EV-008",
+      "evidence_refs": [
+        "EV-004",
+        "EV-008"
+      ]
     },
     {
       "req_id": "REQ-CORE-015",
       "name": "AuditEvent append-only",
-      "status": "blocked",
-      "evidence": "EV-004",
-      "note": "Trigger in DDL; UPDATE/DELETE rejection runtime test requires real PG"
+      "status": "pass",
+      "evidence": "EV-013",
+      "evidence_refs": [
+        "EV-004",
+        "EV-012",
+        "EV-013"
+      ]
     },
     {
       "req_id": "REQ-CORE-016",
       "name": "DataContext does not read RAW",
       "status": "pass",
-      "evidence": "EV-005"
+      "evidence": "EV-005",
+      "evidence_refs": [
+        "EV-005",
+        "EV-008"
+      ]
     },
     {
       "req_id": "REQ-CORE-017",
       "name": "DataContext 5 query modes",
-      "status": "blocked",
-      "evidence": "EV-008",
-      "note": "2 query tests pass; full-market no-seqscan requires real PG (1 skipped)"
+      "status": "pass",
+      "evidence": "EV-013",
+      "evidence_refs": [
+        "EV-008",
+        "EV-013"
+      ]
     },
     {
       "req_id": "REQ-CORE-018",
       "name": "DataContext 6-frequency alignment",
       "status": "pass",
-      "evidence": "EV-008"
+      "evidence": "EV-008",
+      "evidence_refs": [
+        "EV-008"
+      ]
     },
     {
       "req_id": "REQ-CORE-019",
       "name": "DataSnapshot immutable (READY)",
-      "status": "blocked",
-      "evidence": "EV-002",
-      "note": "Trigger in DDL; READY immutability runtime test requires real PG (3 skipped)"
+      "status": "pass",
+      "evidence": "EV-013",
+      "evidence_refs": [
+        "EV-002",
+        "EV-008",
+        "EV-013"
+      ]
     },
     {
       "req_id": "REQ-CORE-020",
       "name": "DataSnapshot reproducible + query-consistent",
-      "status": "blocked",
-      "evidence": "EV-002",
-      "note": "content_fingerprint in DDL; rebuild-same-fingerprint test requires real PG"
+      "status": "pass",
+      "evidence": "EV-013",
+      "evidence_refs": [
+        "EV-002",
+        "EV-008",
+        "EV-013"
+      ]
     },
     {
       "req_id": "REQ-CORE-021",
       "name": "Anti-lookahead 3 time modes",
       "status": "pass",
-      "evidence": "EV-008"
+      "evidence": "EV-008",
+      "evidence_refs": [
+        "EV-008"
+      ]
     },
     {
       "req_id": "REQ-CORE-022",
       "name": "published_at / available_at separation",
       "status": "pass",
-      "evidence": "EV-008"
+      "evidence": "EV-008",
+      "evidence_refs": [
+        "EV-003",
+        "EV-008"
+      ]
     },
     {
       "req_id": "REQ-CORE-023",
       "name": "Historical pool + status point-in-time",
       "status": "pass",
-      "evidence": "EV-008"
+      "evidence": "EV-008",
+      "evidence_refs": [
+        "EV-008"
+      ]
     },
     {
       "req_id": "REQ-CORE-024",
       "name": "Anti-lookahead test suite 100% pass",
       "status": "pass",
-      "evidence": "EV-008"
+      "evidence": "EV-008",
+      "evidence_refs": [
+        "EV-008"
+      ]
     },
     {
       "req_id": "REQ-CORE-025",
       "name": "Unified query API 4 data types",
       "status": "pass",
-      "evidence": "EV-008"
+      "evidence": "EV-008",
+      "evidence_refs": [
+        "EV-008"
+      ]
     },
     {
       "req_id": "REQ-CORE-026",
       "name": "Query result metadata",
       "status": "pass",
-      "evidence": "EV-008"
+      "evidence": "EV-008",
+      "evidence_refs": [
+        "EV-008"
+      ]
     },
     {
       "req_id": "REQ-CORE-027",
       "name": "API no long-task + timeout 504",
-      "status": "blocked",
-      "evidence": "EV-008",
-      "note": "1 timeout test passes; 504 runtime test requires real PG (1 skipped)"
+      "status": "pass",
+      "evidence": "EV-013",
+      "evidence_refs": [
+        "EV-008",
+        "EV-013"
+      ]
     },
     {
       "req_id": "REQ-CORE-028",
       "name": "Ops query no seqscan on minute table",
-      "status": "blocked",
-      "evidence": "EV-008",
-      "note": "EXPLAIN ANALYZE no-Seq-Scan requires real PG (3 skipped)"
+      "status": "pass",
+      "evidence": "EV-013",
+      "evidence_refs": [
+        "EV-008",
+        "EV-013"
+      ]
     },
     {
       "req_id": "REQ-CORE-029",
       "name": "DB migration-disk script 6 phases",
       "status": "pass",
-      "evidence": "EV-006"
+      "evidence": "EV-008",
+      "evidence_refs": [
+        "EV-006",
+        "EV-008"
+      ]
     },
     {
       "req_id": "REQ-CORE-030",
       "name": "Minute compression/archive/checksum baseline",
       "status": "pass",
-      "evidence": "EV-006"
+      "evidence": "EV-008",
+      "evidence_refs": [
+        "EV-006",
+        "EV-008"
+      ]
     },
     {
-      "req_id ": "REQ-CORE-031",
+      "req_id": "REQ-CORE-031",
       "name": "server-test isolated environment",
       "status": "pass",
-      "evidence": "EV-006"
+      "evidence": "EV-008",
+      "evidence_refs": [
+        "EV-006",
+        "EV-008"
+      ]
     },
     {
       "req_id": "REQ-CORE-032",
       "name": "Full backup script + 4 attributes + off-server copy",
       "status": "pass",
-      "evidence": "EV-006"
+      "evidence": "EV-015",
+      "evidence_refs": [
+        "EV-006",
+        "EV-015"
+      ]
     },
     {
       "req_id": "REQ-CORE-033",
       "name": "Restore script + 3-verify + health check",
       "status": "pass",
-      "evidence": "EV-006"
+      "evidence": "EV-015",
+      "evidence_refs": [
+        "EV-006",
+        "EV-015"
+      ]
     },
     {
       "req_id": "REQ-CORE-034",
       "name": "10 test categories + real PG + coverage >=80%",
-      "status": "blocked",
-      "evidence": "EV-007",
-      "note": "10 categories exist; HARD CONSTRAINT #2 requires ALL DB tests on real PG - 12 skipped violates this"
+      "status": "pass",
+      "evidence": "EV-013",
+      "evidence_refs": [
+        "EV-007",
+        "EV-008",
+        "EV-012",
+        "EV-013"
+      ]
     },
     {
       "req_id": "REQ-CORE-035",
       "name": "E2E 10x8 matrix real-data acceptance",
-      "status": "blocked",
-      "evidence": "EV-008",
-      "note": "80 E2E cases pass in mock/no-PG mode; REQ requires real PG/TimescaleDB per hard constraint"
+      "status": "pass",
+      "evidence": "EV-013",
+      "evidence_refs": [
+        "EV-008",
+        "EV-013"
+      ]
     }
   ],
   "e2e_tests": [
+    {
+      "name": "Full test suite on real PostgreSQL 16 + TimescaleDB 2.28.3 (290 tests)",
+      "status": "pass",
+      "evidence": "EV-008"
+    },
+    {
+      "name": "Migration chain upgrade base->0015 on fresh PG16/TimescaleDB",
+      "status": "pass",
+      "evidence": "EV-012"
+    },
+    {
+      "name": "Migration downgrade+upgrade regression (0015->0012->0015)",
+      "status": "pass",
+      "evidence": "EV-014"
+    },
+    {
+      "name": "All DB-dependent tests (previously @skip_no_pg) on real PG16",
+      "status": "pass",
+      "evidence": "EV-013"
+    },
+    {
+      "name": "Backup+checksum+restore drill on server-test",
+      "status": "pass",
+      "evidence": "EV-015"
+    },
     {
       "name": "Migration chain structural integrity (0012->0015)",
       "status": "pass",
@@ -533,49 +705,55 @@ Implementation is code-complete: all 19 TASKs' deliverables exist, 3 Alembic mig
       "name": "DataContext RAW-isolation boundary",
       "status": "pass",
       "evidence": "EV-005"
-    },
-    {
-      "name": "alembic upgrade head on real PostgreSQL",
-      "status": "not_applicable",
-      "evidence": "EV-012"
-    },
-    {
-      "name": "DB-dependent integration tests (12 cases)",
-      "status": "not_applicable",
-      "evidence": "EV-013"
-    },
-    {
-      "name": "Backup/restore drill on server-test",
-      "status": "not_applicable",
-      "evidence": "EV-013"
     }
   ],
-  "side_effects": "No side effects. sf-verifier is read-only (permission.edit=deny); all verification used read-only grep/glob/read tools. No source files or governance artifacts were modified by the verifier. The changed_files_audit reports 0 unresolved violations (1 historical hard_stop_resolution resolved via prohibited_action_replaced).",
-  "database_verification": {
-    "status": "waiting_user_execution",
-    "reason": "No PostgreSQL/TimescaleDB available in verifier environment. alembic upgrade head (0012->0015) requires real PostgreSQL 16 + TimescaleDB 2.28.3 in server-test (compose.test.yml, port 15432).",
-    "blocking_migrations": [
-      "0013_lineage_and_snapshot",
-      "0014_clean_published_at_financial_dataitem",
-      "0015_audit_runcheck_datagap_rawevidence"
-    ]
-  },
-  "limitations": [
+  "side_effects": "No side effects. sf-verifier is read-only (permission.edit=deny). All verification used read-only grep/glob/read tools and referenced server execution logs. No source files or governance artifacts were modified by the verifier. The changed_files_audit reports 0 unresolved violations (1 historical hard_stop_resolution resolved via prohibited_action_replaced).",
+  "bugs_found_and_fixed": [
     {
-      "id": "L1",
-      "description": "No PostgreSQL/TimescaleDB: all DB-dependent tests properly skipped via @skip_no_pg. Requires server-test environment (compose.test.yml, port 15432). Violates REQ-CORE-034 hard constraint #2 until executed."
+      "id": "BUG-001",
+      "description": "Alembic revision IDs exceeded VARCHAR(32): 0014_clean_published_at_financial_dataitem (41 chars) and 0015_audit_runcheck_datagap_rawevidence (39 chars)",
+      "fix": "Shortened to 0014_pub_at_fin_dataitem (24 chars) and 0015_audit_gap_rawev (20 chars)",
+      "commit": "8f73666"
     },
     {
-      "id": "L2",
-      "description": "Python 3.13.12 vs required >=3.11,<3.12 (pyproject.toml): all tests pass on 3.13 but version mismatch exists."
+      "id": "BUG-002",
+      "description": "SET LOCAL statement_timeout parameter binding: PostgreSQL SET does not support parameterized values",
+      "fix": "Changed to f-string interpolation for statement_timeout",
+      "commit": "6a43292"
     },
     {
-      "id": "L3",
-      "description": "psycopg2-binary==2.9.11 vs required psycopg[binary]>=3.2: ORM code compatible with both but production uses psycopg3."
+      "id": "BUG-003",
+      "description": "Missing ORM model attributes: _published_at on 10 CLEAN models, FinancialIncome/FinancialIndicator models, DataGap verified fields, RawBatch evidence fields",
+      "fix": "Added all missing ORM attributes to match migration DDL",
+      "commit": "6a43292"
     },
     {
-      "id": "L4",
-      "description": "sf_safe_bash broken on Windows host (chcp 65001 prefix with ';' invalid in cmd.exe): sf-verifier could not independently re-execute pytest; all L1/L2 static checks were performed independently via read-only tools."
+      "id": "BUG-004",
+      "description": "Starlette 1.3 _IncludedRouter: route extraction needed to handle original_router attribute",
+      "fix": "Added handling for _IncludedRouter.original_router",
+      "commit": "d40ca76"
+    }
+  ],
+  "git_commits": [
+    {
+      "hash": "5164e54",
+      "message": "feat(step2): implement data foundation for server verification"
+    },
+    {
+      "hash": "8f73666",
+      "message": "fix(step2): shorten Alembic revision IDs to fit VARCHAR(32)"
+    },
+    {
+      "hash": "6a43292",
+      "message": "fix(step2): fix 13 test failures found during real PG16 verification"
+    },
+    {
+      "hash": "c1919ae",
+      "message": "fix(step2): fix remaining test failures for PG16 server verification"
+    },
+    {
+      "hash": "d40ca76",
+      "message": "fix(step2): handle Starlette 1.3 _IncludedRouter.original_router"
     }
   ],
   "governance_model": {
@@ -591,10 +769,10 @@ Implementation is code-complete: all 19 TASKs' deliverables exist, 3 Alembic mig
         "REQ-CORE-005"
       ],
       "required_level": "L4",
-      "actual_level": "L1",
-      "status": "blocked",
-      "command": "7-hop RAW chain query on real PG",
-      "observed_result": "DDL columns present; query not executed (no PG)"
+      "actual_level": "L4",
+      "status": "pass",
+      "command": "5 RAW evidence tests on real PG16 (test_raw_evidence.py)",
+      "observed_result": "5 passed, 0 failed. RAW batch evidence fields (content_hash, fetched_at, schema_fingerprint) verified on real PG16."
     },
     {
       "id": "EVREQ-CORE-013-3",
@@ -602,10 +780,10 @@ Implementation is code-complete: all 19 TASKs' deliverables exist, 3 Alembic mig
         "REQ-CORE-013"
       ],
       "required_level": "L4",
-      "actual_level": "L1",
-      "status": "blocked",
-      "command": "recursive lineage query p95<=3s",
-      "observed_result": "Table+indexes present; perf not measured (no PG)"
+      "actual_level": "L4",
+      "status": "pass",
+      "command": "lineage recursive query test on real PG16 (test_lineage_edge.py)",
+      "observed_result": "All lineage tests passed including recursive query performance test on real PG16."
     },
     {
       "id": "EVREQ-CORE-015-2",
@@ -613,10 +791,10 @@ Implementation is code-complete: all 19 TASKs' deliverables exist, 3 Alembic mig
         "REQ-CORE-015"
       ],
       "required_level": "L3",
-      "actual_level": "L1",
-      "status": "blocked",
-      "command": "UPDATE/DELETE audit_event rejection",
-      "observed_result": "Trigger present in DDL; not runtime-tested (no PG)"
+      "actual_level": "L4",
+      "status": "pass",
+      "command": "audit_event UPDATE/DELETE rejection on real PG16",
+      "observed_result": "trg_audit_event_append_only trigger enforces append-only. Migration 0015 creates trigger, tests verify UPDATE/DELETE rejected."
     },
     {
       "id": "EVREQ-CORE-028-2",
@@ -624,10 +802,10 @@ Implementation is code-complete: all 19 TASKs' deliverables exist, 3 Alembic mig
         "REQ-CORE-028"
       ],
       "required_level": "L4",
-      "actual_level": "L1",
-      "status": "blocked",
-      "command": "EXPLAIN ANALYZE no Seq Scan",
-      "observed_result": "Not produced (no PG)"
+      "actual_level": "L4",
+      "status": "pass",
+      "command": "EXPLAIN ANALYZE no Seq Scan on real PG16 (test_ops_query_no_seqscan.py)",
+      "observed_result": "3 ops query no-seqscan tests passed on real PG16 with TimescaleDB hypertable."
     },
     {
       "id": "EVREQ-CORE-034-2",
@@ -635,10 +813,10 @@ Implementation is code-complete: all 19 TASKs' deliverables exist, 3 Alembic mig
         "REQ-CORE-034"
       ],
       "required_level": "L4",
-      "actual_level": "L2",
-      "status": "blocked",
+      "actual_level": "L4",
+      "status": "pass",
       "command": "ALL DB tests on real PG 16/TimescaleDB 2.28.3",
-      "observed_result": "12 skipped; hard constraint violated"
+      "observed_result": "290 tests passed, 0 skipped. All 12 previously-skipped @skip_no_pg tests executed and passed. REQ-CORE-034 hard constraint #2 satisfied."
     },
     {
       "id": "EVREQ-CORE-034-3",
@@ -646,21 +824,53 @@ Implementation is code-complete: all 19 TASKs' deliverables exist, 3 Alembic mig
         "REQ-CORE-034"
       ],
       "required_level": "L3",
-      "actual_level": "L1",
-      "status": "blocked",
-      "command": "alembic upgrade 0001->head + 0012->head",
-      "observed_result": "WAITING_USER_EXECUTION; never run on real DB"
+      "actual_level": "L4",
+      "status": "pass",
+      "command": "alembic upgrade base->head on real PG16",
+      "observed_result": "Full upgrade base->0015_audit_gap_rawev succeeded. 78 tables, 7 schemas, 1 hypertable. Alembic current: 0015_audit_gap_rawev (head)."
     }
   ],
-  "missing_blocking_evidence": [
-    "alembic upgrade head (0012->0015) execution log on real PostgreSQL 16",
-    "alembic downgrade regression (0015->0014, 0014->0013) logs",
-    "12 DB-dependent test cases execution on real PG/TimescaleDB (RAW evidence 7-hop, CLEAN versioning, DataGap VERIFIED enforcement, lineage recursive p95, API 504 timeout, ops EXPLAIN no-seqscan, snapshot READY immutability, perf p95, DataContext full-market, Alembic existing-upgrade)",
-    "EXPLAIN ANALYZE evidence showing no Seq Scan on clean_stock_minute",
-    "Lineage recursive-query p95<=3s performance measurement",
-    "Backup/restore drill log on server-test (checksum reconciliation, 3-verify, /health 200)"
-  ],
-  "unblocking_path": "User must execute in server-test environment: (1) docker compose -f compose.test.yml up -d --wait; (2) alembic upgrade head; (3) python -m pytest tests/ -v (expect 0 skipped); (4) alembic downgrade 0014 && alembic upgrade head (regression); (5) backup/restore drill. Once 12 DB tests pass on real PG and alembic upgrade succeeds, re-run sf-verifier to flip conclusion from blocked to pass.",
+  "missing_blocking_evidence": [],
+  "migration_verification": {
+    "status": "passed",
+    "alembic_head": "0015_audit_gap_rawev",
+    "tables_count": 78,
+    "schemas": {
+      "audit": 1,
+      "clean": 18,
+      "lineage": 1,
+      "meta": 4,
+      "ops": 12,
+      "quality": 4,
+      "raw": 11
+    },
+    "hypertables": [
+      "stock_minute"
+    ],
+    "key_objects_verified": [
+      "financial_income table",
+      "financial_indicator table",
+      "data_snapshot table",
+      "data_snapshot_input table",
+      "lineage_edge table",
+      "trg_audit_event_append_only trigger",
+      "ck_collect_task_run_type CHECK constraint",
+      "_published_at columns on 10 CLEAN tables",
+      "DataGap pre_backfill_count/post_backfill_count/checksum_verified/verified_at",
+      "RawBatch content_hash/fetched_at/schema_fingerprint",
+      "meta.data_item seed data (10 items with correct metadata)"
+    ],
+    "downgrade_upgrade_regression": "0015->0014->0013->0012->0013->0014->0015 all succeeded. Final: 0015_audit_gap_rawev (head)."
+  },
+  "backup_restore_verification": {
+    "status": "passed",
+    "backup_format": "pg_dump custom format",
+    "backup_size_bytes": 378230,
+    "backup_sha256": "2a881d8787464089e9d54ac1853ae028504050db6d282bc23ffc26b53486937d",
+    "verify_result": "78 tables, 1 hypertable, 10 data items, Alembic 0015_audit_gap_rawev, checksum MATCHED",
+    "restore_target": "quantstock1_test_restore (independent DB)",
+    "restore_result": "pg_restore succeeded, all objects verified (78 tables, 1 hypertable, 10 data items, same Alembic version)"
+  },
   "project_integration": {
     "status": "merged",
     "spec_version": "PSV-0001 -> PSV-0002",

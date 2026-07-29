@@ -1,0 +1,164 @@
+{
+  "schema_version": "1.1",
+  "work_item_id": "WI-0002",
+  "workflow_type": "quick_change",
+  "workflow_path": "code_only_fast_path",
+  "title": "Work Item WI-0002",
+  "description": "Auto-created by sf_state_transition during Work Item creation.",
+  "created_at": "2026-07-29T12:30:20.130Z",
+  "updated_at": "2026-07-29T13:03:26.409Z",
+  "code_change_allowed": false,
+  "code_permission_revoked": true,
+  "governance_scope": "governance_scope.json",
+  "affected_modules": [],
+  "architecture_refs": [],
+  "data_model_refs": [],
+  "design_refs": [],
+  "project_contract_refs": [],
+  "module_contract_refs": [],
+  "project_spec_version_at_permission": "PSV-0002",
+  "impact_scope_hash": "2a601e47f0de98cc34a812ed131682cc669ff5c71b15b75016df20d20066b1d3",
+  "allowed_write_files": [],
+  "allowed_write_files_snapshot": [
+    {
+      "path": "docs/00_项目管理/00_A股量化分析平台建设路线图.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/00_项目管理/00_A股量化分析平台建设路线图.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/00_A股量化分析平台建设路线图.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/00_A股量化分析平台建设路线图.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/00_项目管理/02_项目决策记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/00_项目管理/02_项目决策记录.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/02_项目决策记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/02_项目决策记录.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/00_项目管理/03_项目变更记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/00_项目管理/03_项目变更记录.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/03_项目变更记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/03_项目变更记录.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/00_项目管理/07_统一开发任务总表.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/00_项目管理/07_统一开发任务总表.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/07_统一开发任务总表.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/00_项目管理/07_统一开发任务总表.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/05_开发实施/20_第2步实施检查点与证据清单.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/05_开发实施/20_第2步实施检查点与证据清单.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/05_开发实施/20_第2步实施检查点与证据清单.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/05_开发实施/20_第2步实施检查点与证据清单.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/05_开发实施/21_第2步数据底座实施记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/05_开发实施/21_第2步数据底座实施记录.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/05_开发实施/21_第2步数据底座实施记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/05_开发实施/21_第2步数据底座实施记录.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/06_测试验证/11_第2步数据底座验收记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/06_测试验证/11_第2步数据底座验收记录.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/06_测试验证/11_第2步数据底座验收记录.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/06_测试验证/11_第2步数据底座验收记录.md",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/07_部署上线/01_第2步部署迁盘备份恢复说明.md",
+      "operation": "create"
+    },
+    {
+      "path": "docs/07_部署上线/01_第2步部署迁盘备份恢复说明.md",
+      "operation": "modify"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/07_部署上线/01_第2步部署迁盘备份恢复说明.md",
+      "operation": "create"
+    },
+    {
+      "path": "D:/code/temp/quantStock1/docs/07_部署上线/01_第2步部署迁盘备份恢复说明.md",
+      "operation": "modify"
+    }
+  ],
+  "code_permission_last_release_mode": "release",
+  "code_permission_release_count": 1,
+  "allowed_write_files_history": [
+    {
+      "timestamp": "2026-07-29T12:39:45.259Z",
+      "mode": "release",
+      "incoming_count": 32,
+      "previous_count": 0,
+      "total_count": 32
+    }
+  ],
+  "code_permission_revoked_at": "2026-07-29T13:03:22.327Z"
+}

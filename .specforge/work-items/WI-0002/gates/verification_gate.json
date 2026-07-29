@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0002",
+  "gate_id": "verification_gate",
+  "gate_type": "hard_gate",
+  "required": true,
+  "status": "passed",
+  "input_files": [
+    "D:\\code\\temp\\quantStock1\\.specforge\\work-items\\WI-0002\\verification_report.md",
+    "D:\\code\\temp\\quantStock1\\.specforge\\work-items\\WI-0002\\evidence\\evidence_manifest.json",
+    "D:\\code\\temp\\quantStock1\\.specforge\\work-items\\WI-0002\\changed_files_audit.md",
+    "D:\\code\\temp\\quantStock1\\.specforge\\work-items\\WI-0002\\.semantic_closure.json"
+  ],
+  "checks": [
+    {
+      "check_id": "verification_report_exists",
+      "description": "verification_report.md exists",
+      "passed": true
+    },
+    {
+      "check_id": "verification_report_contract_valid",
+      "description": "verification_report contains the machine-readable verification contract",
+      "passed": true
+    },
+    {
+      "check_id": "verification_report_conclusion_pass",
+      "description": "verification_report conclusion is pass",
+      "passed": true,
+      "details": "pass"
+    },
+    {
+      "check_id": "verification_required_tests_complete",
+      "description": "required tests were executed or explicitly marked not_applicable",
+      "passed": true,
+      "details": "statuses=pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,not_applicable,not_applicable,not_applicable,not_applicable,pass,not_applicable,not_applicable,not_applicable,not_applicable,not_applicable"
+    },
+    {
+      "check_id": "verification_acceptance_criteria_passed",
+      "description": "acceptance criteria are present and passed",
+      "passed": true,
+      "details": "statuses=pass,pass,pass,pass,pass,pass,pass,pass,pass,pass"
+    },
+    {
+      "check_id": "verification_e2e_complete",
+      "description": "end-to-end verification passed or is explicitly not_applicable",
+      "passed": true,
+      "details": "statuses=not_applicable"
+    },
+    {
+      "check_id": "verification_evidence_manifest_nonempty",
+      "description": "evidence_manifest exists and has registered entries",
+      "passed": true
+    },
+    {
+      "check_id": "verification_report_claims_have_registered_evidence",
+      "description": "acceptance and end-to-end claims reference registered Evidence",
+      "passed": true
+    },
+    {
+      "check_id": "verification_side_effects_declared",
+      "description": "verification side effects are explicitly declared",
+      "passed": true
+    },
+    {
+      "check_id": "verification_changed_files_audit_passed",
+      "description": "changed_files_audit is complete and passed",
+      "passed": true
+    },
+    {
+      "check_id": "verification_semantic_closure_valid",
+      "description": "semantic closure proves the user outcome to evidence chain",
+      "passed": true
+    },
+    {
+      "check_id": "verification_semantic_closure_provenance_current",
+      "description": "semantic closure is bound to the current verification artifacts",
+      "passed": true
+    },
+    {
+      "check_id": "verification_claims_match_evidence_manifest",
+      "description": "semantic evidence claims match registered Evidence Manifest entries",
+      "passed": true
+    },
+    {
+      "check_id": "evidence_manifest_exists",
+      "description": "evidence/evidence_manifest.json exists and is valid JSON",
+      "passed": true
+    },
+    {
+      "check_id": "code_contract_ast_coverage",
+      "description": "Changed TypeScript/JavaScript with explicit enum bindings was AST-checked",
+      "passed": true,
+      "details": "checked=none; unsupported=none"
+    }
+  ],
+  "blocking_issues": [],
+  "warnings": [],
+  "waiver_allowed": false,
+  "waiver_required": false,
+  "waiver_ids": [],
+  "started_at": "2026-07-29T13:03:15.659Z",
+  "finished_at": "2026-07-29T13:03:15.659Z",
+  "runner": "gate_runner"
+}

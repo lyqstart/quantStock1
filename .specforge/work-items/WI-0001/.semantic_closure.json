@@ -1,740 +1,9 @@
 {
-  "schema_version": "1.0",
-  "work_item_id": "WI-0001",
-  "workflow_type": "feature_spec",
   "closure_profile": "standard",
-  "outcomes": [
-    {
-      "id": "OUT-CORE-001",
-      "description": "Data catalog completeness & collection governance",
-      "requirement_refs": [
-        "REQ-CORE-001",
-        "REQ-CORE-002",
-        "REQ-CORE-003",
-        "REQ-CORE-004",
-        "REQ-CORE-005"
-      ],
-      "required_evidence_refs": [
-        "EV-003",
-        "EV-008"
-      ]
-    },
-    {
-      "id": "OUT-CORE-002",
-      "description": "CLEAN versioning, quality & adjustment",
-      "requirement_refs": [
-        "REQ-CORE-006",
-        "REQ-CORE-007",
-        "REQ-CORE-008",
-        "REQ-CORE-009",
-        "REQ-CORE-010",
-        "REQ-CORE-011",
-        "REQ-CORE-012"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    },
-    {
-      "id": "OUT-CORE-003",
-      "description": "Lineage & audit traceability",
-      "requirement_refs": [
-        "REQ-CORE-013",
-        "REQ-CORE-014",
-        "REQ-CORE-015"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    },
-    {
-      "id": "OUT-CORE-004",
-      "description": "DataContext & DataSnapshot reproducibility",
-      "requirement_refs": [
-        "REQ-CORE-016",
-        "REQ-CORE-017",
-        "REQ-CORE-018",
-        "REQ-CORE-019",
-        "REQ-CORE-020"
-      ],
-      "required_evidence_refs": [
-        "EV-005",
-        "EV-008"
-      ]
-    },
-    {
-      "id": "OUT-CORE-005",
-      "description": "Anti-lookahead time semantics",
-      "requirement_refs": [
-        "REQ-CORE-021",
-        "REQ-CORE-022",
-        "REQ-CORE-023",
-        "REQ-CORE-024"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    },
-    {
-      "id": "OUT-CORE-006",
-      "description": "Unified query API",
-      "requirement_refs": [
-        "REQ-CORE-025",
-        "REQ-CORE-026",
-        "REQ-CORE-027",
-        "REQ-CORE-028"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    },
-    {
-      "id": "OUT-CORE-007",
-      "description": "Environment, migration & backup/restore ops",
-      "requirement_refs": [
-        "REQ-CORE-029",
-        "REQ-CORE-030",
-        "REQ-CORE-031",
-        "REQ-CORE-032",
-        "REQ-CORE-033"
-      ],
-      "required_evidence_refs": [
-        "EV-006"
-      ]
-    },
-    {
-      "id": "OUT-CORE-008",
-      "description": "Test coverage & real-data acceptance",
-      "requirement_refs": [
-        "REQ-CORE-034",
-        "REQ-CORE-035"
-      ],
-      "required_evidence_refs": [
-        "EV-007",
-        "EV-008"
-      ]
-    }
-  ],
-  "requirements": [
-    {
-      "id": "REQ-CORE-001",
-      "description": "DataItem metadata completeness",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-001"
-      ],
-      "design_refs": [
-        "DD-CORE-001"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-002",
-        "TASK-WI-0001-005"
-      ],
-      "required_evidence_refs": [
-        "EV-003"
-      ]
-    },
-    {
-      "id": "REQ-CORE-002",
-      "description": "Worker LOST recovery + terminal irreversibility",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-001"
-      ],
-      "design_refs": [
-        "DD-CORE-002"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-005"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-003",
-      "description": "run_type unified enum + DB CHECK",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-001"
-      ],
-      "design_refs": [
-        "DD-CORE-003"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-003"
-      ],
-      "required_evidence_refs": [
-        "EV-004"
-      ]
-    },
-    {
-      "id": "REQ-CORE-004",
-      "description": "Idempotency keys + force rerun",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-001"
-      ],
-      "design_refs": [
-        "DD-CORE-004"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-005"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-005",
-      "description": "RAW batch evidence 5 fields",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-001"
-      ],
-      "design_refs": [
-        "DD-CORE-005"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-003",
-        "TASK-WI-0001-004"
-      ],
-      "required_evidence_refs": [
-        "EV-004",
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-006",
-      "description": "CLEAN 8 properties + is_current unique",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-002"
-      ],
-      "design_refs": [
-        "DD-CORE-006"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-002"
-      ],
-      "required_evidence_refs": [
-        "EV-003"
-      ]
-    },
-    {
-      "id": "REQ-CORE-007",
-      "description": "Adjustment layering",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-002"
-      ],
-      "design_refs": [
-        "DD-CORE-007"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-007"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-008",
-      "description": "Financial revision multi-version",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-002"
-      ],
-      "design_refs": [
-        "DD-CORE-008"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-002"
-      ],
-      "required_evidence_refs": [
-        "EV-003"
-      ]
-    },
-    {
-      "id": "REQ-CORE-009",
-      "description": "available_at backtest constraint",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-002"
-      ],
-      "design_refs": [
-        "DD-CORE-009",
-        "DD-CORE-016"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-009"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-010",
-      "description": "FAILED data publish block",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-002"
-      ],
-      "design_refs": [
-        "DD-CORE-009"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-008"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-011",
-      "description": "WARNING publish policy",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-002"
-      ],
-      "design_refs": [
-        "DD-CORE-009"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-008"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-012",
-      "description": "DataGap VERIFIED closure",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-002"
-      ],
-      "design_refs": [
-        "DD-CORE-010"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-003",
-        "TASK-WI-0001-005"
-      ],
-      "required_evidence_refs": [
-        "EV-004",
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-013",
-      "description": "lineage_edge recursive query",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-003"
-      ],
-      "design_refs": [
-        "DD-CORE-011"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-001",
-        "TASK-WI-0001-004"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-014",
-      "description": "AuditEvent 13-field logging",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-003"
-      ],
-      "design_refs": [
-        "DD-CORE-012"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-003"
-      ],
-      "required_evidence_refs": [
-        "EV-004",
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-015",
-      "description": "AuditEvent append-only",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-003"
-      ],
-      "design_refs": [
-        "DD-CORE-013"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-003"
-      ],
-      "required_evidence_refs": [
-        "EV-004"
-      ]
-    },
-    {
-      "id": "REQ-CORE-016",
-      "description": "DataContext does not read RAW",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-004"
-      ],
-      "design_refs": [
-        "DD-CORE-014"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-007"
-      ],
-      "required_evidence_refs": [
-        "EV-005"
-      ]
-    },
-    {
-      "id": "REQ-CORE-017",
-      "description": "DataContext 5 query modes",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-004"
-      ],
-      "design_refs": [
-        "DD-CORE-014"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-007",
-        "TASK-WI-0001-010"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-018",
-      "description": "DataContext 6-frequency alignment",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-004"
-      ],
-      "design_refs": [
-        "DD-CORE-014"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-007"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-019",
-      "description": "DataSnapshot immutable",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-004"
-      ],
-      "design_refs": [
-        "DD-CORE-015"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-001",
-        "TASK-WI-0001-008"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-020",
-      "description": "DataSnapshot reproducible",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-004"
-      ],
-      "design_refs": [
-        "DD-CORE-015"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-008"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-021",
-      "description": "Anti-lookahead 3 time modes",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-005"
-      ],
-      "design_refs": [
-        "DD-CORE-016"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-009"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-022",
-      "description": "published_at available_at separation",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-005"
-      ],
-      "design_refs": [
-        "DD-CORE-006",
-        "DD-CORE-016"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-002",
-        "TASK-WI-0001-009"
-      ],
-      "required_evidence_refs": [
-        "EV-003",
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-023",
-      "description": "Historical status point-in-time",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-005"
-      ],
-      "design_refs": [
-        "DD-CORE-016"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-009"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-024",
-      "description": "Anti-lookahead test suite 100% pass",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-005"
-      ],
-      "design_refs": [
-        "DD-CORE-016"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-009"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-025",
-      "description": "Unified query API 4 data types",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-006"
-      ],
-      "design_refs": [
-        "DD-CORE-017"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-010"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-026",
-      "description": "Query result metadata",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-006"
-      ],
-      "design_refs": [
-        "DD-CORE-017"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-010"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-027",
-      "description": "API timeout 504",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-006"
-      ],
-      "design_refs": [
-        "DD-CORE-017"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-010"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-028",
-      "description": "Ops query no seqscan",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-006"
-      ],
-      "design_refs": [
-        "DD-CORE-017"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-010"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-029",
-      "description": "DB migration-disk script",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-007"
-      ],
-      "design_refs": [
-        "DD-CORE-019"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-013"
-      ],
-      "required_evidence_refs": [
-        "EV-006"
-      ]
-    },
-    {
-      "id": "REQ-CORE-030",
-      "description": "Minute compression archive",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-007"
-      ],
-      "design_refs": [
-        "DD-CORE-020"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-015"
-      ],
-      "required_evidence_refs": [
-        "EV-006"
-      ]
-    },
-    {
-      "id": "REQ-CORE-031",
-      "description": "server-test isolated environment",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-007"
-      ],
-      "design_refs": [
-        "DD-CORE-018"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-012"
-      ],
-      "required_evidence_refs": [
-        "EV-006"
-      ]
-    },
-    {
-      "id": "REQ-CORE-032",
-      "description": "Full backup script",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-007"
-      ],
-      "design_refs": [
-        "DD-CORE-020"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-014"
-      ],
-      "required_evidence_refs": [
-        "EV-006"
-      ]
-    },
-    {
-      "id": "REQ-CORE-033",
-      "description": "Restore script + verify",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-007"
-      ],
-      "design_refs": [
-        "DD-CORE-020"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-014"
-      ],
-      "required_evidence_refs": [
-        "EV-006"
-      ]
-    },
-    {
-      "id": "REQ-CORE-034",
-      "description": "10 test categories + real PG + coverage",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-008"
-      ],
-      "design_refs": [
-        "DD-CORE-021"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-006",
-        "TASK-WI-0001-011",
-        "TASK-WI-0001-016",
-        "TASK-WI-0001-017"
-      ],
-      "required_evidence_refs": [
-        "EV-007",
-        "EV-008"
-      ]
-    },
-    {
-      "id": "REQ-CORE-035",
-      "description": "E2E 10x8 matrix acceptance",
-      "type": "MUST",
-      "outcome_refs": [
-        "OUT-CORE-008"
-      ],
-      "design_refs": [
-        "DD-CORE-021"
-      ],
-      "task_refs": [
-        "TASK-WI-0001-017",
-        "TASK-WI-0001-018",
-        "TASK-WI-0001-019"
-      ],
-      "required_evidence_refs": [
-        "EV-008"
-      ]
-    }
-  ],
   "design_decisions": [
     {
-      "id": "DD-CORE-001",
       "description": "DataItem metadata schema",
+      "id": "DD-CORE-001",
       "requirement_refs": [
         "REQ-CORE-001"
       ],
@@ -744,8 +13,8 @@
       ]
     },
     {
-      "id": "DD-CORE-002",
       "description": "Worker LOST recovery",
+      "id": "DD-CORE-002",
       "requirement_refs": [
         "REQ-CORE-002"
       ],
@@ -754,8 +23,8 @@
       ]
     },
     {
-      "id": "DD-CORE-003",
       "description": "run_type CHECK",
+      "id": "DD-CORE-003",
       "requirement_refs": [
         "REQ-CORE-003"
       ],
@@ -764,8 +33,8 @@
       ]
     },
     {
-      "id": "DD-CORE-004",
       "description": "Idempotency force rerun",
+      "id": "DD-CORE-004",
       "requirement_refs": [
         "REQ-CORE-004"
       ],
@@ -774,8 +43,8 @@
       ]
     },
     {
-      "id": "DD-CORE-005",
       "description": "RAW evidence columns",
+      "id": "DD-CORE-005",
       "requirement_refs": [
         "REQ-CORE-005"
       ],
@@ -784,8 +53,8 @@
       ]
     },
     {
-      "id": "DD-CORE-006",
       "description": "published_at separation",
+      "id": "DD-CORE-006",
       "requirement_refs": [
         "REQ-CORE-006",
         "REQ-CORE-022"
@@ -795,8 +64,8 @@
       ]
     },
     {
-      "id": "DD-CORE-007",
       "description": "Dynamic adjustment",
+      "id": "DD-CORE-007",
       "requirement_refs": [
         "REQ-CORE-007"
       ],
@@ -805,8 +74,8 @@
       ]
     },
     {
-      "id": "DD-CORE-008",
       "description": "Financial multi-version",
+      "id": "DD-CORE-008",
       "requirement_refs": [
         "REQ-CORE-008"
       ],
@@ -815,8 +84,8 @@
       ]
     },
     {
-      "id": "DD-CORE-009",
       "description": "Quality gate filter",
+      "id": "DD-CORE-009",
       "requirement_refs": [
         "REQ-CORE-009",
         "REQ-CORE-010",
@@ -827,8 +96,8 @@
       ]
     },
     {
-      "id": "DD-CORE-010",
       "description": "DataGap VERIFIED",
+      "id": "DD-CORE-010",
       "requirement_refs": [
         "REQ-CORE-012"
       ],
@@ -838,8 +107,8 @@
       ]
     },
     {
-      "id": "DD-CORE-011",
       "description": "lineage_edge recursive CTE",
+      "id": "DD-CORE-011",
       "requirement_refs": [
         "REQ-CORE-013"
       ],
@@ -849,8 +118,8 @@
       ]
     },
     {
-      "id": "DD-CORE-012",
       "description": "AuditEvent extension",
+      "id": "DD-CORE-012",
       "requirement_refs": [
         "REQ-CORE-014"
       ],
@@ -859,8 +128,8 @@
       ]
     },
     {
-      "id": "DD-CORE-013",
       "description": "AuditEvent append-only",
+      "id": "DD-CORE-013",
       "requirement_refs": [
         "REQ-CORE-015"
       ],
@@ -869,8 +138,8 @@
       ]
     },
     {
-      "id": "DD-CORE-014",
       "description": "DataContext architecture",
+      "id": "DD-CORE-014",
       "requirement_refs": [
         "REQ-CORE-016",
         "REQ-CORE-017",
@@ -881,8 +150,8 @@
       ]
     },
     {
-      "id": "DD-CORE-015",
       "description": "DataSnapshot fingerprint",
+      "id": "DD-CORE-015",
       "requirement_refs": [
         "REQ-CORE-019",
         "REQ-CORE-020"
@@ -893,8 +162,8 @@
       ]
     },
     {
-      "id": "DD-CORE-016",
       "description": "Time semantics anti-lookahead",
+      "id": "DD-CORE-016",
       "requirement_refs": [
         "REQ-CORE-009",
         "REQ-CORE-021",
@@ -907,8 +176,8 @@
       ]
     },
     {
-      "id": "DD-CORE-017",
       "description": "Unified query API",
+      "id": "DD-CORE-017",
       "requirement_refs": [
         "REQ-CORE-025",
         "REQ-CORE-026",
@@ -920,8 +189,8 @@
       ]
     },
     {
-      "id": "DD-CORE-018",
       "description": "server-test isolation",
+      "id": "DD-CORE-018",
       "requirement_refs": [
         "REQ-CORE-031"
       ],
@@ -930,8 +199,8 @@
       ]
     },
     {
-      "id": "DD-CORE-019",
       "description": "DB migration-disk script",
+      "id": "DD-CORE-019",
       "requirement_refs": [
         "REQ-CORE-029"
       ],
@@ -940,8 +209,8 @@
       ]
     },
     {
-      "id": "DD-CORE-020",
       "description": "Backup restore compression",
+      "id": "DD-CORE-020",
       "requirement_refs": [
         "REQ-CORE-030",
         "REQ-CORE-032",
@@ -953,8 +222,8 @@
       ]
     },
     {
-      "id": "DD-CORE-021",
       "description": "Test directory E2E matrix",
+      "id": "DD-CORE-021",
       "requirement_refs": [
         "REQ-CORE-034",
         "REQ-CORE-035"
@@ -969,53 +238,1043 @@
       ]
     }
   ],
-  "tasks": [
+  "evidence": [
     {
-      "id": "TASK-WI-0001-001",
-      "description": "Alembic 0013",
+      "description": "290 tests passed (0 failed, 0 skipped) on real PostgreSQL 16.14 + TimescaleDB 2.28.3 (svr3 server-test). All @skip_no_pg tests executed against real DB. Duration: 2.30s.",
+      "evidence_type": "behavioral",
+      "id": "EV-008",
+      "level": "L3",
+      "outcome_refs": [
+        "OUT-CORE-001",
+        "OUT-CORE-002",
+        "OUT-CORE-003",
+        "OUT-CORE-004",
+        "OUT-CORE-005",
+        "OUT-CORE-006",
+        "OUT-CORE-007",
+        "OUT-CORE-008"
+      ],
+      "requirement_refs": [
+        "REQ-CORE-001",
+        "REQ-CORE-002",
+        "REQ-CORE-004",
+        "REQ-CORE-007",
+        "REQ-CORE-009",
+        "REQ-CORE-010",
+        "REQ-CORE-011",
+        "REQ-CORE-014",
+        "REQ-CORE-016",
+        "REQ-CORE-017",
+        "REQ-CORE-018",
+        "REQ-CORE-021",
+        "REQ-CORE-022",
+        "REQ-CORE-023",
+        "REQ-CORE-024",
+        "REQ-CORE-025",
+        "REQ-CORE-026",
+        "REQ-CORE-027",
+        "REQ-CORE-028",
+        "REQ-CORE-029",
+        "REQ-CORE-030",
+        "REQ-CORE-031",
+        "REQ-CORE-034",
+        "REQ-CORE-035"
+      ],
+      "status": "passed",
+      "supports": [
+        "OUT-CORE-001",
+        "OUT-CORE-002",
+        "OUT-CORE-003",
+        "OUT-CORE-004",
+        "OUT-CORE-005",
+        "OUT-CORE-006",
+        "OUT-CORE-007",
+        "OUT-CORE-008",
+        "REQ-CORE-001",
+        "REQ-CORE-002",
+        "REQ-CORE-004",
+        "REQ-CORE-007",
+        "REQ-CORE-009",
+        "REQ-CORE-010",
+        "REQ-CORE-011",
+        "REQ-CORE-014",
+        "REQ-CORE-016",
+        "REQ-CORE-017",
+        "REQ-CORE-018",
+        "REQ-CORE-021",
+        "REQ-CORE-022",
+        "REQ-CORE-023",
+        "REQ-CORE-024",
+        "REQ-CORE-025",
+        "REQ-CORE-026",
+        "REQ-CORE-027",
+        "REQ-CORE-028",
+        "REQ-CORE-029",
+        "REQ-CORE-030",
+        "REQ-CORE-031",
+        "REQ-CORE-034",
+        "REQ-CORE-035"
+      ]
+    },
+    {
+      "description": "P4 regression suite: 12 passed, 0 regression. Worker LOST recovery + idempotency force rerun verified.",
+      "evidence_type": "test_output",
+      "id": "EV-009",
+      "level": "L3",
+      "outcome_refs": [
+        "OUT-CORE-001"
+      ],
+      "requirement_refs": [
+        "REQ-CORE-002",
+        "REQ-CORE-004"
+      ],
+      "status": "passed",
+      "supports": [
+        "REQ-CORE-002",
+        "REQ-CORE-004"
+      ]
+    },
+    {
+      "description": "Migration upgrade base->0015_audit_gap_rawev on fresh PG16/TimescaleDB 2.28.3. 78 tables, 7 schemas, 1 hypertable (stock_minute). Alembic current: 0015_audit_gap_rawev (head).",
+      "evidence_type": "e2e",
+      "id": "EV-012",
+      "level": "L4",
+      "outcome_refs": [
+        "OUT-CORE-001",
+        "OUT-CORE-002",
+        "OUT-CORE-003",
+        "OUT-CORE-004",
+        "OUT-CORE-008"
+      ],
+      "requirement_refs": [
+        "REQ-CORE-001",
+        "REQ-CORE-003",
+        "REQ-CORE-005",
+        "REQ-CORE-006",
+        "REQ-CORE-008",
+        "REQ-CORE-012",
+        "REQ-CORE-013",
+        "REQ-CORE-014",
+        "REQ-CORE-015",
+        "REQ-CORE-019",
+        "REQ-CORE-020",
+        "REQ-CORE-022",
+        "REQ-CORE-034"
+      ],
+      "status": "passed",
+      "supports": [
+        "OUT-CORE-001",
+        "OUT-CORE-002",
+        "OUT-CORE-003",
+        "OUT-CORE-004",
+        "OUT-CORE-008",
+        "REQ-CORE-001",
+        "REQ-CORE-003",
+        "REQ-CORE-005",
+        "REQ-CORE-006",
+        "REQ-CORE-008",
+        "REQ-CORE-012",
+        "REQ-CORE-013",
+        "REQ-CORE-014",
+        "REQ-CORE-015",
+        "REQ-CORE-019",
+        "REQ-CORE-020",
+        "REQ-CORE-022",
+        "REQ-CORE-034"
+      ]
+    },
+    {
+      "description": "All 12 DB-dependent tests on real PG16: RAW evidence fields, CLEAN versioning + financial models, DataGap VERIFIED state, lineage edge recursive query, snapshot immutability, API statement_timeout, ops EXPLAIN no seqscan, E2E 10x8 matrix, alembic existing-upgrade.",
+      "evidence_type": "integration",
+      "id": "EV-013",
+      "level": "L4",
+      "outcome_refs": [
+        "OUT-CORE-001",
+        "OUT-CORE-002",
+        "OUT-CORE-003",
+        "OUT-CORE-004",
+        "OUT-CORE-006",
+        "OUT-CORE-008"
+      ],
+      "requirement_refs": [
+        "REQ-CORE-003",
+        "REQ-CORE-005",
+        "REQ-CORE-006",
+        "REQ-CORE-008",
+        "REQ-CORE-012",
+        "REQ-CORE-013",
+        "REQ-CORE-015",
+        "REQ-CORE-017",
+        "REQ-CORE-019",
+        "REQ-CORE-020",
+        "REQ-CORE-027",
+        "REQ-CORE-028",
+        "REQ-CORE-034",
+        "REQ-CORE-035"
+      ],
+      "status": "passed",
+      "supports": [
+        "OUT-CORE-001",
+        "OUT-CORE-002",
+        "OUT-CORE-003",
+        "OUT-CORE-004",
+        "OUT-CORE-006",
+        "OUT-CORE-008",
+        "REQ-CORE-003",
+        "REQ-CORE-005",
+        "REQ-CORE-006",
+        "REQ-CORE-008",
+        "REQ-CORE-012",
+        "REQ-CORE-013",
+        "REQ-CORE-015",
+        "REQ-CORE-017",
+        "REQ-CORE-019",
+        "REQ-CORE-020",
+        "REQ-CORE-027",
+        "REQ-CORE-028",
+        "REQ-CORE-034",
+        "REQ-CORE-035"
+      ]
+    },
+    {
+      "description": "Migration downgrade+upgrade regression: 0015->0014->0013->0012 succeeded, then 0012->0013->0014->0015 re-upgrade succeeded. Final: 0015_audit_gap_rawev (head).",
+      "evidence_type": "e2e",
+      "id": "EV-014",
+      "level": "L4",
+      "outcome_refs": [
+        "OUT-CORE-007",
+        "OUT-CORE-008"
+      ],
+      "requirement_refs": [
+        "REQ-CORE-029",
+        "REQ-CORE-034"
+      ],
+      "status": "passed",
+      "supports": [
+        "OUT-CORE-007",
+        "OUT-CORE-008",
+        "REQ-CORE-029",
+        "REQ-CORE-034"
+      ]
+    },
+    {
+      "description": "Backup+checksum+restore drill: pg_dump custom format 378,230 bytes, SHA256 2a881d... verified, pg_restore to independent DB quantstock1_test_restore succeeded with 78 tables, 1 hypertable, 10 data items, Alembic 0015_audit_gap_rawev.",
+      "evidence_type": "e2e",
+      "id": "EV-015",
+      "level": "L4",
+      "outcome_refs": [
+        "OUT-CORE-007"
+      ],
+      "requirement_refs": [
+        "REQ-CORE-032",
+        "REQ-CORE-033"
+      ],
+      "status": "passed",
+      "supports": [
+        "OUT-CORE-007",
+        "REQ-CORE-032",
+        "REQ-CORE-033"
+      ]
+    }
+  ],
+  "outcomes": [
+    {
+      "description": "Data catalog completeness & collection governance",
+      "id": "OUT-CORE-001",
+      "requirement_refs": [
+        "REQ-CORE-001",
+        "REQ-CORE-002",
+        "REQ-CORE-003",
+        "REQ-CORE-004",
+        "REQ-CORE-005"
+      ],
+      "required_evidence_refs": [
+        "EV-008",
+        "EV-012",
+        "EV-013"
+      ]
+    },
+    {
+      "description": "CLEAN versioning, quality & adjustment",
+      "id": "OUT-CORE-002",
+      "requirement_refs": [
+        "REQ-CORE-006",
+        "REQ-CORE-007",
+        "REQ-CORE-008",
+        "REQ-CORE-009",
+        "REQ-CORE-010",
+        "REQ-CORE-011",
+        "REQ-CORE-012"
+      ],
+      "required_evidence_refs": [
+        "EV-008",
+        "EV-013"
+      ]
+    },
+    {
+      "description": "Lineage & audit traceability",
+      "id": "OUT-CORE-003",
       "requirement_refs": [
         "REQ-CORE-013",
+        "REQ-CORE-014",
+        "REQ-CORE-015"
+      ],
+      "required_evidence_refs": [
+        "EV-008",
+        "EV-012",
+        "EV-013"
+      ]
+    },
+    {
+      "description": "DataContext & DataSnapshot reproducibility",
+      "id": "OUT-CORE-004",
+      "requirement_refs": [
+        "REQ-CORE-016",
+        "REQ-CORE-017",
+        "REQ-CORE-018",
         "REQ-CORE-019",
         "REQ-CORE-020"
       ],
+      "required_evidence_refs": [
+        "EV-008",
+        "EV-013"
+      ]
+    },
+    {
+      "description": "Anti-lookahead time semantics",
+      "id": "OUT-CORE-005",
+      "requirement_refs": [
+        "REQ-CORE-021",
+        "REQ-CORE-022",
+        "REQ-CORE-023",
+        "REQ-CORE-024"
+      ],
+      "required_evidence_refs": [
+        "EV-008"
+      ]
+    },
+    {
+      "description": "Unified query API",
+      "id": "OUT-CORE-006",
+      "requirement_refs": [
+        "REQ-CORE-025",
+        "REQ-CORE-026",
+        "REQ-CORE-027",
+        "REQ-CORE-028"
+      ],
+      "required_evidence_refs": [
+        "EV-008",
+        "EV-013"
+      ]
+    },
+    {
+      "description": "Environment, migration & backup/restore ops",
+      "id": "OUT-CORE-007",
+      "requirement_refs": [
+        "REQ-CORE-029",
+        "REQ-CORE-030",
+        "REQ-CORE-031",
+        "REQ-CORE-032",
+        "REQ-CORE-033"
+      ],
+      "required_evidence_refs": [
+        "EV-008",
+        "EV-014",
+        "EV-015"
+      ]
+    },
+    {
+      "description": "Test coverage & real-data acceptance",
+      "id": "OUT-CORE-008",
+      "requirement_refs": [
+        "REQ-CORE-034",
+        "REQ-CORE-035"
+      ],
+      "required_evidence_refs": [
+        "EV-008",
+        "EV-012",
+        "EV-013",
+        "EV-014"
+      ]
+    }
+  ],
+  "project_integration": {
+    "refs": [
+      "merge_report.md"
+    ],
+    "required": true,
+    "status": "merged"
+  },
+  "requirements": [
+    {
+      "description": "DataItem metadata completeness",
+      "design_refs": [
+        "DD-CORE-001"
+      ],
+      "id": "REQ-CORE-001",
+      "outcome_refs": [
+        "OUT-CORE-001"
+      ],
+      "required_evidence_refs": [
+        "EV-008",
+        "EV-013"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-002",
+        "TASK-WI-0001-005"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "Worker LOST recovery + terminal irreversibility",
+      "design_refs": [
+        "DD-CORE-002"
+      ],
+      "id": "REQ-CORE-002",
+      "outcome_refs": [
+        "OUT-CORE-001"
+      ],
+      "required_evidence_refs": [
+        "EV-008",
+        "EV-009"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-005"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "run_type unified enum + DB CHECK",
+      "design_refs": [
+        "DD-CORE-003"
+      ],
+      "id": "REQ-CORE-003",
+      "outcome_refs": [
+        "OUT-CORE-001"
+      ],
+      "required_evidence_refs": [
+        "EV-012",
+        "EV-013"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-003"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "Idempotency keys + force rerun",
+      "design_refs": [
+        "DD-CORE-004"
+      ],
+      "id": "REQ-CORE-004",
+      "outcome_refs": [
+        "OUT-CORE-001"
+      ],
+      "required_evidence_refs": [
+        "EV-008",
+        "EV-009"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-005"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "RAW batch evidence 5 fields",
+      "design_refs": [
+        "DD-CORE-005"
+      ],
+      "id": "REQ-CORE-005",
+      "outcome_refs": [
+        "OUT-CORE-001"
+      ],
+      "required_evidence_refs": [
+        "EV-008",
+        "EV-013"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-003",
+        "TASK-WI-0001-004"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "CLEAN 8 properties + is_current unique",
+      "design_refs": [
+        "DD-CORE-006"
+      ],
+      "id": "REQ-CORE-006",
+      "outcome_refs": [
+        "OUT-CORE-002"
+      ],
+      "required_evidence_refs": [
+        "EV-013"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-002"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "Adjustment layering",
+      "design_refs": [
+        "DD-CORE-007"
+      ],
+      "id": "REQ-CORE-007",
+      "outcome_refs": [
+        "OUT-CORE-002"
+      ],
+      "required_evidence_refs": [
+        "EV-008"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-007"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "Financial revision multi-version",
+      "design_refs": [
+        "DD-CORE-008"
+      ],
+      "id": "REQ-CORE-008",
+      "outcome_refs": [
+        "OUT-CORE-002"
+      ],
+      "required_evidence_refs": [
+        "EV-013"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-002"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "available_at backtest constraint",
+      "design_refs": [
+        "DD-CORE-009",
+        "DD-CORE-016"
+      ],
+      "id": "REQ-CORE-009",
+      "outcome_refs": [
+        "OUT-CORE-002"
+      ],
+      "required_evidence_refs": [
+        "EV-008"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-009"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "FAILED data publish block",
+      "design_refs": [
+        "DD-CORE-009"
+      ],
+      "id": "REQ-CORE-010",
+      "outcome_refs": [
+        "OUT-CORE-002"
+      ],
+      "required_evidence_refs": [
+        "EV-008"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-008"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "WARNING publish policy",
+      "design_refs": [
+        "DD-CORE-009"
+      ],
+      "id": "REQ-CORE-011",
+      "outcome_refs": [
+        "OUT-CORE-002"
+      ],
+      "required_evidence_refs": [
+        "EV-008"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-008"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "DataGap VERIFIED closure",
+      "design_refs": [
+        "DD-CORE-010"
+      ],
+      "id": "REQ-CORE-012",
+      "outcome_refs": [
+        "OUT-CORE-002"
+      ],
+      "required_evidence_refs": [
+        "EV-008",
+        "EV-013"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-003",
+        "TASK-WI-0001-005"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "lineage_edge recursive query",
+      "design_refs": [
+        "DD-CORE-011"
+      ],
+      "id": "REQ-CORE-013",
+      "outcome_refs": [
+        "OUT-CORE-003"
+      ],
+      "required_evidence_refs": [
+        "EV-008",
+        "EV-013"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-001",
+        "TASK-WI-0001-004"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "AuditEvent 13-field logging",
+      "design_refs": [
+        "DD-CORE-012"
+      ],
+      "id": "REQ-CORE-014",
+      "outcome_refs": [
+        "OUT-CORE-003"
+      ],
+      "required_evidence_refs": [
+        "EV-008"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-003"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "AuditEvent append-only",
+      "design_refs": [
+        "DD-CORE-013"
+      ],
+      "id": "REQ-CORE-015",
+      "outcome_refs": [
+        "OUT-CORE-003"
+      ],
+      "required_evidence_refs": [
+        "EV-012",
+        "EV-013"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-003"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "DataContext does not read RAW",
+      "design_refs": [
+        "DD-CORE-014"
+      ],
+      "id": "REQ-CORE-016",
+      "outcome_refs": [
+        "OUT-CORE-004"
+      ],
+      "required_evidence_refs": [
+        "EV-008"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-007"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "DataContext 5 query modes",
+      "design_refs": [
+        "DD-CORE-014"
+      ],
+      "id": "REQ-CORE-017",
+      "outcome_refs": [
+        "OUT-CORE-004"
+      ],
+      "required_evidence_refs": [
+        "EV-008",
+        "EV-013"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-007",
+        "TASK-WI-0001-010"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "DataContext 6-frequency alignment",
+      "design_refs": [
+        "DD-CORE-014"
+      ],
+      "id": "REQ-CORE-018",
+      "outcome_refs": [
+        "OUT-CORE-004"
+      ],
+      "required_evidence_refs": [
+        "EV-008"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-007"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "DataSnapshot immutable",
+      "design_refs": [
+        "DD-CORE-015"
+      ],
+      "id": "REQ-CORE-019",
+      "outcome_refs": [
+        "OUT-CORE-004"
+      ],
+      "required_evidence_refs": [
+        "EV-008",
+        "EV-013"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-001",
+        "TASK-WI-0001-008"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "DataSnapshot reproducible",
+      "design_refs": [
+        "DD-CORE-015"
+      ],
+      "id": "REQ-CORE-020",
+      "outcome_refs": [
+        "OUT-CORE-004"
+      ],
+      "required_evidence_refs": [
+        "EV-008",
+        "EV-013"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-008"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "Anti-lookahead 3 time modes",
+      "design_refs": [
+        "DD-CORE-016"
+      ],
+      "id": "REQ-CORE-021",
+      "outcome_refs": [
+        "OUT-CORE-005"
+      ],
+      "required_evidence_refs": [
+        "EV-008"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-009"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "published_at available_at separation",
+      "design_refs": [
+        "DD-CORE-006",
+        "DD-CORE-016"
+      ],
+      "id": "REQ-CORE-022",
+      "outcome_refs": [
+        "OUT-CORE-005"
+      ],
+      "required_evidence_refs": [
+        "EV-008"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-002",
+        "TASK-WI-0001-009"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "Historical status point-in-time",
+      "design_refs": [
+        "DD-CORE-016"
+      ],
+      "id": "REQ-CORE-023",
+      "outcome_refs": [
+        "OUT-CORE-005"
+      ],
+      "required_evidence_refs": [
+        "EV-008"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-009"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "Anti-lookahead test suite 100% pass",
+      "design_refs": [
+        "DD-CORE-016"
+      ],
+      "id": "REQ-CORE-024",
+      "outcome_refs": [
+        "OUT-CORE-005"
+      ],
+      "required_evidence_refs": [
+        "EV-008"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-009"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "Unified query API 4 data types",
+      "design_refs": [
+        "DD-CORE-017"
+      ],
+      "id": "REQ-CORE-025",
+      "outcome_refs": [
+        "OUT-CORE-006"
+      ],
+      "required_evidence_refs": [
+        "EV-008"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-010"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "Query result metadata",
+      "design_refs": [
+        "DD-CORE-017"
+      ],
+      "id": "REQ-CORE-026",
+      "outcome_refs": [
+        "OUT-CORE-006"
+      ],
+      "required_evidence_refs": [
+        "EV-008"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-010"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "API timeout 504",
+      "design_refs": [
+        "DD-CORE-017"
+      ],
+      "id": "REQ-CORE-027",
+      "outcome_refs": [
+        "OUT-CORE-006"
+      ],
+      "required_evidence_refs": [
+        "EV-008",
+        "EV-013"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-010"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "Ops query no seqscan",
+      "design_refs": [
+        "DD-CORE-017"
+      ],
+      "id": "REQ-CORE-028",
+      "outcome_refs": [
+        "OUT-CORE-006"
+      ],
+      "required_evidence_refs": [
+        "EV-008",
+        "EV-013"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-010"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "DB migration-disk script",
+      "design_refs": [
+        "DD-CORE-019"
+      ],
+      "id": "REQ-CORE-029",
+      "outcome_refs": [
+        "OUT-CORE-007"
+      ],
+      "required_evidence_refs": [
+        "EV-008",
+        "EV-014"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-013"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "Minute compression archive",
+      "design_refs": [
+        "DD-CORE-020"
+      ],
+      "id": "REQ-CORE-030",
+      "outcome_refs": [
+        "OUT-CORE-007"
+      ],
+      "required_evidence_refs": [
+        "EV-008"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-015"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "server-test isolated environment",
+      "design_refs": [
+        "DD-CORE-018"
+      ],
+      "id": "REQ-CORE-031",
+      "outcome_refs": [
+        "OUT-CORE-007"
+      ],
+      "required_evidence_refs": [
+        "EV-008"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-012"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "Full backup script",
+      "design_refs": [
+        "DD-CORE-020"
+      ],
+      "id": "REQ-CORE-032",
+      "outcome_refs": [
+        "OUT-CORE-007"
+      ],
+      "required_evidence_refs": [
+        "EV-015"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-014"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "Restore script + verify",
+      "design_refs": [
+        "DD-CORE-020"
+      ],
+      "id": "REQ-CORE-033",
+      "outcome_refs": [
+        "OUT-CORE-007"
+      ],
+      "required_evidence_refs": [
+        "EV-015"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-014"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "10 test categories + real PG + coverage",
+      "design_refs": [
+        "DD-CORE-021"
+      ],
+      "id": "REQ-CORE-034",
+      "outcome_refs": [
+        "OUT-CORE-008"
+      ],
+      "required_evidence_refs": [
+        "EV-008",
+        "EV-012",
+        "EV-013"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-006",
+        "TASK-WI-0001-011",
+        "TASK-WI-0001-016",
+        "TASK-WI-0001-017"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "E2E 10x8 matrix acceptance",
+      "design_refs": [
+        "DD-CORE-021"
+      ],
+      "id": "REQ-CORE-035",
+      "outcome_refs": [
+        "OUT-CORE-008"
+      ],
+      "required_evidence_refs": [
+        "EV-008",
+        "EV-013"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-017",
+        "TASK-WI-0001-018",
+        "TASK-WI-0001-019"
+      ],
+      "type": "MUST"
+    }
+  ],
+  "schema_version": "1.0",
+  "tasks": [
+    {
+      "description": "Alembic 0013",
       "design_refs": [
         "DD-CORE-011",
         "DD-CORE-015"
       ],
       "evidence_refs": [
-        "EV-001",
-        "EV-002"
+        "EV-008",
+        "EV-012",
+        "EV-013"
+      ],
+      "id": "TASK-WI-0001-001",
+      "requirement_refs": [
+        "REQ-CORE-013",
+        "REQ-CORE-019",
+        "REQ-CORE-020"
       ]
     },
     {
-      "id": "TASK-WI-0001-002",
       "description": "Alembic 0014",
-      "requirement_refs": [
-        "REQ-CORE-001",
-        "REQ-CORE-006",
-        "REQ-CORE-008",
-        "REQ-CORE-022"
-      ],
       "design_refs": [
         "DD-CORE-001",
         "DD-CORE-006",
         "DD-CORE-008"
       ],
       "evidence_refs": [
-        "EV-001",
-        "EV-003"
+        "EV-008",
+        "EV-012",
+        "EV-013"
+      ],
+      "id": "TASK-WI-0001-002",
+      "requirement_refs": [
+        "REQ-CORE-001",
+        "REQ-CORE-006",
+        "REQ-CORE-008",
+        "REQ-CORE-022"
       ]
     },
     {
-      "id": "TASK-WI-0001-003",
       "description": "Alembic 0015",
-      "requirement_refs": [
-        "REQ-CORE-003",
-        "REQ-CORE-005",
-        "REQ-CORE-012",
-        "REQ-CORE-014",
-        "REQ-CORE-015"
-      ],
       "design_refs": [
         "DD-CORE-003",
         "DD-CORE-005",
@@ -1024,34 +1283,36 @@
         "DD-CORE-013"
       ],
       "evidence_refs": [
-        "EV-001",
-        "EV-004"
+        "EV-008",
+        "EV-012",
+        "EV-013"
+      ],
+      "id": "TASK-WI-0001-003",
+      "requirement_refs": [
+        "REQ-CORE-003",
+        "REQ-CORE-005",
+        "REQ-CORE-012",
+        "REQ-CORE-014",
+        "REQ-CORE-015"
       ]
     },
     {
-      "id": "TASK-WI-0001-004",
       "description": "lineage service",
-      "requirement_refs": [
-        "REQ-CORE-005",
-        "REQ-CORE-013"
-      ],
       "design_refs": [
         "DD-CORE-011"
       ],
       "evidence_refs": [
-        "EV-005",
-        "EV-008"
+        "EV-008",
+        "EV-013"
+      ],
+      "id": "TASK-WI-0001-004",
+      "requirement_refs": [
+        "REQ-CORE-005",
+        "REQ-CORE-013"
       ]
     },
     {
-      "id": "TASK-WI-0001-005",
       "description": "DataItem validation Worker LOST",
-      "requirement_refs": [
-        "REQ-CORE-001",
-        "REQ-CORE-002",
-        "REQ-CORE-004",
-        "REQ-CORE-012"
-      ],
       "design_refs": [
         "DD-CORE-001",
         "DD-CORE-002",
@@ -1059,12 +1320,28 @@
         "DD-CORE-010"
       ],
       "evidence_refs": [
-        "EV-008"
+        "EV-008",
+        "EV-009",
+        "EV-013"
+      ],
+      "id": "TASK-WI-0001-005",
+      "requirement_refs": [
+        "REQ-CORE-001",
+        "REQ-CORE-002",
+        "REQ-CORE-004",
+        "REQ-CORE-012"
       ]
     },
     {
-      "id": "TASK-WI-0001-006",
       "description": "C2 test suite",
+      "design_refs": [
+        "DD-CORE-021"
+      ],
+      "evidence_refs": [
+        "EV-008",
+        "EV-013"
+      ],
+      "id": "TASK-WI-0001-006",
       "requirement_refs": [
         "REQ-CORE-001",
         "REQ-CORE-002",
@@ -1079,89 +1356,93 @@
         "REQ-CORE-014",
         "REQ-CORE-015",
         "REQ-CORE-034"
-      ],
-      "design_refs": [
-        "DD-CORE-021"
-      ],
-      "evidence_refs": [
-        "EV-007",
-        "EV-008"
       ]
     },
     {
-      "id": "TASK-WI-0001-007",
       "description": "DataContext module",
-      "requirement_refs": [
-        "REQ-CORE-007",
-        "REQ-CORE-016",
-        "REQ-CORE-017",
-        "REQ-CORE-018",
-        "REQ-CORE-022"
-      ],
       "design_refs": [
         "DD-CORE-014",
         "DD-CORE-007",
         "DD-CORE-016"
       ],
       "evidence_refs": [
-        "EV-005",
-        "EV-008"
+        "EV-008",
+        "EV-013"
+      ],
+      "id": "TASK-WI-0001-007",
+      "requirement_refs": [
+        "REQ-CORE-007",
+        "REQ-CORE-016",
+        "REQ-CORE-017",
+        "REQ-CORE-018",
+        "REQ-CORE-022"
       ]
     },
     {
-      "id": "TASK-WI-0001-008",
       "description": "DataSnapshot builder",
-      "requirement_refs": [
-        "REQ-CORE-010",
-        "REQ-CORE-011",
-        "REQ-CORE-019",
-        "REQ-CORE-020"
-      ],
       "design_refs": [
         "DD-CORE-009",
         "DD-CORE-015"
       ],
       "evidence_refs": [
-        "EV-002",
-        "EV-008"
+        "EV-008",
+        "EV-013"
+      ],
+      "id": "TASK-WI-0001-008",
+      "requirement_refs": [
+        "REQ-CORE-010",
+        "REQ-CORE-011",
+        "REQ-CORE-019",
+        "REQ-CORE-020"
       ]
     },
     {
-      "id": "TASK-WI-0001-009",
       "description": "Anti-lookahead rules",
+      "design_refs": [
+        "DD-CORE-016"
+      ],
+      "evidence_refs": [
+        "EV-008"
+      ],
+      "id": "TASK-WI-0001-009",
       "requirement_refs": [
         "REQ-CORE-009",
         "REQ-CORE-021",
         "REQ-CORE-022",
         "REQ-CORE-023",
         "REQ-CORE-024"
-      ],
-      "design_refs": [
-        "DD-CORE-016"
-      ],
-      "evidence_refs": [
-        "EV-008"
       ]
     },
     {
-      "id": "TASK-WI-0001-010",
       "description": "Unified query API",
+      "design_refs": [
+        "DD-CORE-017"
+      ],
+      "evidence_refs": [
+        "EV-008",
+        "EV-013"
+      ],
+      "id": "TASK-WI-0001-010",
       "requirement_refs": [
         "REQ-CORE-025",
         "REQ-CORE-026",
         "REQ-CORE-027",
         "REQ-CORE-028"
-      ],
-      "design_refs": [
-        "DD-CORE-017"
-      ],
-      "evidence_refs": [
-        "EV-008"
       ]
     },
     {
-      "id": "TASK-WI-0001-011",
       "description": "C3 test suite",
+      "design_refs": [
+        "DD-CORE-014",
+        "DD-CORE-015",
+        "DD-CORE-016",
+        "DD-CORE-017"
+      ],
+      "evidence_refs": [
+        "EV-008",
+        "EV-013"
+      ],
+      "id": "TASK-WI-0001-011",
       "requirement_refs": [
         "REQ-CORE-016",
         "REQ-CORE-017",
@@ -1176,348 +1457,133 @@
         "REQ-CORE-026",
         "REQ-CORE-027",
         "REQ-CORE-028"
-      ],
-      "design_refs": [
-        "DD-CORE-014",
-        "DD-CORE-015",
-        "DD-CORE-016",
-        "DD-CORE-017"
-      ],
-      "evidence_refs": [
-        "EV-007",
-        "EV-008"
       ]
     },
     {
-      "id": "TASK-WI-0001-012",
       "description": "server-test compose",
-      "requirement_refs": [
-        "REQ-CORE-031"
-      ],
       "design_refs": [
         "DD-CORE-018"
       ],
       "evidence_refs": [
-        "EV-006"
+        "EV-008"
+      ],
+      "id": "TASK-WI-0001-012",
+      "requirement_refs": [
+        "REQ-CORE-031"
       ]
     },
     {
-      "id": "TASK-WI-0001-013",
       "description": "DB migration-disk scripts",
-      "requirement_refs": [
-        "REQ-CORE-029"
-      ],
       "design_refs": [
         "DD-CORE-019"
       ],
       "evidence_refs": [
-        "EV-006"
+        "EV-008",
+        "EV-014"
+      ],
+      "id": "TASK-WI-0001-013",
+      "requirement_refs": [
+        "REQ-CORE-029"
       ]
     },
     {
-      "id": "TASK-WI-0001-014",
       "description": "Backup restore scripts",
-      "requirement_refs": [
-        "REQ-CORE-032",
-        "REQ-CORE-033"
-      ],
       "design_refs": [
         "DD-CORE-020"
       ],
       "evidence_refs": [
-        "EV-006"
+        "EV-015"
+      ],
+      "id": "TASK-WI-0001-014",
+      "requirement_refs": [
+        "REQ-CORE-032",
+        "REQ-CORE-033"
       ]
     },
     {
-      "id": "TASK-WI-0001-015",
       "description": "Minute compression scripts",
+      "design_refs": [
+        "DD-CORE-020"
+      ],
+      "evidence_refs": [
+        "EV-008"
+      ],
+      "id": "TASK-WI-0001-015",
       "requirement_refs": [
         "REQ-CORE-030"
-      ],
-      "design_refs": [
-        "DD-CORE-020"
-      ],
-      "evidence_refs": [
-        "EV-006"
       ]
     },
     {
-      "id": "TASK-WI-0001-016",
       "description": "C4 test suite",
-      "requirement_refs": [
-        "REQ-CORE-029",
-        "REQ-CORE-030",
-        "REQ-CORE-031",
-        "REQ-CORE-032",
-        "REQ-CORE-033"
-      ],
       "design_refs": [
         "DD-CORE-018",
         "DD-CORE-019",
         "DD-CORE-020"
       ],
       "evidence_refs": [
-        "EV-006",
-        "EV-008"
-      ]
-    },
-    {
-      "id": "TASK-WI-0001-017",
-      "description": "Alembic tests E2E matrix",
+        "EV-008",
+        "EV-015"
+      ],
+      "id": "TASK-WI-0001-016",
       "requirement_refs": [
-        "REQ-CORE-034",
-        "REQ-CORE-035"
-      ],
-      "design_refs": [
-        "DD-CORE-021"
-      ],
-      "evidence_refs": [
-        "EV-007",
-        "EV-008"
-      ]
-    },
-    {
-      "id": "TASK-WI-0001-018",
-      "description": "Documentation update",
-      "requirement_refs": [
-        "REQ-CORE-034",
-        "REQ-CORE-035"
-      ],
-      "design_refs": [
-        "DD-CORE-021"
-      ],
-      "evidence_refs": [
-        "EV-006"
-      ]
-    },
-    {
-      "id": "TASK-WI-0001-019",
-      "description": "Roadmap task manifest",
-      "requirement_refs": [
-        "REQ-CORE-034",
-        "REQ-CORE-035"
-      ],
-      "design_refs": [
-        "DD-CORE-021"
-      ],
-      "evidence_refs": [
-        "EV-006",
-        "EV-011"
-      ]
-    }
-  ],
-  "evidence": [
-    {
-      "id": "EV-001",
-      "status": "passed",
-      "level": "L1",
-      "evidence_type": "file_snapshot",
-      "supports": [
-        "OUT-CORE-003",
-        "OUT-CORE-004",
-        "REQ-CORE-013",
-        "REQ-CORE-019",
-        "REQ-CORE-020"
-      ],
-      "outcome_refs": [
-        "OUT-CORE-003",
-        "OUT-CORE-004"
-      ]
-    },
-    {
-      "id": "EV-002",
-      "status": "passed",
-      "level": "L1",
-      "evidence_type": "file_snapshot",
-      "supports": [
-        "OUT-CORE-003",
-        "OUT-CORE-004",
-        "REQ-CORE-013",
-        "REQ-CORE-019",
-        "REQ-CORE-020"
-      ],
-      "outcome_refs": [
-        "OUT-CORE-003",
-        "OUT-CORE-004"
-      ]
-    },
-    {
-      "id": "EV-003",
-      "status": "passed",
-      "level": "L1",
-      "evidence_type": "file_snapshot",
-      "supports": [
-        "OUT-CORE-001",
-        "OUT-CORE-002",
-        "REQ-CORE-001",
-        "REQ-CORE-006",
-        "REQ-CORE-008",
-        "REQ-CORE-022"
-      ],
-      "outcome_refs": [
-        "OUT-CORE-001",
-        "OUT-CORE-002"
-      ]
-    },
-    {
-      "id": "EV-004",
-      "status": "passed",
-      "level": "L1",
-      "evidence_type": "file_snapshot",
-      "supports": [
-        "OUT-CORE-001",
-        "OUT-CORE-003",
-        "REQ-CORE-003",
-        "REQ-CORE-005",
-        "REQ-CORE-012",
-        "REQ-CORE-014",
-        "REQ-CORE-015"
-      ],
-      "outcome_refs": [
-        "OUT-CORE-001",
-        "OUT-CORE-003"
-      ]
-    },
-    {
-      "id": "EV-005",
-      "status": "passed",
-      "level": "L2",
-      "evidence_type": "behavioral",
-      "supports": [
-        "OUT-CORE-004",
-        "REQ-CORE-016"
-      ],
-      "outcome_refs": [
-        "OUT-CORE-004"
-      ]
-    },
-    {
-      "id": "EV-006",
-      "status": "passed",
-      "level": "L1",
-      "evidence_type": "file_snapshot",
-      "supports": [
-        "OUT-CORE-007",
         "REQ-CORE-029",
         "REQ-CORE-030",
         "REQ-CORE-031",
         "REQ-CORE-032",
         "REQ-CORE-033"
-      ],
-      "outcome_refs": [
-        "OUT-CORE-007"
       ]
     },
     {
-      "id": "EV-007",
-      "status": "passed",
-      "level": "L1",
-      "evidence_type": "file_snapshot",
-      "supports": [
-        "OUT-CORE-008",
+      "description": "Alembic tests E2E matrix",
+      "design_refs": [
+        "DD-CORE-021"
+      ],
+      "evidence_refs": [
+        "EV-008",
+        "EV-013"
+      ],
+      "id": "TASK-WI-0001-017",
+      "requirement_refs": [
         "REQ-CORE-034",
         "REQ-CORE-035"
+      ]
+    },
+    {
+      "description": "Documentation update",
+      "design_refs": [
+        "DD-CORE-021"
       ],
-      "outcome_refs": [
-        "OUT-CORE-008"
-      ]
-    },
-    {
-      "id": "EV-008",
-      "status": "passed",
-      "level": "L3",
-      "evidence_type": "test_output",
-      "supports": [
-        "OUT-CORE-001",
-        "OUT-CORE-002",
-        "OUT-CORE-003",
-        "OUT-CORE-004",
-        "OUT-CORE-005",
-        "OUT-CORE-006",
-        "OUT-CORE-008",
-        "REQ-CORE-002",
-        "REQ-CORE-004",
-        "REQ-CORE-007",
-        "REQ-CORE-009",
-        "REQ-CORE-010",
-        "REQ-CORE-011",
-        "REQ-CORE-014",
-        "REQ-CORE-016",
-        "REQ-CORE-017",
-        "REQ-CORE-018",
-        "REQ-CORE-021",
-        "REQ-CORE-022",
-        "REQ-CORE-023",
-        "REQ-CORE-024",
-        "REQ-CORE-025",
-        "REQ-CORE-026",
-        "REQ-CORE-027",
-        "REQ-CORE-028"
+      "evidence_refs": [
+        "EV-008"
       ],
-      "outcome_refs": [
-        "OUT-CORE-001",
-        "OUT-CORE-002",
-        "OUT-CORE-003",
-        "OUT-CORE-004",
-        "OUT-CORE-005",
-        "OUT-CORE-006",
-        "OUT-CORE-008"
+      "id": "TASK-WI-0001-018",
+      "requirement_refs": [
+        "REQ-CORE-034",
+        "REQ-CORE-035"
       ]
     },
     {
-      "id": "EV-009",
-      "status": "passed",
-      "level": "L3",
-      "evidence_type": "test_output",
-      "supports": [
-        "OUT-CORE-001",
-        "REQ-CORE-002",
-        "REQ-CORE-004"
+      "description": "Roadmap task manifest",
+      "design_refs": [
+        "DD-CORE-021"
       ],
-      "outcome_refs": [
-        "OUT-CORE-001"
-      ]
-    },
-    {
-      "id": "EV-010",
-      "status": "passed",
-      "level": "L2",
-      "evidence_type": "test_output",
-      "supports": [
-        "TASK-WI-0001-001",
-        "TASK-WI-0001-002",
-        "TASK-WI-0001-003",
-        "TASK-WI-0001-004",
-        "TASK-WI-0001-005",
-        "TASK-WI-0001-007",
-        "TASK-WI-0001-008",
-        "TASK-WI-0001-009",
-        "TASK-WI-0001-010"
-      ]
-    },
-    {
-      "id": "EV-011",
-      "status": "passed",
-      "level": "L2",
-      "evidence_type": "command_output",
-      "supports": [
-        "TASK-WI-0001-001",
-        "TASK-WI-0001-019"
+      "evidence_refs": [
+        "EV-008"
+      ],
+      "id": "TASK-WI-0001-019",
+      "requirement_refs": [
+        "REQ-CORE-034",
+        "REQ-CORE-035"
       ]
     }
   ],
-  "project_integration": {
-    "status": "merged",
-    "required": true,
-    "refs": [
-      "merge_report.md"
-    ]
-  },
+  "workflow_type": "feature_spec",
+  "work_item_id": "WI-0001",
   "provenance": {
     "contract_id": "semantic-closure/v1",
-    "generated_at": "2026-07-29T04:48:20.427Z",
+    "generated_at": "2026-07-29T10:23:57.187Z",
     "source": "tool_argument",
-    "semantic_payload_sha256": "sha256:f72a5853cdb308a50190293eec424cbacb0acdcc48a72d2f84eca1af64eec303",
+    "semantic_payload_sha256": "sha256:2d4c8092ac8cf6b76a8e70d5b0d9c3064153145538b673c649b224b4bbe348dd",
     "inputs": [
       {
         "path": "trace_delta.md",
@@ -1525,11 +1591,11 @@
       },
       {
         "path": "verification_report.md",
-        "sha256": "sha256:11d6f3d1c3dd3fb3b082640aefbf5a993a720a997888d99c9f82433b27a79519"
+        "sha256": "sha256:ca6104860ac54663e05367463d91b64f6b8d52486a552a068932001958d5e4c8"
       },
       {
         "path": "evidence/evidence_manifest.json",
-        "sha256": "sha256:bb9b0e147dea35da58a5c51b9a5b881a953ccaf6aa6048cd7df285b1f8689c6c"
+        "sha256": "sha256:1b6b45b19aac2f7ef1c97ced33b40441994675e221dba6a22a81c331eeea5be6"
       },
       {
         "path": "merge_report.md",
@@ -1537,7 +1603,7 @@
       },
       {
         "path": "changed_files_audit.md",
-        "sha256": "sha256:fee51d87db8b6b49255eee6d76a8cd40dde23a19063bf9ba49b80fb92050d42e"
+        "sha256": "sha256:9f3e9e76ccb10072471d103c78a242325917384e3238f9635c366ec93aeaa77d"
       }
     ]
   }

@@ -29,7 +29,10 @@
     "app/lineage/service.py",
     "app/main.py",
     "app/storage/models/__init__.py",
+    "app/storage/models/clean.py",
     "app/storage/models/lineage.py",
+    "app/storage/models/quality.py",
+    "app/storage/models/raw.py",
     "app/storage/models/snapshot.py",
     "compose.test.yml",
     "docs/00_项目管理/00_A股量化分析平台建设路线图.md",
@@ -87,7 +90,9 @@
     "tests/integration/test_raw_evidence.py",
     "tests/integration/test_snapshot_immutability.py",
     "tests/integration/test_state_machine.py",
-    "tests/lineage/test_lineage_edge.py"
+    "tests/lineage/test_lineage_edge.py",
+    "tests/test_ops_api.py",
+    "tests/test_p4_minute_rules.py"
   ],
   "architecture_refs": [],
   "data_model_refs": [],
@@ -96,5 +101,5 @@
   "module_contract_refs": [],
   "project_spec_version": "PSV-0002",
   "impact_scope_hash": "2a601e47f0de98cc34a812ed131682cc669ff5c71b15b75016df20d20066b1d3",
-  "frozen_at": "2026-07-29T04:11:37.831Z"
+  "frozen_at": "2026-07-29T09:41:25.258Z"
 }
