@@ -99,6 +99,7 @@ def test_minute_clean_table_is_narrow_high_volume_schema() -> None:
         "volume_share",
         "amount_cny",
         "_clean_batch_id",
+        "_published_at",
     }
     assert StoragePolicy.__table__.schema == "meta"
     assert "stock_minute" in P4_ITEMS

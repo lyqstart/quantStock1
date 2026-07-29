@@ -2,7 +2,14 @@ from app.main import app
 
 
 def test_ops_routes_are_registered() -> None:
-    paths = {route.path for route in app.routes if hasattr(route, "path")}
+    paths = set()
+    for route in app.routes:
+        if hasattr(route, "path"):
+            paths.add(route.path)
+        elif hasattr(route, "routes"):
+            for sub_route in route.routes:
+                if hasattr(sub_route, "path"):
+                    paths.add(sub_route.path)
     expected = {
         "/api/v1/ops/overview",
         "/api/v1/ops/data-items",

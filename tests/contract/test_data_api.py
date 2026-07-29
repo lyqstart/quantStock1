@@ -4,30 +4,43 @@ import pytest
 from fastapi.testclient import TestClient
 
 
+def _get_all_paths(app):
+    """Extract all route paths including those from included routers."""
+    paths = []
+    for route in app.routes:
+        if hasattr(route, "path"):
+            paths.append(route.path)
+        elif hasattr(route, "routes"):
+            for sub_route in route.routes:
+                if hasattr(sub_route, "path"):
+                    paths.append(sub_route.path)
+    return paths
+
+
 class TestDataAPIContract:
     def test_app_has_data_router(self):
         from app.main import app
-        routes = [r.path for r in app.routes if hasattr(r, "path")]
+        routes = _get_all_paths(app)
         assert any("/api/v1/data" in r for r in routes), "data router not registered"
 
     def test_daily_endpoint_exists(self):
         from app.main import app
-        routes = [r.path for r in app.routes if hasattr(r, "path")]
+        routes = _get_all_paths(app)
         assert "/api/v1/data/daily" in routes
 
     def test_minute_endpoint_exists(self):
         from app.main import app
-        routes = [r.path for r in app.routes if hasattr(r, "path")]
+        routes = _get_all_paths(app)
         assert "/api/v1/data/minute" in routes
 
     def test_financial_endpoint_exists(self):
         from app.main import app
-        routes = [r.path for r in app.routes if hasattr(r, "path")]
+        routes = _get_all_paths(app)
         assert "/api/v1/data/financial" in routes
 
     def test_events_endpoint_exists(self):
         from app.main import app
-        routes = [r.path for r in app.routes if hasattr(r, "path")]
+        routes = _get_all_paths(app)
         assert "/api/v1/data/events" in routes
 
     def test_response_model_has_metadata(self):
