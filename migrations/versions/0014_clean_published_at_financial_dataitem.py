@@ -1,6 +1,6 @@
 """CLEAN published_at + financial tables + DataItem metadata
 
-Revision ID: 0014_clean_published_at_financial_dataitem
+Revision ID: 0014_pub_at_fin_dataitem
 Revises: 0013_lineage_and_snapshot
 Create Date: 2026-07-29
 
@@ -14,7 +14,7 @@ import uuid
 
 from alembic import op
 
-revision = "0014_clean_published_at_financial_dataitem"
+revision = "0014_pub_at_fin_dataitem"
 down_revision = "0013_lineage_and_snapshot"
 branch_labels = None
 depends_on = None

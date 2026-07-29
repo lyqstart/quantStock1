@@ -1,7 +1,7 @@
 """AuditEvent extension + run_type CHECK + DataGap VERIFIED + RAW evidence
 
-Revision ID: 0015_audit_runcheck_datagap_rawevidence
-Revises: 0014_clean_published_at_financial_dataitem
+Revision ID: 0015_audit_gap_rawev
+Revises: 0014_pub_at_fin_dataitem
 Create Date: 2026-07-29
 
 Implements:
@@ -14,8 +14,8 @@ import uuid
 
 from alembic import op
 
-revision = "0015_audit_runcheck_datagap_rawevidence"
-down_revision = "0014_clean_published_at_financial_dataitem"
+revision = "0015_audit_gap_rawev"
+down_revision = "0014_pub_at_fin_dataitem"
 branch_labels = None
 depends_on = None
 
