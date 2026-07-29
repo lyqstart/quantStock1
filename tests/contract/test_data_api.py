@@ -10,6 +10,10 @@ def _get_all_paths(app):
     for route in app.routes:
         if hasattr(route, "path"):
             paths.append(route.path)
+        elif hasattr(route, "original_router"):
+            for sub_route in route.original_router.routes:
+                if hasattr(sub_route, "path"):
+                    paths.append(sub_route.path)
         elif hasattr(route, "routes"):
             for sub_route in route.routes:
                 if hasattr(sub_route, "path"):

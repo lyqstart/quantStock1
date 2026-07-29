@@ -6,6 +6,10 @@ def test_ops_routes_are_registered() -> None:
     for route in app.routes:
         if hasattr(route, "path"):
             paths.add(route.path)
+        elif hasattr(route, "original_router"):
+            for sub_route in route.original_router.routes:
+                if hasattr(sub_route, "path"):
+                    paths.add(sub_route.path)
         elif hasattr(route, "routes"):
             for sub_route in route.routes:
                 if hasattr(sub_route, "path"):
