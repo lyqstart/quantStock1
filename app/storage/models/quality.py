@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import BigInteger, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, func
+from sqlalchemy import BigInteger, Boolean, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -81,6 +81,10 @@ class DataGap(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     trace_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    pre_backfill_count: Mapped[int | None] = mapped_column(Integer)
+    post_backfill_count: Mapped[int | None] = mapped_column(Integer)
+    checksum_verified: Mapped[bool | None] = mapped_column(Boolean)
+    verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class IssueTaskLink(Base):

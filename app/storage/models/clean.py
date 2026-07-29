@@ -117,6 +117,7 @@ class CleanTradeCalendar(Base):
     quality_rule_version: Mapped[str] = mapped_column("_quality_rule_version", String(32), nullable=False)
     created_at: Mapped[datetime] = mapped_column("_created_at", DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column("_updated_at", DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    published_at: Mapped[datetime] = mapped_column("_published_at", DateTime(timezone=True), nullable=False, server_default=func.now())
 
 
 class SecurityMaster(Base):
@@ -149,6 +150,7 @@ class SecurityMaster(Base):
     quality_rule_version: Mapped[str] = mapped_column("_quality_rule_version", String(32), nullable=False)
     created_at: Mapped[datetime] = mapped_column("_created_at", DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column("_updated_at", DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    published_at: Mapped[datetime] = mapped_column("_published_at", DateTime(timezone=True), nullable=False, server_default=func.now())
 
 
 class SecurityMasterHistory(Base):
@@ -163,6 +165,7 @@ class SecurityMasterHistory(Base):
     payload: Mapped[dict] = mapped_column(JSONB, nullable=False)
     clean_batch_id: Mapped[uuid.UUID] = mapped_column("_clean_batch_id", UUID(as_uuid=True), ForeignKey("clean.clean_batch.clean_batch_id"), nullable=False)
     created_at: Mapped[datetime] = mapped_column("_created_at", DateTime(timezone=True), server_default=func.now(), nullable=False)
+    published_at: Mapped[datetime] = mapped_column("_published_at", DateTime(timezone=True), nullable=False, server_default=func.now())
 
 
 class CleanStockDaily(Base):
@@ -191,6 +194,7 @@ class CleanStockDaily(Base):
     quality_rule_version: Mapped[str] = mapped_column("_quality_rule_version", String(32), nullable=False)
     created_at: Mapped[datetime] = mapped_column("_created_at", DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column("_updated_at", DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    published_at: Mapped[datetime] = mapped_column("_published_at", DateTime(timezone=True), nullable=False, server_default=func.now())
 
 
 class CleanStockAdjFactor(Base):
@@ -209,6 +213,7 @@ class CleanStockAdjFactor(Base):
     quality_rule_version: Mapped[str] = mapped_column("_quality_rule_version", String(32), nullable=False)
     created_at: Mapped[datetime] = mapped_column("_created_at", DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column("_updated_at", DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    published_at: Mapped[datetime] = mapped_column("_published_at", DateTime(timezone=True), nullable=False, server_default=func.now())
 
 
 class CleanStockAdjFactorHistory(Base):
@@ -225,6 +230,7 @@ class CleanStockAdjFactorHistory(Base):
     clean_batch_id: Mapped[uuid.UUID] = mapped_column("_clean_batch_id", UUID(as_uuid=True), ForeignKey("clean.clean_batch.clean_batch_id"), nullable=False)
     source: Mapped[str] = mapped_column("_source", String(32), nullable=False)
     created_at: Mapped[datetime] = mapped_column("_created_at", DateTime(timezone=True), server_default=func.now(), nullable=False)
+    published_at: Mapped[datetime] = mapped_column("_published_at", DateTime(timezone=True), nullable=False, server_default=func.now())
 
 
 class CleanStockDailyBasic(Base):
@@ -259,6 +265,7 @@ class CleanStockDailyBasic(Base):
     quality_rule_version: Mapped[str] = mapped_column("_quality_rule_version", String(32), nullable=False)
     created_at: Mapped[datetime] = mapped_column("_created_at", DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column("_updated_at", DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    published_at: Mapped[datetime] = mapped_column("_published_at", DateTime(timezone=True), nullable=False, server_default=func.now())
 
 
 class CleanStockSuspendEvent(Base):
@@ -279,6 +286,7 @@ class CleanStockSuspendEvent(Base):
     quality_rule_version: Mapped[str] = mapped_column("_quality_rule_version", String(32), nullable=False)
     created_at: Mapped[datetime] = mapped_column("_created_at", DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column("_updated_at", DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    published_at: Mapped[datetime] = mapped_column("_published_at", DateTime(timezone=True), nullable=False, server_default=func.now())
 
 
 class CleanStockLimitPrice(Base):
@@ -299,6 +307,7 @@ class CleanStockLimitPrice(Base):
     quality_rule_version: Mapped[str] = mapped_column("_quality_rule_version", String(32), nullable=False)
     created_at: Mapped[datetime] = mapped_column("_created_at", DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column("_updated_at", DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    published_at: Mapped[datetime] = mapped_column("_published_at", DateTime(timezone=True), nullable=False, server_default=func.now())
 
 class CleanStockMinute(Base):
     __tablename__ = "stock_minute"
@@ -314,4 +323,95 @@ class CleanStockMinute(Base):
     volume_share: Mapped[int | None] = mapped_column(BigInteger)
     amount_cny: Mapped[float | None] = mapped_column(Float)
     clean_batch_id: Mapped[uuid.UUID] = mapped_column("_clean_batch_id", UUID(as_uuid=True), ForeignKey("clean.clean_batch.clean_batch_id"), nullable=False)
+    published_at: Mapped[datetime] = mapped_column("_published_at", DateTime(timezone=True), nullable=False, server_default=func.now())
+
+
+class FinancialIncome(Base):
+    """Multi-version CLEAN financial income (DD-CORE-008)."""
+    __tablename__ = "financial_income"
+    __table_args__ = {"schema": "clean"}
+
+    financial_income_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
+    ts_code: Mapped[str] = mapped_column(String(16), nullable=False)
+    report_period: Mapped[date] = mapped_column("end_date", Date, nullable=False)
+    ann_date: Mapped[date | None] = mapped_column(Date)
+    f_ann_date: Mapped[date | None] = mapped_column(Date)
+    report_type: Mapped[str | None] = mapped_column(String(8))
+    update_flag: Mapped[str | None] = mapped_column(String(8))
+    revision_version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    is_current: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    valid_from: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    valid_to: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # core business fields
+    basic_eps: Mapped[float | None] = mapped_column(Float)
+    diluted_eps: Mapped[float | None] = mapped_column(Float)
+    total_revenue: Mapped[float | None] = mapped_column(Float)
+    revenue: Mapped[float | None] = mapped_column(Float)
+    oper_cost: Mapped[float | None] = mapped_column(Float)
+    total_profit: Mapped[float | None] = mapped_column(Float)
+    income_tax: Mapped[float | None] = mapped_column(Float)
+    n_income: Mapped[float | None] = mapped_column(Float)
+    n_income_attr_p: Mapped[float | None] = mapped_column(Float)
+    operate_profit: Mapped[float | None] = mapped_column(Float)
+    total_cogs: Mapped[float | None] = mapped_column(Float)
+    sell_exp: Mapped[float | None] = mapped_column(Float)
+    admin_exp: Mapped[float | None] = mapped_column(Float)
+    fin_exp: Mapped[float | None] = mapped_column(Float)
+    rd_exp: Mapped[float | None] = mapped_column(Float)
+    ebit: Mapped[float | None] = mapped_column(Float)
+    ebitda: Mapped[float | None] = mapped_column(Float)
+    # governance columns
+    clean_batch_id: Mapped[uuid.UUID] = mapped_column("_clean_batch_id", UUID(as_uuid=True), ForeignKey("clean.clean_batch.clean_batch_id"), nullable=False)
+    source: Mapped[str] = mapped_column("_source", String(32), nullable=False)
+    available_at: Mapped[datetime] = mapped_column("_available_at", DateTime(timezone=True), nullable=False)
+    quality_status: Mapped[str] = mapped_column("_quality_status", String(16), nullable=False)
+    mapping_version: Mapped[str] = mapped_column("_mapping_version", String(32), nullable=False)
+    normalization_version: Mapped[str] = mapped_column("_normalization_version", String(32), nullable=False)
+    quality_rule_version: Mapped[str] = mapped_column("_quality_rule_version", String(32), nullable=False)
+    published_at: Mapped[datetime] = mapped_column("_published_at", DateTime(timezone=True), nullable=False, server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column("_created_at", DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column("_updated_at", DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+
+
+class FinancialIndicator(Base):
+    """Multi-version CLEAN financial indicator (DD-CORE-008)."""
+    __tablename__ = "financial_indicator"
+    __table_args__ = {"schema": "clean"}
+
+    financial_indicator_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
+    ts_code: Mapped[str] = mapped_column(String(16), nullable=False)
+    report_period: Mapped[date] = mapped_column("end_date", Date, nullable=False)
+    ann_date: Mapped[date | None] = mapped_column(Date)
+    update_flag: Mapped[str | None] = mapped_column(String(8))
+    revision_version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    is_current: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    valid_from: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    valid_to: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # core indicator fields
+    eps: Mapped[float | None] = mapped_column(Float)
+    dt_eps: Mapped[float | None] = mapped_column(Float)
+    total_revenue_ps: Mapped[float | None] = mapped_column(Float)
+    revenue_ps: Mapped[float | None] = mapped_column(Float)
+    bps: Mapped[float | None] = mapped_column(Float)
+    roe: Mapped[float | None] = mapped_column(Float)
+    roe_dt: Mapped[float | None] = mapped_column(Float)
+    roa: Mapped[float | None] = mapped_column(Float)
+    npta: Mapped[float | None] = mapped_column(Float)
+    grossprofit_margin: Mapped[float | None] = mapped_column(Float)
+    netprofit_margin: Mapped[float | None] = mapped_column(Float)
+    current_ratio: Mapped[float | None] = mapped_column(Float)
+    quick_ratio: Mapped[float | None] = mapped_column(Float)
+    debt_to_assets: Mapped[float | None] = mapped_column(Float)
+    ocfps: Mapped[float | None] = mapped_column(Float)
+    # governance columns
+    clean_batch_id: Mapped[uuid.UUID] = mapped_column("_clean_batch_id", UUID(as_uuid=True), ForeignKey("clean.clean_batch.clean_batch_id"), nullable=False)
+    source: Mapped[str] = mapped_column("_source", String(32), nullable=False)
+    available_at: Mapped[datetime] = mapped_column("_available_at", DateTime(timezone=True), nullable=False)
+    quality_status: Mapped[str] = mapped_column("_quality_status", String(16), nullable=False)
+    mapping_version: Mapped[str] = mapped_column("_mapping_version", String(32), nullable=False)
+    normalization_version: Mapped[str] = mapped_column("_normalization_version", String(32), nullable=False)
+    quality_rule_version: Mapped[str] = mapped_column("_quality_rule_version", String(32), nullable=False)
+    published_at: Mapped[datetime] = mapped_column("_published_at", DateTime(timezone=True), nullable=False, server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column("_created_at", DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column("_updated_at", DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 

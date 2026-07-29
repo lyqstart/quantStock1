@@ -7,27 +7,27 @@ from fastapi.testclient import TestClient
 class TestDataAPIContract:
     def test_app_has_data_router(self):
         from app.main import app
-        routes = [r.path for r in app.routes]
+        routes = [r.path for r in app.routes if hasattr(r, "path")]
         assert any("/api/v1/data" in r for r in routes), "data router not registered"
 
     def test_daily_endpoint_exists(self):
         from app.main import app
-        routes = [r.path for r in app.routes]
+        routes = [r.path for r in app.routes if hasattr(r, "path")]
         assert "/api/v1/data/daily" in routes
 
     def test_minute_endpoint_exists(self):
         from app.main import app
-        routes = [r.path for r in app.routes]
+        routes = [r.path for r in app.routes if hasattr(r, "path")]
         assert "/api/v1/data/minute" in routes
 
     def test_financial_endpoint_exists(self):
         from app.main import app
-        routes = [r.path for r in app.routes]
+        routes = [r.path for r in app.routes if hasattr(r, "path")]
         assert "/api/v1/data/financial" in routes
 
     def test_events_endpoint_exists(self):
         from app.main import app
-        routes = [r.path for r in app.routes]
+        routes = [r.path for r in app.routes if hasattr(r, "path")]
         assert "/api/v1/data/events" in routes
 
     def test_response_model_has_metadata(self):

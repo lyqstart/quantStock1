@@ -77,7 +77,7 @@ def _get_session() -> Session:
 def _apply_statement_timeout(session: Session) -> int:
     """Set LOCAL statement_timeout for this transaction (REQ-CORE-027)."""
     timeout_ms = int(get_settings().query_timeout_seconds * 1000)
-    session.execute(text("SET LOCAL statement_timeout = :ms"), {"ms": timeout_ms})
+    session.execute(text(f"SET LOCAL statement_timeout = {timeout_ms}"))
     return timeout_ms
 
 

@@ -22,6 +22,9 @@ class RawBatch(Base):
     started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    content_hash: Mapped[str | None] = mapped_column(String(128))
+    fetched_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    schema_fingerprint: Mapped[str | None] = mapped_column(String(128))
 
 
 class TushareTradeCal(Base):
